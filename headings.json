@@ -1,0 +1,14 @@
+[
+  {"id":1,"text":"I saw a name in my contact list inside this QR code 👀 Unlock the message with your name.","emoji":"👀"},
+  {"id":2,"text":"Someone in my contacts needs to see this message. Is it you?","emoji":"🤫"},
+  {"id":3,"text":"A secret message is hidden inside this QR code. Only the right person can unlock it.","emoji":"🔐"},
+  {"id":4,"text":"I left a message for someone special in my contacts. Check if it's for you.","emoji":"💌"},
+  {"id":5,"text":"This QR code has a message that will make someone smile today. Scan it.","emoji":"😊"},
+  {"id":6,"text":"Someone you know has been thinking about you. They left this message.","emoji":"💭"},
+  {"id":7,"text":"There's a confession hidden in this QR code. Do you dare to scan it? 👀","emoji":"😏"},
+  {"id":8,"text":"This message was made for exactly ONE person. Are you the one?","emoji":"🎯"},
+  {"id":9,"text":"Someone couldn't say this to your face, so they left it in a QR code 🙈","emoji":"🙈"},
+  {"id":10,"text":"Not everyone can unlock this message. Try your name and see what happens 😉","emoji":"✨"},
+  {"id":11,"text":"A secret admirer left this for you. Scan to reveal who it's from 💝","emoji":"💝"},
+  {"id":12,"text":"Your name might be the key to unlocking something beautiful. Try it.","emoji":"🗝️"}
+]

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecretQR — Send Viral Secret Messages via QR Code</title>
+  <meta name="description" content="Create secret messages that reveal themselves dramatically. Share via QR code on WhatsApp, TikTok, Instagram and more.">
+  <meta property="og:title" content="Someone left you a secret message 👀">
+  <meta property="og:description" content="Scan to reveal a secret message made just for you.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Google Analytics — replace G-XXXXXXXXXX with your ID -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script> -->
+
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     MAIN PAGE
+══════════════════════════════ -->
+<div id="main-page">
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Secret<span>QR</span> 🤫</div>
+    <button class="nav-cta" onclick="openCreateModal()">+ Create Message</button>
+  </nav>
+
+  <!-- AD: TOP BANNER -->
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px">
+    <div class="ad-slot">
+      <!-- Google AdSense / Adsterra / PropellerAds top banner -->
+      <span>Advertisement — Top Banner</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🔥 Going viral on WhatsApp &amp; TikTok</div>
+      <h1>Someone left you a<br><em>secret message</em> 👀</h1>
+      <p class="hero-sub">Create a mysterious QR code that reveals your message in a dramatic AI-style chat. Share it on WhatsApp, TikTok, Instagram &amp; more.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="openCreateModal()">✨ Create a Secret Message</button>
+        <button class="btn-secondary" onclick="document.getElementById('templates-section').scrollIntoView({behavior:'smooth'})">Browse Templates →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section>
+    <h2 class="section-title">How It <span>Works</span></h2>
+    <p class="section-sub">Three steps to send a viral secret message</p>
+    <div class="steps">
+      <div class="step fade-up">
+        <div class="step-num">1</div>
+        <h3>Pick a Template</h3>
+        <p>Choose from dozens of categories — birthday, love, flirts, pranks and more.</p>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">2</div>
+        <h3>Generate QR Code</h3>
+        <p>A beautiful shareable QR poster is created instantly with your secret inside.</p>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">3</div>
+        <h3>Share &amp; Go Viral</h3>
+        <p>Share the poster on WhatsApp, TikTok, Instagram. Watch the reactions come in.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRENDING -->
+  <section>
+    <h2 class="section-title">Trending <span>Today 🔥</span></h2>
+    <p class="section-sub">The most shared secret messages right now</p>
+    <div class="trending-grid" id="trending-grid"></div>
+  </section>
+
+  <!-- AD: MID PAGE -->
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px">
+    <div class="ad-slot">
+      <!-- Ad between template rows -->
+      <span>Advertisement — Mid Page</span>
+    </div>
+  </div>
+
+  <!-- TEMPLATES -->
+  <section id="templates-section">
+    <h2 class="section-title">Message <span>Templates</span></h2>
+    <p class="section-sub">Pick a template and create your viral QR message in seconds</p>
+    <div class="category-tabs" id="category-tabs"></div>
+    <div class="template-grid" id="template-grid"></div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Made with ❤️ by <strong>SecretQR</strong> — Share secrets. Go viral.</p>
+    <p style="margin-top:8px"><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Contact</a></p>
+  </footer>
+
+</div><!-- /main-page -->
+
+
+<!-- ══════════════════════════════
+     CHAT REVEAL PAGE
+══════════════════════════════ -->
+<div id="chat-page">
+  <div class="chat-header">
+    <div class="chat-avatar">🤫</div>
+    <div class="chat-header-info">
+      <h3>SecretQR Bot</h3>
+      <span>● Online — Unlocking your message</span>
+    </div>
+  </div>
+  <div class="chat-body" id="chat-body"></div>
+  <div style="width:100%;background:var(--bg2);border-top:1px solid var(--border);padding:16px 24px;">
+    <div style="display:flex;gap:12px;align-items:center;max-width:640px;margin:0 auto;">
+      <input
+        type="text"
+        class="chat-input"
+        id="chat-input"
+        placeholder="Type your name to unlock..."
+        disabled
+        autocomplete="off"
+      >
+      <button class="chat-send" id="chat-send">➤</button>
+    </div>
+  </div>
+</div><!-- /chat-page -->
+
+
+<!-- ══════════════════════════════
+     CREATE MESSAGE MODAL
+══════════════════════════════ -->
+<div class="modal-overlay" id="create-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('create-modal')">✕</button>
+
+    <!-- STEP 1: Configure -->
+    <div id="create-modal-step1">
+      <h2>Create Your Secret Message 🤫</h2>
+      <p class="modal-sub">Fill in the details below to generate your viral QR code.</p>
+
+      <div class="field-group">
+        <label>Choose a Template</label>
+        <select id="create-template-select">
+          <option value="">Loading templates...</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Recipient's Name (optional)</label>
+        <input type="text" id="recipient-name" placeholder="e.g. Sarah — leave blank for anyone">
+      </div>
+
+      <div class="field-group">
+        <label>Your Name / Alias (optional)</label>
+        <input type="text" id="sender-name" placeholder="e.g. Your Secret Admirer">
+      </div>
+
+      <div class="field-group">
+        <label>Choose a Viral Heading 👇</label>
+        <p style="font-size:.82rem;color:var(--text2);margin-bottom:10px">This text will appear when you share the QR poster.</p>
+        <div class="heading-options" id="heading-options"></div>
+      </div>
+
+      <button class="btn-primary" style="width:100%" onclick="generateLink()">Generate QR Code →</button>
+    </div>
+
+    <!-- STEP 2: QR + Share -->
+    <div id="create-modal-step2" class="hidden">
+      <h2>Your QR Code is Ready! 🎉</h2>
+      <p class="modal-sub">Download the poster or share the link directly.</p>
+
+      <!-- Poster Theme Picker -->
+      <label>Choose a Poster Theme</label>
+      <div class="poster-themes">
+        <button class="poster-theme-btn selected" onclick="selectPosterTheme('romantic',this)"><span>❤️</span>Romantic</button>
+        <button class="poster-theme-btn" onclick="selectPosterTheme('birthday',this)"><span>🎂</span>Birthday</button>
+        <button class="poster-theme-btn" onclick="selectPosterTheme('funny',this)"><span>😂</span>Funny</button>
+        <button class="poster-theme-btn" onclick="selectPosterTheme('wedding',this)"><span>💍</span>Wedding</button>
+        <button class="poster-theme-btn" onclick="selectPosterTheme('christmas',this)"><span>🎄</span>Xmas</button>
+      </div>
+
+      <!-- Poster Preview Canvas -->
+      <canvas id="poster-canvas" style="width:100%;border-radius:12px;display:block;margin-bottom:12px;border:1px solid var(--border)"></canvas>
+
+      <!-- Hidden QR (used by canvas) -->
+      <div id="qrcode" style="position:absolute;opacity:0;pointer-events:none"></div>
+
+      <button class="btn-primary" style="width:100%;margin-bottom:12px" onclick="downloadPoster()">⬇️ Download Poster (1080×1080)</button>
+
+      <label>Your Share Link</label>
+      <input type="text" id="generated-link" readonly style="font-size:.8rem;cursor:pointer" onclick="this.select()">
+
+      <div id="share-buttons" class="share-buttons"></div>
+
+      <button class="btn-secondary" style="width:100%;margin-top:16px" onclick="document.getElementById('create-modal-step1').classList.remove('hidden');document.getElementById('create-modal-step2').classList.add('hidden')">← Edit Message</button>
+    </div>
+  </div>
+</div><!-- /create-modal -->
+
+
+<!-- ══════════════════════════════
+     PREVIEW MODAL
+══════════════════════════════ -->
+<div class="modal-overlay" id="preview-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('preview-modal')">✕</button>
+    <h2 id="preview-title">Preview</h2>
+    <p class="modal-sub">This is how the message will reveal itself to the recipient.</p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px" id="preview-messages"></div>
+    <button class="btn-primary" style="width:100%;margin-top:24px" onclick="closeModal('preview-modal');openQRFlow(selectedTemplate?.id)">Use This Template →</button>
+  </div>
+</div><!-- /preview-modal -->
+
+
+<script src="script.js"></script>
+</body>
+</html>
