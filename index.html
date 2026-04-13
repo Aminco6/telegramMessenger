@@ -1131,13 +1131,13 @@ select option { background: #1a1008; }
        <!--   [ AD SPACE — 300×250 -->
       
       
-      <script async="async" data-cfasync="false" src="https://pl29144186.profitablecpmratenetwork.com/792561ff1ca5cda2554b219b4d26b7b8/invoke.js"></script>
-<div id="container-792561ff1ca5cda2554b219b4d26b7b8"></div>
+
+<script>(function(s){s.dataset.zone='10871985',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 
       
       
-      ]</div>
+      </div>
       <button class="generate-btn" onclick="showAdThenDo('create')">✦ Generate Secret Message</button>
     </div>
   </div>
@@ -1244,12 +1244,18 @@ const VIDEO_COMMENTARY = {
 };
 
 function extractYouTubeId(url) { if(!url) return null; const patterns=[/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,/youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/]; for(const p of patterns){const m=url.match(p); if(m) return m[1];} return null; }
+
+
+
+
 function buildYTSrc(videoId, startSec, autoplay) { return `https://www.youtube-nocookie.com/embed/${videoId}?start=${startSec}&autoplay=${autoplay}&rel=0&modestbranding=1&playsinline=1`; }
 const SEGMENTS = [{start:0,dur:30000},{start:40,dur:30000},{start:80,dur:30000},{start:120,dur:30000},{start:160,dur:30000}];
 
 // ===================== MANDATORY AD SYSTEM (Adsterra + PropellerAds) =====================
 const AD_DURATION = 8;
 let adCallback = null, adTimerInterval = null, adSecsLeft = AD_DURATION;
+
+
 
 function showAdThenDo(context) {
   const modal = document.getElementById('ad-modal');
@@ -1259,6 +1265,7 @@ function showAdThenDo(context) {
   const cdText = document.getElementById('ad-countdown-text');
   const cdIcon = document.getElementById('ad-countdown-icon');
   const title = document.getElementById('ad-modal-title');
+  
   title.textContent = context === 'create' ? 'One moment — loading your message experience' : 'One moment — unlocking your secret message';
   adSecsLeft = AD_DURATION;
   skipBtn.disabled = true;
@@ -1267,36 +1274,79 @@ function showAdThenDo(context) {
   fill.style.width = '0%';
   cdIcon.textContent = '⏳';
   cdText.innerHTML = `Please wait — <strong id="ad-secs">${AD_DURATION}</strong>s`;
+  
+  // Clear wrap and add visual timer overlay + your ad scripts
   wrap.innerHTML = '';
   
-  // Adsterra interstitial (high CPM, works well)
+  // Create a container that holds both your ads AND a visual timer overlay
+  const adContainer = document.createElement('div');
+  adContainer.style.position = 'relative';
+  adContainer.style.width = '100%';
+  adContainer.style.minHeight = '260px';
+  
+  // Add your existing ad scripts to the container
+  // Adsterra interstitial
   const adScript = document.createElement('script');
   adScript.type = 'text/javascript';
-  
-  
   adScript.src = '//pl29144183.profitablecpmratenetwork.com/e7/79/5c/e7795cedb3f40ac0b06e48d754a7102e.js';
+  adContainer.appendChild(adScript);
   
+  // PropellerAds zone
+  const fallbackScript = document.createElement('script');
+  fallbackScript.src = 'https://quge5.com/88/tag.min.js';
+  fallbackScript.setAttribute('data-zone', '229355');
+  fallbackScript.async = true;
+  fallbackScript.setAttribute('data-cfasync', 'false');
+  adContainer.appendChild(fallbackScript);
   
-
-
+  // Add visual timer overlay (so users see progress while ads load)
+  const timerOverlay = document.createElement('div');
+  timerOverlay.style.position = 'absolute';
+  timerOverlay.style.bottom = '10px';
+  timerOverlay.style.left = '10px';
+  timerOverlay.style.right = '10px';
+  timerOverlay.style.background = 'rgba(0,0,0,0.7)';
+  timerOverlay.style.backdropFilter = 'blur(8px)';
+  timerOverlay.style.borderRadius = '12px';
+  timerOverlay.style.padding = '12px';
+  timerOverlay.style.textAlign = 'center';
+  timerOverlay.style.border = '1px solid rgba(232,160,32,0.3)';
+  timerOverlay.style.zIndex = '10';
+  timerOverlay.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="font-size:11px;font-family:var(--font-mono);color:var(--gold);letter-spacing:2px;">⏱️ AD PLAYING</div>
+      <div style="width:100%;max-width:200px;height:3px;background:rgba(232,160,32,0.2);border-radius:3px;overflow:hidden;">
+        <div style="width:0%;height:100%;background:var(--gold);transition:width ${AD_DURATION}s linear;" id="timer-fill-overlay"></div>
+      </div>
+      <div style="font-size:10px;font-family:var(--font-mono);color:var(--text-dim);">Continue available in <span id="overlay-seconds">${AD_DURATION}</span>s</div>
+    </div>
+  `;
   
+  adContainer.appendChild(timerOverlay);
+  wrap.appendChild(adContainer);
   
-  wrap.appendChild(adScript);
-
-// PropellerAds zone (YOUR NEW CODE)
-const fallbackScript = document.createElement('script');
-fallbackScript.src = 'https://quge5.com/88/tag.min.js';
-fallbackScript.setAttribute('data-zone', '229355');
-fallbackScript.async = true;
-fallbackScript.setAttribute('data-cfasync', 'false');
-wrap.appendChild(fallbackScript);
-
-
-
-
+  // Animate the overlay timer fill
+  setTimeout(() => {
+    const timerFill = document.getElementById('timer-fill-overlay');
+    if (timerFill) timerFill.style.width = '100%';
+  }, 50);
+  
+  // Update overlay seconds counter
+  let secondsRemaining = AD_DURATION;
+  const overlaySecondsSpan = document.getElementById('overlay-seconds');
+  const overlayInterval = setInterval(() => {
+    secondsRemaining--;
+    if (overlaySecondsSpan) overlaySecondsSpan.textContent = secondsRemaining;
+    if (secondsRemaining <= 0) clearInterval(overlayInterval);
+  }, 1000);
   
   modal.style.display = 'flex';
-  setTimeout(() => { fill.style.transition = `width ${AD_DURATION}s linear`; fill.style.width = '100%'; }, 120);
+  
+  setTimeout(() => { 
+    fill.style.transition = `width ${AD_DURATION}s linear`; 
+    fill.style.width = '100%'; 
+  }, 120);
+  
   clearInterval(adTimerInterval);
   adTimerInterval = setInterval(() => {
     adSecsLeft--;
@@ -1309,8 +1359,11 @@ wrap.appendChild(fallbackScript);
       cdText.innerHTML = '<strong>You may now continue</strong>';
     }
   }, 1000);
+  
   adCallback = context === 'create' ? () => generateMessage() : () => runBootSequence(window._pendingRevealPayload);
 }
+
+
 
 function skipAd() { clearInterval(adTimerInterval); document.getElementById('ad-modal').style.display = 'none'; document.getElementById('ad-provider-wrap').innerHTML = ''; if(adCallback){ adCallback(); adCallback = null; } }
 
@@ -1369,6 +1422,15 @@ window.addEventListener('DOMContentLoaded',checkHash);
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 
