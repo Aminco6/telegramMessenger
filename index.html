@@ -210,6 +210,29 @@ select option { background: #1a1008; }
 .emotion-btn.selected { border-color: var(--gold); color: var(--gold); background: rgba(232,160,32,0.08); }
 .emotion-btn .emo-icon { font-size: 20px; }
 
+/* Gender row */
+.gender-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.gender-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 8px;
+  color: var(--text-dim);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.gender-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+.gender-btn.selected { border-color: var(--gold); color: var(--gold); background: rgba(232,160,32,0.08); font-weight: 700; }
+
 /* Generate button */
 .generate-btn {
   width: 100%;
@@ -306,37 +329,30 @@ select option { background: #1a1008; }
   letter-spacing: 1px;
 }
 
-/* 16:9 video */
-.ad-modal-video-wrap {
-  position: relative;
+/* Ad provider container */
+.ad-modal-ad-wrap {
   width: 100%;
-  padding-bottom: 56.25%;
-  background: #000;
+  min-height: 260px;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.ad-modal-video-wrap iframe {
+.ad-modal-ad-wrap::before {
+  content: 'Loading ad...';
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  border: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  z-index: 0;
 }
 
-.ad-video-shimmer {
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  pointer-events: none;
-  z-index: 2;
-  transition: opacity 0.5s;
-}
-
-.ad-video-shimmer.hide { opacity: 0; pointer-events: none; }
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
+/* Scripts loaded inside the wrap will render on top */
+.ad-modal-ad-wrap > * { position: relative; z-index: 1; }
 
 .ad-modal-footer {
   padding: 14px 20px 20px;
@@ -1071,8 +1087,26 @@ select option { background: #1a1008; }
       </div>
 
       <div class="form-group">
+        <label>Recipient's Gender</label>
+        <div class="gender-row" id="receiver-gender-row">
+          <button class="gender-btn selected" data-gender="female" data-target="rg">👩 She / Her</button>
+          <button class="gender-btn" data-gender="male" data-target="rg">👨 He / Him</button>
+        </div>
+        <input type="hidden" id="receiver-gender" value="female">
+      </div>
+
+      <div class="form-group">
         <label>Your Name</label>
-        <input type="text" id="sender-name" placeholder="e.g. A secret admirer..." autocomplete="off">
+        <input type="text" id="sender-name" placeholder="e.g. James..." autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label>Your Gender</label>
+        <div class="gender-row" id="sender-gender-row">
+          <button class="gender-btn selected" data-gender="male" data-target="sg">👨 He / Him</button>
+          <button class="gender-btn" data-gender="female" data-target="sg">👩 She / Her</button>
+        </div>
+        <input type="hidden" id="sender-gender" value="male">
       </div>
 
       <div class="form-group">
@@ -1209,18 +1243,12 @@ select option { background: #1a1008; }
   <div class="ad-modal-box">
     <div class="ad-modal-header">
       <div class="ad-modal-logo">⬡ SecretMsg AI</div>
-      <div class="ad-modal-title" id="ad-modal-title">Watch this short video to continue</div>
+      <div class="ad-modal-title" id="ad-modal-title">One moment — loading your experience</div>
     </div>
 
-    <div class="ad-modal-video-wrap">
-      <iframe id="ad-yt-iframe"
-        src=""
-        allow="autoplay; encrypted-media; fullscreen"
-        allowfullscreen
-        title="Ad video">
-      </iframe>
-      <!-- Shimmer while loading -->
-      <div class="ad-video-shimmer" id="ad-video-shimmer"></div>
+    <!-- Ad provider container -->
+    <div class="ad-modal-ad-wrap" id="ad-provider-wrap">
+      <!-- omg10 ad script loads here dynamically -->
     </div>
 
     <div class="ad-modal-footer">
@@ -1230,138 +1258,185 @@ select option { background: #1a1008; }
       <div class="ad-modal-bottom">
         <div class="ad-countdown" id="ad-countdown">
           <span id="ad-countdown-icon">⏳</span>
-          <span id="ad-countdown-text">Watch to unlock — <strong id="ad-secs">30</strong>s remaining</span>
+          <span id="ad-countdown-text">Please wait — <strong id="ad-secs">10</strong>s</span>
         </div>
         <button class="ad-skip-btn" id="ad-skip-btn" onclick="skipAd()" disabled>
           Continue →
         </button>
       </div>
-      <div class="ad-disclaimer">Powered by SecretMsg · Ad supports free messaging</div>
+      <div class="ad-disclaimer">⬡ SecretMsg · Powered by Voddic · Ad keeps this free</div>
     </div>
   </div>
 </div>
 
 <script>
+// ===================== PRONOUN HELPERS =====================
+function resolvePronouns(text, payload) {
+  const sg = payload.sg || 'male';
+  const rg = payload.rg || 'female';
+  const sName = payload.s || 'the sender';
+  const rName = payload.r || 'you';
+  const S_HE  = sg==='male'?'He':'She', S_he=sg==='male'?'he':'she';
+  const S_HIS = sg==='male'?'His':'Her', S_his=sg==='male'?'his':'her';
+  const S_HIM = sg==='male'?'Him':'Her', S_him=sg==='male'?'him':'her';
+  const R_HE  = rg==='male'?'He':'She', R_he=rg==='male'?'he':'she';
+  const R_HIS = rg==='male'?'His':'Her', R_his=rg==='male'?'his':'her';
+  const R_HIM = rg==='male'?'Him':'Her', R_him=rg==='male'?'him':'her';
+  return text
+    .replace(/\{S_HE\}/g,S_HE).replace(/\{S_he\}/g,S_he)
+    .replace(/\{S_HIS\}/g,S_HIS).replace(/\{S_his\}/g,S_his)
+    .replace(/\{S_HIM\}/g,S_HIM).replace(/\{S_him\}/g,S_him)
+    .replace(/\{R_HE\}/g,R_HE).replace(/\{R_he\}/g,R_he)
+    .replace(/\{R_HIS\}/g,R_HIS).replace(/\{R_his\}/g,R_his)
+    .replace(/\{R_HIM\}/g,R_HIM).replace(/\{R_him\}/g,R_him)
+    .replace(/\{S_NAME\}/g,sName).replace(/\{R_NAME\}/g,rName)
+    .replace(/\{MSG\}/g,payload.m||'');
+}
+
 // ===================== EMOTION TEMPLATES =====================
 const TEMPLATES = {
-  love: [
-    ["Hey...", "Someone asked me to deliver something to you.", "They weren't sure how to say it directly.", "But they asked me to pass along this message:", '"{MSG}"', "They said they hope you still think about them too."],
-    ["I was given a secret mission tonight.", "To find you. And to tell you something important.", "The person who sent this message has been holding this inside for too long.", '"{MSG}"', "That's it. That's all they wanted you to know."],
-    ["Someone out there is thinking about you right now.", "They couldn't sleep. They wrote this instead:", '"{MSG}"', "I hope it reaches your heart the way they intended."],
+  love:[
+    ["{S_HE} had a message. Couldn't say it out loud.","{S_HE} held it inside for days.","But {S_he} finally asked me to find you.","And to tell you this:",'"{MSG}"',"{S_HE} said {S_he} hopes you still think about {S_him} too."],
+    ["I was given a secret mission.","To find you. And to pass something along.","{S_HE} said {S_he} has been holding this inside too long.",'"{MSG}"',"That's all. That's everything."],
+    ["{S_HE} couldn't sleep.","{S_HE} wrote this instead:",'"{MSG}"',"I hope it reaches your heart the way {S_he} intended."],
   ],
-  romantic: [
-    ["Close your eyes for a second.", "Now open them.", "The person who sent this wants you to know:", '"{MSG}"', "They said every time they see you, the room gets a little warmer."],
-    ["This message was composed at night.", "When the city is quiet and hearts speak louder.", '"{MSG}"', "The sender hopes you smile when you read this."],
-    ["Romance isn't always grand gestures.", "Sometimes it's a quiet message sent in the dark.", '"{MSG}"'],
+  romantic:[
+    ["Close your eyes for a second.","Now open them.","{S_HE} wants you to know:",'"{MSG}"',"{S_HE} said every time {S_he} sees you, the room gets a little warmer."],
+    ["This message was composed at night.","When the city is quiet and hearts speak louder.",'"{MSG}"',"{S_HE} hopes you smile when you read this."],
+    ["Romance isn't always grand gestures.","Sometimes it's a quiet message sent in the dark.",'"{MSG}"'],
   ],
-  birthday: [
-    ["Today is your day. ✨", "Someone very special made sure I delivered this:", '"{MSG}"', "They wanted you to know how much your existence means to them.", "Happy Birthday. 🎂"],
-    ["Somewhere out there, someone is smiling just because today is your birthday.", '"{MSG}"', "May today be as wonderful as you are. 🎉"],
-    ["Birthday alert! 🎂", "I've been programmed with one specific message for you today:", '"{MSG}"', "Enjoy every second of today — you deserve it."],
+  birthday:[
+    ["Today is your day. ✨","{S_HE} made sure I delivered this:",'"{MSG}"',"{S_HE} wanted you to know how much your existence means to {S_him}.","Happy Birthday. 🎂"],
+    ["{S_HE} is smiling right now just because today is your birthday.",'"{MSG}"',"May today be as wonderful as you are. 🎉"],
+    ["Birthday alert! 🎂","{S_HE} programmed me with one specific message for you today:",'"{MSG}"',"Enjoy every second — you deserve it."],
   ],
-  apology: [
-    ["This message wasn't easy to send.", "The person who wrote it rewrote it seven times.", "But they finally wanted to say:", '"{MSG}"', "They mean every word."],
-    ["Sometimes sorry is the hardest word.", "But this person found the courage:", '"{MSG}"', "They're hoping you'll still give them a chance."],
-    ["An apology arrived for you.", "Quietly. Sincerely.", '"{MSG}"', "Whether you accept it is up to you."],
+  apology:[
+    ["This message wasn't easy to send.","{S_HE} rewrote it seven times.","But {S_he} finally wanted to say:",'"{MSG}"',"{S_HE} means every word."],
+    ["Sorry is the hardest word.","But {S_he} found the courage:",'"{MSG}"',"{S_HE} is hoping you'll still give {S_him} a chance."],
+    ["An apology arrived for you.","Quietly. Sincerely. From {S_NAME}.",'"{MSG}"',"Whether you accept it is up to you."],
   ],
-  wedding: [
-    ["On this beautiful occasion...", "Someone wanted to send you something from the heart:", '"{MSG}"', "May your love story be long and full of joy. 💍"],
-    ["Two souls, one journey. 💍", "And a message from someone who loves you both:", '"{MSG}"', "Congratulations and endless blessings."],
+  wedding:[
+    ["On this beautiful occasion...","{S_HE} wanted to send you something from the heart:",'"{MSG}"',"May your love story be long and full of joy. 💍"],
+    ["Two souls, one journey. 💍","{S_HE} sends this with all {S_his} love:",'"{MSG}"',"Congratulations and endless blessings."],
   ],
-  anniversary: [
-    ["Another year of love. 🥂", "Someone wanted to celebrate it with these words:", '"{MSG}"', "Here's to many more years together."],
-    ["Time passes. Love deepens.", '"{MSG}"', "Happy Anniversary. 🥂"],
+  anniversary:[
+    ["Another year of love. 🥂","{S_HE} wanted to celebrate it with these words:",'"{MSG}"',"Here's to many more years together."],
+    ["Time passes. Love deepens.",'"{MSG}"',"Happy Anniversary. 🥂 — from {S_NAME}"],
   ],
-  funny: [
-    ["Okay okay okay. Listen.", "I was sent here with a very URGENT message:", '"{MSG}"', "I hope you're laughing. Because the sender is definitely laughing right now. 😂"],
-    ["Breaking news 📰", "A very reliable source (your friend) has issued the following statement:", '"{MSG}"', "No further comment. 😂"],
-    ["This is a legally binding message. 📜", '"{MSG}"', "You've been served. 😂"],
+  funny:[
+    ["Okay okay okay. Listen.","{S_HE} sent me here with a very URGENT message:",'"{MSG}"',"{S_HE} is definitely laughing right now. 😂"],
+    ["Breaking news 📰","A very reliable source — {S_NAME} — has issued this statement:",'"{MSG}"',"No further comment. 😂"],
+    ["This is a legally binding message. 📜",'"{MSG}"',"You've been served. By {S_NAME}. 😂"],
   ],
-  encouragement: [
-    ["Hey. I need you to listen.", "Someone believes in you more than you know.", '"{MSG}"', "Now go. Do the thing. You've got this. 💪"],
-    ["You're stronger than you think.", "And someone wanted to make sure you know that.", '"{MSG}"', "Keep going."],
-    ["This message was sent to remind you:", '"{MSG}"', "The person who sent this believes in you. So do I. 💪"],
+  encouragement:[
+    ["Hey. Listen.","{S_HE} believes in you more than you know.",'"{MSG}"',"Now go. Do the thing. You've got this. 💪"],
+    ["You're stronger than you think.","{S_HE} wanted to make sure you know that.",'"{MSG}"',"Keep going."],
+    ["{S_HE} sent this to remind you:",'"{MSG}"',"{S_HE} believes in you. So do I. 💪"],
   ],
-  christmas: [
-    ["Ho ho ho 🎄", "Santa asked me to deliver a special message:", '"{MSG}"', "Merry Christmas and all the joy in the world to you."],
-    ["The snow is falling somewhere...", "And someone warm is thinking of you. 🎄", '"{MSG}"', "Warmest wishes this Christmas."],
+  christmas:[
+    ["Ho ho ho 🎄","{S_HE} asked me to deliver a special message:",'"{MSG}"',"Merry Christmas — with love from {S_NAME}."],
+    ["The snow is falling somewhere...","{S_HE} is thinking of you. 🎄",'"{MSG}"',"Warmest wishes this Christmas."],
   ],
-  eid: [
-    ["Eid Mubarak! 🌙", "A beautiful message has arrived for you:", '"{MSG}"', "May your Eid be filled with blessings and joy."],
-    ["On this blessed occasion...", "Someone sent you their warmest Eid greetings. 🌙", '"{MSG}"', "Eid Mubarak!"],
+  eid:[
+    ["Eid Mubarak! 🌙","{S_HE} sent this beautiful message for you:",'"{MSG}"',"May your Eid be filled with blessings and joy."],
+    ["On this blessed occasion...","{S_HE} sends {S_his} warmest Eid greetings. 🌙",'"{MSG}"',"Eid Mubarak!"],
   ],
-  condolence: [
-    ["Words are never enough in moments like these.", "But someone wanted you to know they're thinking of you.", '"{MSG}"', "You are not alone. 🕊️"],
-    ["In the quiet of grief, a message arrived.", "From someone who cares deeply.", '"{MSG}"', "May you find peace and comfort."],
+  condolence:[
+    ["Words are never enough in moments like these.","{S_HE} wanted you to know {S_he} is thinking of you.",'"{MSG}"',"You are not alone. 🕊️"],
+    ["In the quiet of grief, a message arrived.","From {S_NAME}, who cares deeply.",'"{MSG}"',"May you find peace and comfort."],
   ],
-  flirt: [
-    ["Alright, I'll just say it.", "Someone couldn't stop thinking about you.", "They finally worked up the nerve to send this:", '"{MSG}"', "Your move. 😏"],
-    ["Plot twist: someone likes you.", "They asked me to deliver this:", '"{MSG}"', "They're probably checking their phone right now waiting for you to reply. 😏"],
-    ["New message. From a very flustered human.", '"{MSG}"', "They said it took them three days to send this. 😏"],
+  flirt:[
+    ["Alright, I'll just say it.","{S_HE} couldn't stop thinking about you.","{S_HE} finally worked up the nerve:",'"{MSG}"',"Your move. 😏"],
+    ["Plot twist: {S_he} likes you.","{S_HE} asked me to deliver this:",'"{MSG}"',"{S_HE} is probably checking {S_his} phone right now waiting for you to reply. 😏"],
+    ["New message. From a very flustered {S_NAME}.",'"{MSG}"',"{S_HE} said it took {S_him} three days to send this. 😏"],
   ],
 };
 
-// ===================== VIDEO COMMENTARY (per emotion, 3 rounds each) =====================
+// ===================== VIDEO COMMENTARY — 5 segments × lyric-aligned, pronoun-aware =====================
 const VIDEO_COMMENTARY = {
-  love: [
-    ["🎬 This is the first part of the song the sender chose for you.", "Listen to the melody. They said this part sounds exactly like how they feel when they think of you."],
-    ["Did you feel that?", "The sender said this section plays in their head every time they miss you. They wanted you to hear it the same way they do."],
-    ["And this last part...", "They said when they first heard this, they thought of you immediately. That's why they sent it. That's why you're hearing it now."],
+  love:[
+    ["{S_HE} chose this song for you. Listen to how it opens — that gentle ache in the first notes.","That feeling right there? That's {S_him}. That's exactly how {S_he} feels when {S_he} thinks of you."],
+    ["Did you catch that line just now?","{S_HE} said those words are the ones {S_he} never knew how to say out loud to you."],
+    ["This part of the song — right here — {S_he} has replayed it a hundred times.","Every single time, your face is what {S_he} sees."],
+    ["That bridge. Hear the way the melody shifts?","{S_HE} said that's the moment {S_he} knew {S_he} had to send you this message. That exact moment."],
+    ["And now this final stretch of the song.","{S_HE} said: if this reaches you, then {S_he} hopes you finally understand just how much {S_he} means it."],
   ],
-  romantic: [
-    ["🎬 This opening melody... the sender said it's the closest thing to the feeling of being near you.", "Let it wash over you."],
-    ["This part of the song carries a confession.", "The sender couldn't say it directly, so they let the music say it instead."],
-    ["The final verse. The sender said this is where the song says everything they couldn't find words for.", "Now you've heard it all."],
+  romantic:[
+    ["This opening — {S_he} picked it because it sounds like how {S_he} feels standing near you.","Let it wash over you."],
+    ["That verse carries a confession {S_he} couldn't make in person.","{S_HE} let the music say it instead."],
+    ["Right here — this is where the melody exhales.","{S_HE} said this is the part that sounds like {S_his} heart when {S_he} is with you."],
+    ["That chorus again. {S_HE} said {S_he} sang this line under {S_his} breath thinking of you.","And {S_he} didn't even realise it until later."],
+    ["{S_HE} said the last verse says everything {S_he} couldn't find words for.","Now you've heard it all. Every bit of it."],
   ],
-  birthday: [
-    ["🎬 A birthday song — chosen just for you! 🎂", "The sender wanted today to feel like a celebration from the moment you pressed play."],
-    ["Keep listening!", "This part reminded the sender of your smile. They said they hope you're smiling right now."],
-    ["And to close it out... 🎉", "The sender said: may every day this year feel as special as this moment. Happy Birthday!"],
+  birthday:[
+    ["{S_HE} chose this to make today feel like a celebration from the very first second.","Happy Birthday — this song is for you. 🎂"],
+    ["This part reminded {S_him} of your smile.","{S_HE} said {S_he} hopes you're smiling right now."],
+    ["Hear that melody? That's the joy {S_he} wishes for you — every single day of this new year."],
+    ["{S_HE} said this section feels like all the memories you've built together.","Precious ones. Every single one."],
+    ["And to close it out 🎉 — {S_HE} said: may every day this year feel exactly this special.","You deserve it, {R_NAME}."],
   ],
-  apology: [
-    ["🎬 The sender chose this song because it says sorry better than they ever could.", "Please listen carefully."],
-    ["This part is where the weight of regret lives.", "The sender said they've listened to this section many times thinking of you."],
-    ["And this ending...", "It's an open hand. A question. The sender hopes you can find it in your heart to listen."],
+  apology:[
+    ["{S_HE} chose this because it says sorry better than {S_he} ever could.","Please listen carefully."],
+    ["This part — this is where the weight of regret lives in this song.","{S_HE} has listened to this section many times, thinking of you."],
+    ["That quiet moment? {S_HE} said that silence is exactly how {S_he} feels waiting to hear back from you."],
+    ["{S_HE} said this line in the song says what {S_he} wishes {S_he} had said sooner.","It's too late to go back. But {S_he} wants you to know {S_he} knows that."],
+    ["And this ending — it's an open hand. A question.","{S_HE} hopes you can find it in your heart to listen. That's all {S_he} is asking."],
   ],
-  wedding: [
-    ["🎬 A wedding melody — chosen to honour this beautiful moment. 💍", "The sender wanted to be part of your celebration through this song."],
-    ["This section is about commitment.", "The sender said: may your love always feel this strong, even years from now."],
-    ["The final notes of this song...", "Are a blessing. The sender sends every good wish wrapped inside this melody. 💍"],
+  wedding:[
+    ["{S_HE} chose this to honour the most beautiful moment of your lives. 💍","Let it fill the room."],
+    ["This section speaks of devotion.","{S_HE} said: may your love always carry this weight, even years from now."],
+    ["That swell in the music? {S_HE} said that's what it feels like watching you two together.","Pure joy. Pure love."],
+    ["{S_HE} said this part of the song sounds like a promise.","The kind that lasts a lifetime. 💍"],
+    ["The final notes — a blessing wrapped in melody.","{S_HE} sends every good wish through this song. Congratulations."],
   ],
-  anniversary: [
-    ["🎬 This song carries years of feeling in every note. 🥂", "The sender chose it because anniversaries deserve more than words."],
-    ["This part is about growth.", "The sender said: we've come a long way. And they're grateful for every step with you."],
-    ["And this final stretch...", "Is about choosing each other again and again. Happy Anniversary. 🥂"],
+  anniversary:[
+    ["This song carries years of feeling in every note. 🥂","{S_HE} chose it because anniversaries deserve more than words."],
+    ["This part is about growth.","{S_HE} said: you've both come so far. {S_HE} is grateful for every step."],
+    ["That line just now — {S_he} said that's how {S_he} feels every morning waking up beside you.","Still grateful. Still chosen."],
+    ["{S_HE} said this section is the part of your story you're still writing together.","And {S_he} wouldn't want to write it with anyone else."],
+    ["And this final stretch — about choosing each other, again and again.","Happy Anniversary. 🥂 — from {S_NAME}, with everything."],
   ],
-  funny: [
-    ["🎬 Okay... they picked THIS song? 😂", "You have to admit, it's kind of perfect. The sender knew you'd react exactly like this."],
-    ["Still going 😂", "The sender said they were laughing while setting this up. They hope you are too."],
-    ["THE FINALE 😂🎉", "The sender said: if you're not laughing by now, they've failed. But they probably haven't. 😂"],
+  funny:[
+    ["{S_HE} picked THIS song. 😂 Of all the songs in the world.","You have to admit — it's kind of perfect."],
+    ["Still going 😂","{S_HE} was laughing while setting this up. {S_HE} knew exactly how you'd react."],
+    ["That lyric right there — {S_he} said that line is basically {S_his} life motto.","Make of that what you will. 😂"],
+    ["{S_HE} said this part is dedicated specifically to you.","No further explanation was given. 😂"],
+    ["THE FINALE 😂🎉 — {S_HE} said: if you're not laughing by now, {S_he}'s failed.","But {S_he} probably hasn't."],
   ],
-  encouragement: [
-    ["🎬 This song was chosen to push you forward. 💪", "The sender believes in what you're capable of. Let the music remind you."],
-    ["This part is the climb.", "The sender said: when it gets hard, remember this feeling. Keep going."],
-    ["The peak of the song. 💪", "The sender wants you to carry this energy. You're more powerful than you know."],
+  encouragement:[
+    ["This song was chosen to push you forward. 💪","{S_HE} believes in what you're capable of. Let the music remind you."],
+    ["This part is the climb.","{S_HE} said: when it gets hard, remember this exact feeling. Keep going."],
+    ["That lyric — {S_he} said it's the line {S_he} replays on {S_his} own hardest days.","Now {S_he} sends it to you."],
+    ["{S_HE} said this section sounds like everything you've already survived.","Look how far you've come."],
+    ["The peak of the song. 💪 — {S_HE} wants you to carry this energy.","You are more powerful than you know, {R_NAME}."],
   ],
-  christmas: [
-    ["🎬 A Christmas melody just for you! 🎄", "The sender wanted your holiday season to start with something warm and joyful."],
-    ["This is the part that feels like firelight and family. 🎄", "The sender hopes you're somewhere warm and surrounded by love."],
-    ["The final chime of the song. 🎄", "Merry Christmas from the sender — and from this little AI messenger too."],
+  christmas:[
+    ["{S_HE} chose this to fill your Christmas with warmth from the very first note. 🎄"],
+    ["This part feels like firelight and family.","{S_HE} hopes you're somewhere warm and surrounded by love."],
+    ["That verse — {S_he} said it reminds {S_him} of the best Christmas memories {S_he} has with you."],
+    ["{S_HE} said this section sounds like the feeling of coming home.","And {S_he} hopes every Christmas feels like coming home for you."],
+    ["The final chime of the song. 🎄 Merry Christmas, {R_NAME} — with all {S_his} heart, from {S_NAME}."],
   ],
-  eid: [
-    ["🎬 A blessed melody for a blessed occasion. 🌙", "The sender chose this to celebrate Eid with you across the distance."],
-    ["This part carries the spirit of gratitude. 🌙", "The sender is grateful for you. For your presence in their life. Eid Mubarak."],
-    ["And in the final notes... 🌙", "A prayer for your peace, your joy, and your family. Eid Mubarak!"],
+  eid:[
+    ["A blessed melody for a blessed occasion. 🌙","{S_HE} chose this to celebrate Eid with you across the distance."],
+    ["This part carries the spirit of gratitude.","{S_HE} is grateful for you — for your presence in {S_his} life. Eid Mubarak."],
+    ["That lyric — {S_he} said it captures exactly what {S_he} prays for you this Eid.","Peace. Health. Joy."],
+    ["{S_HE} said this part feels like the warmth of the celebration.","{S_HE} wishes {S_he} could share it with you in person."],
+    ["And in the final notes — a prayer for your peace, your family, your joy. 🌙 Eid Mubarak, {R_NAME}!"],
   ],
-  condolence: [
-    ["🎬 The sender chose this music gently and thoughtfully. 🕊️", "There are no perfect words. But there is this."],
-    ["This section is calm. 🕊️", "The sender hopes it brings even a small moment of peace."],
-    ["And in the quiet of this final part...", "The sender is thinking of you. You are not alone. 🕊️"],
+  condolence:[
+    ["{S_HE} chose this music gently and thoughtfully. 🕊️","There are no perfect words. But there is this."],
+    ["This section is calm.","{S_HE} hopes it brings even a small moment of peace to your heart."],
+    ["That quiet passage — {S_he} said it sounds like sitting beside someone in silence.","Sometimes that's all we can offer. And it's enough."],
+    ["{S_HE} said this part sounds like remembrance.","Soft. Tender. Real. 🕊️"],
+    ["And in the quiet of this final part — {S_NAME} is thinking of you.","You are not alone, {R_NAME}. You are not alone."],
   ],
-  flirt: [
-    ["🎬 Okay so... they sent you THIS song. 😏", "That says everything about how they feel. The sender is definitely nervous right now."],
-    ["This part is giving main character energy. 😏", "The sender said: this song makes them think of you specifically. Interpret that however you like."],
-    ["The last bit of the song. 😏", "Your move. The sender is waiting. 👀"],
+  flirt:[
+    ["{S_HE} sent you THIS song. 😏 That already says a lot.","The sender is definitely nervous right now."],
+    ["That lyric — {S_he} said that line is basically {S_his} situation right now.","Interpret that however you like. 😏"],
+    ["This part is giving main character energy. 😏","{S_HE} said this song makes {S_him} think of you specifically. Only you."],
+    ["{S_HE} replayed this section three times before hitting send.","Three times, {R_NAME}. Think about that. 😏"],
+    ["The last bit of the song. 😏 — Your move.","{S_NAME} is waiting. 👀"],
   ],
 };
 
@@ -1380,267 +1455,260 @@ function buildYTSrc(videoId, startSec, autoplay) {
   return `https://www.youtube-nocookie.com/embed/${videoId}?start=${startSec}&autoplay=${autoplay}&rel=0&modestbranding=1&playsinline=1`;
 }
 
-// Segment config: start time in seconds, play duration in ms
+// 5 segments x 30s each
 const SEGMENTS = [
-  { start: 0,  dur: 20000 },
-  { start: 30, dur: 20000 },
-  { start: 60, dur: 20000 },
+  {start:0,   dur:30000},
+  {start:40,  dur:30000},
+  {start:80,  dur:30000},
+  {start:120, dur:30000},
+  {start:160, dur:30000},
 ];
 
-// ===================== MANDATORY AD SYSTEM =====================
-// Placeholder ad video IDs — replace with your actual ad video IDs
-// These are used in rotation. Each is a YouTube video ID.
-const AD_VIDEO_IDS = [
-  'jNQXAC9IVRw',  // placeholder — replace with real ad video IDs
-  'dQw4w9WgXcQ',  // placeholder
-  'L_jWHffIx5E',  // placeholder
-];
-const AD_DURATION = 30; // seconds the user must watch
-
+// ===================== MANDATORY AD SYSTEM — omg10.com =====================
+const AD_DURATION = 10;
 let adCallback = null;
 let adTimerInterval = null;
 let adSecsLeft = AD_DURATION;
 
 function showAdThenDo(context) {
-  // context = 'create' | 'reveal'
-  const modal = document.getElementById('ad-modal');
-  const title = document.getElementById('ad-modal-title');
-  const iframe = document.getElementById('ad-yt-iframe');
+  const modal   = document.getElementById('ad-modal');
+  const title   = document.getElementById('ad-modal-title');
   const skipBtn = document.getElementById('ad-skip-btn');
-  const secsEl = document.getElementById('ad-secs');
-  const progressFill = document.getElementById('ad-progress-fill');
-  const shimmer = document.getElementById('ad-video-shimmer');
-  const countdownIcon = document.getElementById('ad-countdown-icon');
+  const fill    = document.getElementById('ad-progress-fill');
+  const wrap    = document.getElementById('ad-provider-wrap');
+  const cdText  = document.getElementById('ad-countdown-text');
+  const cdIcon  = document.getElementById('ad-countdown-icon');
 
   title.textContent = context === 'create'
-    ? 'Watch this short video to generate your message'
-    : 'Watch this short video to unlock your message';
+    ? 'One moment — loading your message experience'
+    : 'One moment — unlocking your secret message';
 
-  // Pick random ad video
-  const adId = AD_VIDEO_IDS[Math.floor(Math.random() * AD_VIDEO_IDS.length)];
-  iframe.src = buildYTSrc(adId, 0, 1);
-
-  // Reset state
   adSecsLeft = AD_DURATION;
-  secsEl.textContent = adSecsLeft;
   skipBtn.disabled = true;
-  progressFill.style.transition = 'none';
-  progressFill.style.width = '0%';
-  shimmer.classList.remove('hide');
+  skipBtn.textContent = 'Continue \u2192';
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  cdIcon.textContent = '\u23f3';
+  cdText.innerHTML = `Please wait \u2014 <strong id="ad-secs">${AD_DURATION}</strong>s`;
+
+  // Inject omg10 ad script fresh
+  wrap.innerHTML = '';
+  const adScript = document.createElement('script');
+  adScript.type = 'text/javascript';
+  adScript.src = '//omg10.com/4/10871321';
+  wrap.appendChild(adScript);
 
   modal.style.display = 'flex';
 
-  // Hide shimmer after brief delay (video loading)
-  setTimeout(() => shimmer.classList.add('hide'), 2500);
-
-  // Start countdown
-  clearInterval(adTimerInterval);
-  // Trigger smooth progress bar start
   setTimeout(() => {
-    progressFill.style.transition = `width ${AD_DURATION}s linear`;
-    progressFill.style.width = '100%';
-  }, 100);
+    fill.style.transition = `width ${AD_DURATION}s linear`;
+    fill.style.width = '100%';
+  }, 120);
 
+  clearInterval(adTimerInterval);
   adTimerInterval = setInterval(() => {
     adSecsLeft--;
-    secsEl.textContent = adSecsLeft;
+    const s = document.getElementById('ad-secs');
+    if (s) s.textContent = adSecsLeft;
     if (adSecsLeft <= 0) {
       clearInterval(adTimerInterval);
       skipBtn.disabled = false;
-      skipBtn.textContent = 'Continue →';
-      countdownIcon.textContent = '✓';
-      document.getElementById('ad-countdown-text').innerHTML = '<strong>Ad complete — you may continue</strong>';
+      cdIcon.textContent = '\u2713';
+      cdText.innerHTML = '<strong>You may now continue</strong>';
     }
   }, 1000);
 
-  // Store what to do after ad
-  if (context === 'create') {
-    adCallback = () => generateMessage();
-  } else if (context === 'reveal') {
-    adCallback = () => {
-      runBootSequence(window._pendingRevealPayload);
-    };
-  }
+  adCallback = context === 'create'
+    ? () => generateMessage()
+    : () => runBootSequence(window._pendingRevealPayload);
 }
 
 function skipAd() {
-  // Only callable when ad is done (button enabled)
   clearInterval(adTimerInterval);
-  const modal = document.getElementById('ad-modal');
-  const iframe = document.getElementById('ad-yt-iframe');
-  modal.style.display = 'none';
-  iframe.src = ''; // stop video
+  document.getElementById('ad-modal').style.display = 'none';
+  document.getElementById('ad-provider-wrap').innerHTML = '';
   if (adCallback) { adCallback(); adCallback = null; }
 }
 
-// ===================== FULLY AUTOMATIC INLINE VIDEO EXPERIENCE =====================
+// ===================== FULLY AUTOMATIC INLINE VIDEO — 5 segments x 30s =====================
 let ytVideoId = null;
-let ytSegmentIndex = 0;
 let ytSegmentTimer = null;
-let ytCommentaryLines = [];
 let ytOnDone = null;
-// Shared progress dots tracker across all 3 segment bubbles
 let segBubbles = [];
+let ytPayload = null;
 
 function initVideoExperience(payload, msgs, typing, onDone) {
   ytVideoId = extractYouTubeId(payload.mu);
   if (!ytVideoId) { onDone(); return; }
-
-  ytCommentaryLines = VIDEO_COMMENTARY[payload.e || 'love'] || VIDEO_COMMENTARY.love;
-  ytSegmentIndex = 0;
-  ytOnDone = onDone;
+  ytOnDone  = onDone;
+  ytPayload = payload;
   segBubbles = [];
 
-  // AI intro bubble
   typing.classList.add('show');
   msgs.scrollTop = msgs.scrollHeight;
   setTimeout(() => {
     typing.classList.remove('show');
-    addBubble('ai', `🎬 The sender attached a video for you.<br><em>I'll play it in three parts — with emotional notes after each one.</em>`, msgs);
-    speak('The sender attached a video for you. Playing it in three parts.');
+    const introText = resolvePronouns(
+      '{S_NAME} attached a video for you. \uD83C\uDFAC<br><em>Playing it in five parts \u2014 with emotional notes after each one.</em>',
+      payload
+    );
+    addBubble('ai', introText, msgs);
+    speakBold(introText.replace(/<[^>]+>/g,''));
     setTimeout(() => playSegment(0, msgs, typing), 1200);
   }, 1400);
 }
 
 function playSegment(index, msgs, typing) {
-  if (index >= SEGMENTS.length) {
-    // Show "watch full" on the last bubble
-    if (segBubbles[2]) {
-      segBubbles[2].querySelector('.video-full-btn').classList.add('show');
-    }
+  const N = SEGMENTS.length;
+  if (index >= N) {
+    if (segBubbles[N-1]) segBubbles[N-1].querySelector('.video-full-btn').classList.add('show');
     if (ytOnDone) ytOnDone();
     return;
   }
 
   const seg = SEGMENTS[index];
-  const commentaryLines = ytCommentaryLines[index] || [];
+  const rawLines = (VIDEO_COMMENTARY[ytPayload.e||'love']||VIDEO_COMMENTARY.love)[index]||[];
+  const lines = rawLines.map(l => resolvePronouns(l, ytPayload));
 
-  // Create a new inline video bubble for this segment
-  const bubble = createSegBubble(index);
-  const typing2 = document.getElementById('typing-indicator');
-  msgs.insertBefore(bubble, typing2);
+  const bubble = createSegBubble(index, N);
+  msgs.insertBefore(bubble, document.getElementById('typing-indicator'));
   segBubbles[index] = bubble;
   msgs.scrollTop = msgs.scrollHeight;
-
-  // Animate in
   requestAnimationFrame(() => setTimeout(() => bubble.classList.add('in'), 60));
 
-  // Set iframe src to autoplay this segment
-  const iframe = bubble.querySelector('iframe');
-  iframe.src = buildYTSrc(ytVideoId, seg.start, 1);
+  bubble.querySelector('iframe').src = buildYTSrc(ytVideoId, seg.start, 1);
 
-  // Update progress dots on all existing bubbles
-  updateAllDots(index);
-
-  // Progress bar animation
   const barFill = bubble.querySelector('.seg-play-bar-fill');
   setTimeout(() => {
     barFill.style.transition = `width ${seg.dur}ms linear`;
     barFill.style.width = '100%';
   }, 100);
 
+  updateAllDots(index, N);
   msgs.scrollTop = msgs.scrollHeight;
 
-  // After play duration, pause and deliver commentary
   clearTimeout(ytSegmentTimer);
   ytSegmentTimer = setTimeout(() => {
-    // Freeze video (replace src to stop it)
-    const endSec = seg.start + Math.floor(seg.dur / 1000);
-    iframe.src = buildYTSrc(ytVideoId, endSec, 0);
+    const endSec = seg.start + Math.floor(seg.dur/1000);
+    bubble.querySelector('iframe').src = buildYTSrc(ytVideoId, endSec, 0);
+    bubble.querySelector('.video-seg-veil').classList.add('show');
+    updateAllDots(index+1, N);
 
-    // Show veil on this bubble
-    const veil = bubble.querySelector('.video-seg-veil');
-    veil.classList.add('show');
-
-    // Mark this dot as done
-    updateAllDots(index + 1); // next = upcoming
-
-    // Deliver commentary lines one by one
     let ci = 0;
     function nextComment() {
-      if (ci >= commentaryLines.length) {
-        // Commentary done — automatically start next segment
-        veil.classList.remove('show');
-        setTimeout(() => playSegment(index + 1, msgs, typing), 800);
+      if (ci >= lines.length) {
+        bubble.querySelector('.video-seg-veil').classList.remove('show');
+        setTimeout(() => playSegment(index+1, msgs, typing), 800);
         return;
       }
       typing.classList.add('show');
       msgs.scrollTop = msgs.scrollHeight;
       setTimeout(() => {
         typing.classList.remove('show');
-        addBubble('ai', commentaryLines[ci], msgs);
-        speak(commentaryLines[ci]);
+        addBubble('ai', lines[ci], msgs);
+        speakBold(lines[ci].replace(/<[^>]+>/g,''));
         ci++;
-        setTimeout(nextComment, 1500);
+        setTimeout(nextComment, 1600);
       }, 1200);
     }
     setTimeout(nextComment, 500);
   }, seg.dur);
 }
 
-function createSegBubble(index) {
-  const labels = ['Part 1 of 3 — Playing now', 'Part 2 of 3 — Playing now', 'Part 3 of 3 — Final segment'];
+function createSegBubble(index, total) {
+  const isLast = index === total-1;
+  const label  = isLast ? `Part ${index+1} of ${total} \u2014 Final segment` : `Part ${index+1} of ${total} \u2014 Playing now`;
+  const dots   = Array.from({length:total},(_,i)=>`<div class="sdot ${i===index?'active':''}" id="sdot-${index}-${i}"></div>`).join('');
   const div = document.createElement('div');
   div.className = 'video-seg-bubble';
   div.innerHTML = `
     <div class="video-seg-header">
-      <div class="video-seg-icon">🎬</div>
-      <div class="video-seg-title">${labels[index]}</div>
-      <div class="video-seg-badge">${index + 1} / 3</div>
+      <div class="video-seg-icon">\uD83C\uDFAC</div>
+      <div class="video-seg-title">${label}</div>
+      <div class="video-seg-badge">${index+1} / ${total}</div>
     </div>
     <div class="seg-play-bar-track"><div class="seg-play-bar-fill"></div></div>
     <div class="video-seg-frame-wrap">
       <iframe src="" allow="autoplay; encrypted-media" allowfullscreen playsinline title="Video part ${index+1}"></iframe>
       <div class="video-seg-veil">
-        <div class="veil-icon">⏸</div>
-        <div class="veil-text">AI reading this moment...</div>
+        <div class="veil-icon">\u23f8</div>
+        <div class="veil-text">Reading this moment...</div>
       </div>
     </div>
     <div class="video-seg-footer">
-      <div class="seg-progress">
-        <div class="sdot ${index === 0 ? 'active' : ''}" id="sdot-${index}-0"></div>
-        <div class="sdot ${index === 1 ? 'active' : ''}" id="sdot-${index}-1"></div>
-        <div class="sdot ${index === 2 ? 'active' : ''}" id="sdot-${index}-2"></div>
-      </div>
-      <button class="video-full-btn" onclick="watchFullVideoInBubble(this, '${ytVideoId}')">▶ Watch full</button>
+      <div class="seg-progress">${dots}</div>
+      <button class="video-full-btn" onclick="watchFullVideoInBubble(this,'${ytVideoId}')">&#9654; Watch full</button>
     </div>
   `;
   return div;
 }
 
-// Update progress dots across ALL existing segment bubbles to reflect current state
-function updateAllDots(currentIdx) {
+function updateAllDots(currentIdx, total) {
   segBubbles.forEach((b, bi) => {
     if (!b) return;
-    for (let di = 0; di < 3; di++) {
+    for (let di=0; di<total; di++) {
       const dot = b.querySelector(`#sdot-${bi}-${di}`);
-      if (!dot) continue;
-      dot.className = 'sdot' + (di < currentIdx ? ' done' : di === currentIdx ? ' active' : '');
+      if (dot) dot.className = 'sdot'+(di<currentIdx?' done':di===currentIdx?' active':'');
     }
   });
 }
 
 function watchFullVideoInBubble(btn, videoId) {
-  // Find the iframe in the same bubble
   const bubble = btn.closest('.video-seg-bubble');
-  const iframe = bubble.querySelector('iframe');
-  const veil = bubble.querySelector('.video-seg-veil');
-  iframe.src = buildYTSrc(videoId, 0, 1);
-  veil.classList.remove('show');
-  btn.classList.remove('show'); // hide button after tap
+  bubble.querySelector('iframe').src = buildYTSrc(videoId, 0, 1);
+  bubble.querySelector('.video-seg-veil').classList.remove('show');
+  btn.classList.remove('show');
 }
 
-// ===================== FINAL LOOP =====================
+// ===================== FINAL LOOP — closing signature =====================
 function showFinalLoop(payload) {
-  const msgs = document.getElementById('chat-messages');
+  const msgs   = document.getElementById('chat-messages');
   const typing = document.getElementById('typing-indicator');
   typing.classList.add('show');
   msgs.scrollTop = msgs.scrollHeight;
   setTimeout(() => {
     typing.classList.remove('show');
-    addBubble('ai', `That's the message. 💌<br><br>Now... someone out there is waiting to know you received this.`, msgs);
+    const sName = payload.s || 'someone';
+    addBubble('ai', `That's the message. \uD83D\uDC8C<br><br>Now... ${sName} out there is waiting to know you received this.`, msgs);
     msgs.scrollTop = msgs.scrollHeight;
+    setTimeout(() => {
+      typing.classList.add('show');
+      msgs.scrollTop = msgs.scrollHeight;
+      setTimeout(() => {
+        typing.classList.remove('show');
+        const closingLine = `This message is from <strong>${payload.s||'your sender'}</strong>, delivered by <strong>VODDIC</strong>. \uD83D\uDC8C`;
+        addBubble('ai', closingLine, msgs);
+        speakBold(`This message is from ${payload.s||'your sender'}, delivered by VODDIC.`);
+        msgs.scrollTop = msgs.scrollHeight;
+      }, 1200);
+    }, 1600);
   }, 1200);
+}
+
+// ===================== TTS — bold deep male voice for buttresses =====================
+function speakBold(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const clean = text.replace(/<[^>]+>/g,'').replace(/[""«»\u201c\u201d]/g,'');
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.rate   = 0.80;
+  utt.pitch  = 0.5;
+  utt.volume = 1;
+  const voices = window.speechSynthesis.getVoices();
+  const maleVoice = voices.find(v =>
+    /male|man|david|mark|daniel|alex|thomas|jorge|diego|carlos|pierre|google uk english male/i.test(v.name) && v.lang.startsWith('en')
+  ) || voices.find(v => v.lang.startsWith('en'));
+  if (maleVoice) utt.voice = maleVoice;
+  window.speechSynthesis.speak(utt);
+}
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const clean = text.replace(/<[^>]+>/g,'').replace(/[""«»\u201c\u201d]/g,'');
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.rate = 0.9; utt.pitch = 1.0;
+  window.speechSynthesis.speak(utt);
 }
 
 const BOOT_SEQUENCE = [
@@ -1654,28 +1722,38 @@ const BOOT_SEQUENCE = [
 ];
 
 const POSTER_THEMES = {
-  love:        { bg: ['#1a0010','#3a0020'], accent: '#ff4488', emoji: '❤️' },
-  romantic:    { bg: ['#1a0010','#2a0818'], accent: '#ff6699', emoji: '🌹' },
-  birthday:    { bg: ['#0a0a1a','#1a1040'], accent: '#ffd700', emoji: '🎂' },
-  apology:     { bg: ['#0a0a0a','#1a1a1a'], accent: '#aaaaff', emoji: '🙏' },
-  wedding:     { bg: ['#0a0810','#1a1525'], accent: '#e0c0ff', emoji: '💍' },
-  anniversary: { bg: ['#0a0808','#1a1010'], accent: '#ffa040', emoji: '🥂' },
-  funny:       { bg: ['#0a1800','#0f2800'], accent: '#aaff00', emoji: '😂' },
-  encouragement: { bg: ['#0a0500','#1a0d00'], accent: '#ff8800', emoji: '💪' },
-  christmas:   { bg: ['#060a02','#0d1504'], accent: '#44ff44', emoji: '🎄' },
-  eid:         { bg: ['#02060a','#041020'], accent: '#44aaff', emoji: '🌙' },
-  condolence:  { bg: ['#060606','#0f0f0f'], accent: '#aaaaaa', emoji: '🕊️' },
-  flirt:       { bg: ['#0a0008','#1a0018'], accent: '#ff44cc', emoji: '😏' },
+  love:          {bg:['#1a0010','#3a0020'],accent:'#ff4488',emoji:'\u2764\ufe0f'},
+  romantic:      {bg:['#1a0010','#2a0818'],accent:'#ff6699',emoji:'\uD83C\uDF39'},
+  birthday:      {bg:['#0a0a1a','#1a1040'],accent:'#ffd700',emoji:'\uD83C\uDF82'},
+  apology:       {bg:['#0a0a0a','#1a1a1a'],accent:'#aaaaff',emoji:'\uD83D\uDE4F'},
+  wedding:       {bg:['#0a0810','#1a1525'],accent:'#e0c0ff',emoji:'\uD83D\uDC8D'},
+  anniversary:   {bg:['#0a0808','#1a1010'],accent:'#ffa040',emoji:'\uD83E\uDD42'},
+  funny:         {bg:['#0a1800','#0f2800'],accent:'#aaff00',emoji:'\uD83D\uDE02'},
+  encouragement: {bg:['#0a0500','#1a0d00'],accent:'#ff8800',emoji:'\uD83D\uDCAA'},
+  christmas:     {bg:['#060a02','#0d1504'],accent:'#44ff44',emoji:'\uD83C\uDF84'},
+  eid:           {bg:['#02060a','#041020'],accent:'#44aaff',emoji:'\uD83C\uDF19'},
+  condolence:    {bg:['#060606','#0f0f0f'],accent:'#aaaaaa',emoji:'\uD83D\uDD4A\uFE0F'},
+  flirt:         {bg:['#0a0008','#1a0018'],accent:'#ff44cc',emoji:'\uD83D\uDE0F'},
 };
 
 // ===================== STATE =====================
 let currentEmotion = 'love';
 let currentMsgData = null;
 
+// ===================== GENDER SELECTORS =====================
+document.querySelectorAll('.gender-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.target;
+    btn.closest('.gender-row').querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById(target==='sg'?'sender-gender':'receiver-gender').value = btn.dataset.gender;
+  });
+});
+
 // ===================== EMOTION SELECTOR =====================
 document.querySelectorAll('.emotion-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('.emotion-btn').forEach(b=>b.classList.remove('selected'));
     btn.classList.add('selected');
     currentEmotion = btn.dataset.emotion;
   });
@@ -1683,26 +1761,28 @@ document.querySelectorAll('.emotion-btn').forEach(btn => {
 
 // ===================== PAGE NAVIGATION =====================
 function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
 }
 
 // ===================== GENERATE =====================
 function generateMessage() {
-  const recipient = document.getElementById('recipient-name').value.trim();
-  const sender = document.getElementById('sender-name').value.trim();
-  const msgText = document.getElementById('message-text').value.trim();
-  const musicUrl = document.getElementById('music-url').value.trim();
+  const recipient      = document.getElementById('recipient-name').value.trim();
+  const sender         = document.getElementById('sender-name').value.trim();
+  const msgText        = document.getElementById('message-text').value.trim();
+  const musicUrl       = document.getElementById('music-url').value.trim();
+  const senderGender   = document.getElementById('sender-gender').value;
+  const receiverGender = document.getElementById('receiver-gender').value;
 
   if (!msgText) { alert('Please write a message first!'); return; }
-  if (!sender) { alert('Please enter your name or a sender name!'); return; }
+  if (!sender)  { alert('Please enter a sender name!'); return; }
 
-  const payload = { r: recipient, s: sender, m: msgText, e: currentEmotion, mu: musicUrl };
-  const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
+  const payload = {r:recipient,s:sender,m:msgText,e:currentEmotion,mu:musicUrl,sg:senderGender,rg:receiverGender};
+  const encoded  = btoa(encodeURIComponent(JSON.stringify(payload)));
   const shareUrl = `${location.origin}${location.pathname}#msg=${encoded}`;
 
-  currentMsgData = { ...payload, url: shareUrl };
+  currentMsgData = {...payload, url:shareUrl};
   renderSharePage(shareUrl, payload);
   showPage('share-page');
 }
@@ -1715,327 +1795,220 @@ function renderSharePage(url, payload) {
 }
 
 function copyLink() {
-  const url = currentMsgData?.url || '';
+  const url = currentMsgData?.url||'';
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => {
+    navigator.clipboard.writeText(url).then(()=>{
       const el = document.getElementById('share-link-display');
-      el.textContent = '✓ Copied!';
-      setTimeout(() => el.textContent = url, 2000);
+      el.textContent = '\u2713 Copied!';
+      setTimeout(()=>el.textContent=url, 2000);
     });
   } else {
-    const ta = document.createElement('textarea');
-    ta.value = url; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy');
+    const ta=document.createElement('textarea'); ta.value=url;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
     document.body.removeChild(ta);
   }
 }
 
 function renderShareButtons(url, container) {
-  const shareText = encodeURIComponent("I saw a name in my contacts inside this message 👀 Check if it's you:");
+  const shareText  = encodeURIComponent("I saw a name in my contacts inside this message \uD83D\uDC40 Check if it's you:");
   const encodedUrl = encodeURIComponent(url);
   const btns = [
-    { label: '💬 WhatsApp', href: `https://wa.me/?text=${shareText}%20${encodedUrl}` },
-    { label: '📘 Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
-    { label: '✈️ Telegram', href: `https://t.me/share/url?url=${encodedUrl}&text=${shareText}` },
-    { label: '🐦 Twitter', href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}` },
+    {label:'\uD83D\uDCAC WhatsApp', href:`https://wa.me/?text=${shareText}%20${encodedUrl}`},
+    {label:'\uD83D\uDCD8 Facebook', href:`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`},
+    {label:'\u2708\uFE0F Telegram', href:`https://t.me/share/url?url=${encodedUrl}&text=${shareText}`},
+    {label:'\uD83D\uDC26 Twitter',  href:`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`},
   ];
-  container.innerHTML = btns.map(b =>
-    `<a class="share-social-btn" href="${b.href}" target="_blank" rel="noopener">${b.label}</a>`
-  ).join('');
+  container.innerHTML = btns.map(b=>`<a class="share-social-btn" href="${b.href}" target="_blank" rel="noopener">${b.label}</a>`).join('');
 }
 
 // ===================== POSTER CANVAS =====================
 function renderPoster(url, payload) {
-  const canvas = document.getElementById('poster-canvas');
-  const ctx = canvas.getContext('2d');
-  const W = 400, H = 480;
-  const theme = POSTER_THEMES[payload.e] || POSTER_THEMES.love;
-
-  // Background gradient
-  const grad = ctx.createLinearGradient(0, 0, W, H);
-  grad.addColorStop(0, theme.bg[0]);
-  grad.addColorStop(1, theme.bg[1]);
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
-
-  // Border glow
-  ctx.strokeStyle = theme.accent;
-  ctx.lineWidth = 2;
-  ctx.globalAlpha = 0.6;
-  ctx.strokeRect(12, 12, W-24, H-24);
-  ctx.globalAlpha = 1;
-
-  // Emoji
-  ctx.font = '60px serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(theme.emoji, W/2, 90);
-
-  // Headline
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 22px serif';
-  ctx.fillText('Someone left you a', W/2, 140);
-
-  ctx.fillStyle = theme.accent;
-  ctx.font = 'bold italic 26px serif';
-  ctx.fillText('secret message 👀', W/2, 172);
-
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.font = '14px monospace';
-  ctx.fillText('Scan the QR code to reveal it', W/2, 200);
-
-  // QR code (generate in hidden div, draw to canvas)
-  const qrDiv = document.createElement('div');
-  qrDiv.style.position = 'absolute';
-  qrDiv.style.left = '-9999px';
+  const canvas=document.getElementById('poster-canvas'), ctx=canvas.getContext('2d');
+  const W=400,H=480,theme=POSTER_THEMES[payload.e]||POSTER_THEMES.love;
+  const grad=ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,theme.bg[0]); grad.addColorStop(1,theme.bg[1]);
+  ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle=theme.accent; ctx.lineWidth=2; ctx.globalAlpha=0.6;
+  ctx.strokeRect(12,12,W-24,H-24); ctx.globalAlpha=1;
+  ctx.font='60px serif'; ctx.textAlign='center'; ctx.fillText(theme.emoji,W/2,90);
+  ctx.fillStyle='#ffffff'; ctx.font='bold 22px serif'; ctx.fillText('Someone left you a',W/2,140);
+  ctx.fillStyle=theme.accent; ctx.font='bold italic 26px serif'; ctx.fillText('secret message \uD83D\uDC40',W/2,172);
+  ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font='14px monospace'; ctx.fillText('Scan the QR code to reveal it',W/2,200);
+  const qrDiv=document.createElement('div'); qrDiv.style.position='absolute'; qrDiv.style.left='-9999px';
   document.body.appendChild(qrDiv);
-
   try {
-    new QRCode(qrDiv, { text: url, width: 160, height: 160, colorDark: '#ffffff', colorLight: 'transparent' });
-    setTimeout(() => {
-      const qrImg = qrDiv.querySelector('img') || qrDiv.querySelector('canvas');
-      if (qrImg) {
-        // Draw QR background
-        ctx.fillStyle = 'rgba(255,255,255,0.08)';
-        roundRect(ctx, W/2 - 90, 218, 180, 180, 12);
-        ctx.fill();
-
-        if (qrImg.tagName === 'IMG') {
-          qrImg.onload = () => { ctx.drawImage(qrImg, W/2 - 80, 228, 160, 160); drawPosterFooter(ctx, W, H, payload, theme); };
-          if (qrImg.complete) { ctx.drawImage(qrImg, W/2 - 80, 228, 160, 160); drawPosterFooter(ctx, W, H, payload, theme); }
-        } else {
-          ctx.drawImage(qrImg, W/2 - 80, 228, 160, 160);
-          drawPosterFooter(ctx, W, H, payload, theme);
-        }
+    new QRCode(qrDiv,{text:url,width:160,height:160,colorDark:'#ffffff',colorLight:'transparent'});
+    setTimeout(()=>{
+      const qrImg=qrDiv.querySelector('img')||qrDiv.querySelector('canvas');
+      if(qrImg){
+        ctx.fillStyle='rgba(255,255,255,0.08)'; roundRect(ctx,W/2-90,218,180,180,12); ctx.fill();
+        if(qrImg.tagName==='IMG'){
+          qrImg.onload=()=>{ctx.drawImage(qrImg,W/2-80,228,160,160);drawPosterFooter(ctx,W,H,payload,theme);};
+          if(qrImg.complete){ctx.drawImage(qrImg,W/2-80,228,160,160);drawPosterFooter(ctx,W,H,payload,theme);}
+        } else { ctx.drawImage(qrImg,W/2-80,228,160,160); drawPosterFooter(ctx,W,H,payload,theme); }
       }
       document.body.removeChild(qrDiv);
-    }, 200);
-  } catch(e) {
-    document.body.removeChild(qrDiv);
-    drawPosterFooter(ctx, W, H, payload, theme);
-  }
+    },200);
+  } catch(e){ document.body.removeChild(qrDiv); drawPosterFooter(ctx,W,H,payload,theme); }
 }
 
-function drawPosterFooter(ctx, W, H, payload, theme) {
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = '11px monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText('secretmsg.ai  ·  anonymous · emotional · viral', W/2, H - 24);
-
-  if (payload.r) {
-    ctx.fillStyle = theme.accent;
-    ctx.font = 'italic 13px serif';
-    ctx.fillText(`For: ${payload.r}`, W/2, H - 48);
-  }
+function drawPosterFooter(ctx,W,H,payload,theme){
+  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='11px monospace'; ctx.textAlign='center';
+  ctx.fillText('Delivered by VODDIC  \u00b7  secretmsg.ai',W/2,H-24);
+  if(payload.r){ctx.fillStyle=theme.accent;ctx.font='italic 13px serif';ctx.fillText(`For: ${payload.r}`,W/2,H-48);}
 }
 
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
 }
 
-function downloadPoster() {
-  const canvas = document.getElementById('poster-canvas');
-  const link = document.createElement('a');
-  link.download = 'secret-message-poster.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+function downloadPoster(){
+  const canvas=document.getElementById('poster-canvas');
+  const link=document.createElement('a');
+  link.download='secret-message-poster.png';
+  link.href=canvas.toDataURL('image/png'); link.click();
 }
 
 // ===================== REVEAL FLOW =====================
-function startReveal(payload) {
-  // Store payload for after ad
-  window._pendingRevealPayload = payload;
+function startReveal(payload){
+  window._pendingRevealPayload=payload;
   showPage('reveal-page');
-  document.getElementById('boot-screen').style.display = 'none';
-  document.getElementById('name-verify-screen').style.display = 'none';
-  document.getElementById('chat-screen').style.display = 'none';
-  // Show mandatory ad before reveal
+  document.getElementById('boot-screen').style.display='none';
+  document.getElementById('name-verify-screen').style.display='none';
+  document.getElementById('chat-screen').style.display='none';
   showAdThenDo('reveal');
 }
 
-function runBootSequence(payload) {
-  document.getElementById('boot-screen').style.display = 'flex';
-  const container = document.getElementById('boot-lines');
-  const thinking = document.getElementById('boot-thinking');
-  container.innerHTML = '';
-
-  let i = 0;
-  function showNext() {
-    if (i < BOOT_SEQUENCE.length) {
-      const div = document.createElement('div');
-      div.className = 'boot-line';
-      div.textContent = `> ${BOOT_SEQUENCE[i]}`;
+function runBootSequence(payload){
+  document.getElementById('boot-screen').style.display='flex';
+  const container=document.getElementById('boot-lines');
+  const thinking=document.getElementById('boot-thinking');
+  container.innerHTML='';
+  let i=0;
+  function showNext(){
+    if(i<BOOT_SEQUENCE.length){
+      const div=document.createElement('div'); div.className='boot-line';
+      div.textContent=`> ${BOOT_SEQUENCE[i]}`;
       container.appendChild(div);
-      requestAnimationFrame(() => { setTimeout(() => div.classList.add('shown'), 50); });
-      i++;
-      setTimeout(showNext, 500 + Math.random() * 300);
+      requestAnimationFrame(()=>setTimeout(()=>div.classList.add('shown'),50));
+      i++; setTimeout(showNext,500+Math.random()*300);
     } else {
       thinking.classList.add('show');
-      setTimeout(() => {
-        document.getElementById('boot-screen').style.display = 'none';
-        if (payload.r) {
-          showVerify(payload);
-        } else {
-          showChat(payload);
-        }
-      }, 1800);
+      setTimeout(()=>{
+        document.getElementById('boot-screen').style.display='none';
+        payload.r?showVerify(payload):showChat(payload);
+      },1800);
     }
   }
   showNext();
 }
 
 // ===================== NAME VERIFY =====================
-function showVerify(payload) {
-  document.getElementById('name-verify-screen').style.display = 'flex';
-  document.getElementById('verify-result').className = 'verify-result';
-  document.getElementById('verify-name-input').value = '';
-  window._verifyPayload = payload;
+function showVerify(payload){
+  document.getElementById('name-verify-screen').style.display='flex';
+  document.getElementById('verify-result').className='verify-result';
+  document.getElementById('verify-name-input').value='';
+  window._verifyPayload=payload;
 }
 
-function verifyName() {
-  const entered = document.getElementById('verify-name-input').value.trim().toLowerCase();
-  const expected = (window._verifyPayload?.r || '').toLowerCase();
-  const result = document.getElementById('verify-result');
-
-  if (expected && entered && entered === expected) {
-    result.textContent = `✓ Yes... this message was prepared for you, ${window._verifyPayload.r}.`;
-    result.className = 'verify-result match';
+function verifyName(){
+  const entered=(document.getElementById('verify-name-input').value||'').trim().toLowerCase();
+  const expected=(window._verifyPayload?.r||'').toLowerCase();
+  const result=document.getElementById('verify-result');
+  if(expected&&entered&&entered===expected){
+    result.textContent=`\u2713 Yes... this message was prepared for you, ${window._verifyPayload.r}.`;
+    result.className='verify-result match';
   } else {
-    result.textContent = `This message might not be for you.\n\nBut the sender still thinks you are a wonderful person.`;
-    result.className = 'verify-result no-match';
-    result.style.whiteSpace = 'pre-line';
+    result.textContent=`This message might not be for you.\n\nBut ${window._verifyPayload?.s||'the sender'} still thinks you are a wonderful person.`;
+    result.className='verify-result no-match'; result.style.whiteSpace='pre-line';
   }
-
-  setTimeout(() => {
-    document.getElementById('name-verify-screen').style.display = 'none';
+  setTimeout(()=>{
+    document.getElementById('name-verify-screen').style.display='none';
     showChat(window._verifyPayload);
-  }, 2500);
+  },2500);
 }
 
 // ===================== CHAT =====================
-function showChat(payload) {
-  document.getElementById('chat-screen').style.display = 'flex';
-  const msgs = document.getElementById('chat-messages');
-  const typing = document.getElementById('typing-indicator');
-  msgs.innerHTML = '';
-  msgs.appendChild(typing);
+function showChat(payload){
+  document.getElementById('chat-screen').style.display='flex';
+  const msgs=document.getElementById('chat-messages');
+  const typing=document.getElementById('typing-indicator');
+  msgs.innerHTML=''; msgs.appendChild(typing);
 
-  // Set avatar emoji from theme
-  const themeEmoji = POSTER_THEMES[payload.e]?.emoji || '🤖';
-  document.getElementById('chat-avatar').textContent = themeEmoji;
+  document.getElementById('chat-avatar').textContent=POSTER_THEMES[payload.e]?.emoji||'\uD83E\uDD16';
 
-  // Build conversation lines
-  const templates = TEMPLATES[payload.e] || TEMPLATES.love;
-  const template = templates[Math.floor(Math.random() * templates.length)];
-  const lines = template.map(line => line.replace('{MSG}', payload.m));
+  const templates=TEMPLATES[payload.e]||TEMPLATES.love;
+  const template=templates[Math.floor(Math.random()*templates.length)];
+  const lines=template.map(line=>resolvePronouns(line,payload));
 
-  // Share buttons in chat footer
   renderShareButtons(location.href, document.getElementById('chat-share-btns'));
 
-  let queue = [...lines];
-  let videoInserted = false;
-  const hasVideo = !!(payload.mu && extractYouTubeId(payload.mu));
+  let queue=[...lines], videoInserted=false;
+  const hasVideo=!!(payload.mu&&extractYouTubeId(payload.mu));
 
-  function nextMessage() {
-    typing.classList.add('show');
-    msgs.scrollTop = msgs.scrollHeight;
-    const delay = 1000 + Math.floor(Math.random() * 800);
-    setTimeout(() => {
+  function nextMessage(){
+    typing.classList.add('show'); msgs.scrollTop=msgs.scrollHeight;
+    const delay=1000+Math.floor(Math.random()*800);
+    setTimeout(()=>{
       typing.classList.remove('show');
-      if (queue.length === 0) {
-        if (hasVideo && !videoInserted) {
-          videoInserted = true;
-          initVideoExperience(payload, msgs, typing, () => showFinalLoop(payload));
-          return;
-        }
-        showFinalLoop(payload);
-        return;
+      if(queue.length===0){
+        if(hasVideo&&!videoInserted){ videoInserted=true; initVideoExperience(payload,msgs,typing,()=>showFinalLoop(payload)); return; }
+        showFinalLoop(payload); return;
       }
-      const text = queue.shift();
-      addBubble('ai', text, msgs);
-      speak(text.replace(/"/g, ''));
-      if (queue.length > 0) {
-        nextMessage();
-      } else {
-        if (hasVideo && !videoInserted) {
-          videoInserted = true;
-          setTimeout(() => initVideoExperience(payload, msgs, typing, () => showFinalLoop(payload)), 900);
-        } else {
-          setTimeout(() => showFinalLoop(payload), 800);
-        }
+      const text=queue.shift();
+      addBubble('ai',text,msgs);
+      speak(text.replace(/"/g,'').replace(/<[^>]+>/g,''));
+      if(queue.length>0){ nextMessage(); }
+      else {
+        if(hasVideo&&!videoInserted){ videoInserted=true; setTimeout(()=>initVideoExperience(payload,msgs,typing,()=>showFinalLoop(payload)),900); }
+        else { setTimeout(()=>showFinalLoop(payload),800); }
       }
-    }, delay);
+    },delay);
   }
-
   nextMessage();
 }
 
-function addBubble(type, text, container) {
-  const typing = document.getElementById('typing-indicator');
-  const bubble = document.createElement('div');
-  bubble.className = `bubble ${type}`;
-  bubble.innerHTML = text + `<span class="bubble-time">${getTime()}</span>`;
-  if (type === 'ai') {
-    const ttsBtn = document.createElement('button');
-    ttsBtn.className = 'tts-btn';
-    ttsBtn.textContent = '🔊 Read aloud';
-    ttsBtn.onclick = () => speak(text.replace(/"/g, ''));
+function addBubble(type, text, container){
+  const typing=document.getElementById('typing-indicator');
+  const bubble=document.createElement('div');
+  bubble.className=`bubble ${type}`;
+  bubble.innerHTML=text+`<span class="bubble-time">${getTime()}</span>`;
+  if(type==='ai'){
+    const ttsBtn=document.createElement('button');
+    ttsBtn.className='tts-btn'; ttsBtn.textContent='\uD83D\uDD0A Read aloud';
+    ttsBtn.onclick=()=>speakBold(text.replace(/<[^>]+>/g,'').replace(/"/g,''));
     bubble.appendChild(ttsBtn);
   }
-  container.insertBefore(bubble, typing);
-  requestAnimationFrame(() => { setTimeout(() => bubble.classList.add('in'), 50); });
-  container.scrollTop = container.scrollHeight;
+  container.insertBefore(bubble,typing);
+  requestAnimationFrame(()=>setTimeout(()=>bubble.classList.add('in'),50));
+  container.scrollTop=container.scrollHeight;
   return bubble;
 }
 
-
-
-
-// ===================== TTS =====================
-function speak(text) {
-  if (!window.speechSynthesis) return;
-  const clean = text.replace(/<[^>]+>/g, '').replace(/[""]/g, '');
-  const utt = new SpeechSynthesisUtterance(clean);
-  utt.rate = 0.9; utt.pitch = 1.05;
-  window.speechSynthesis.speak(utt);
-}
-
-// ===================== UTILS =====================
-function getTime() {
-  const now = new Date();
+function getTime(){
+  const now=new Date();
   return `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
 }
 
 // ===================== HASH ROUTING =====================
-function checkHash() {
-  const hash = location.hash;
-  if (hash && hash.startsWith('#msg=')) {
-    try {
-      const encoded = hash.slice(5);
-      const json = decodeURIComponent(atob(encoded));
-      const payload = JSON.parse(json);
-      startReveal(payload);
-    } catch(e) {
-      // Bad hash, just show home
-      showPage('home-page');
-    }
-  } else {
-    showPage('home-page');
-  }
+function checkHash(){
+  const hash=location.hash;
+  if(hash&&hash.startsWith('#msg=')){
+    try{
+      const json=decodeURIComponent(atob(hash.slice(5)));
+      startReveal(JSON.parse(json));
+    } catch(e){ showPage('home-page'); }
+  } else { showPage('home-page'); }
 }
 
-window.addEventListener('hashchange', checkHash);
-window.addEventListener('DOMContentLoaded', checkHash);
+window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+window.addEventListener('hashchange',checkHash);
+window.addEventListener('DOMContentLoaded',checkHash);
 </script>
+
 
 <!-- ===================== ANALYTICS ===================== -->
 <!-- Google Analytics — replace G-XXXXXXXXXX with your ID -->
