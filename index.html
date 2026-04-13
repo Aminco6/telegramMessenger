@@ -1194,7 +1194,7 @@ select option { background: #1a1008; }
     <div class="verify-card">
       <div class="verify-ai-icon">🤖</div>
       <p class="verify-text" id="verify-intro-text">
-        I detected a possible match<br>in the sender's contact list.<br><br>
+        I see a possible match in the sender's list.<br><br>
         <em>Type your name to confirm.</em>
       </p>
       <div class="verify-input">
@@ -1293,149 +1293,149 @@ function resolvePronouns(text, payload) {
     .replace(/\{MSG\}/g,payload.m||'');
 }
 
-// ===================== EMOTION TEMPLATES =====================
+// ===================== EMOTION TEMPLATES (natural, warm voice) =====================
 const TEMPLATES = {
   love:[
-    ["{S_HE} had a message. Couldn't say it out loud.","{S_HE} held it inside for days.","But {S_he} finally asked me to find you.","And to tell you this:",'"{MSG}"',"{S_HE} said {S_he} hopes you still think about {S_him} too."],
-    ["I was given a secret mission.","To find you. And to pass something along.","{S_HE} said {S_he} has been holding this inside too long.",'"{MSG}"',"That's all. That's everything."],
-    ["{S_HE} couldn't sleep.","{S_HE} wrote this instead:",'"{MSG}"',"I hope it reaches your heart the way {S_he} intended."],
+    ["{S_NAME} has something they've been wanting to tell you for a while.","It's not easy to say out loud, so they asked me to deliver it.","Here's what they wanted you to know:",'"{MSG}"',"They hope this reaches your heart exactly the way they mean it."],
+    ["There's a message here, written just for you.","It comes from {S_NAME}. They've been holding onto it.",'"{MSG}"',"That's the whole truth, nothing held back."],
+    ["A secret from {S_NAME}.","They say:",'"{MSG}"',"That's everything. Just wanted you to know."],
   ],
   romantic:[
-    ["Close your eyes for a second.","Now open them.","{S_HE} wants you to know:",'"{MSG}"',"{S_HE} said every time {S_he} sees you, the room gets a little warmer."],
-    ["This message was composed at night.","When the city is quiet and hearts speak louder.",'"{MSG}"',"{S_HE} hopes you smile when you read this."],
-    ["Romance isn't always grand gestures.","Sometimes it's a quiet message sent in the dark.",'"{MSG}"'],
+    ["{S_NAME} is thinking of you right now.","They wanted to send this your way:",'"{MSG}"',"Every time they see you, the world feels a little warmer."],
+    ["Late at night, when everything is quiet, this is what {S_NAME} thinks about.",'"{MSG}"',"They hope it brings a smile to your face."],
+    ["Not every feeling needs a grand gesture. Sometimes it's just a quiet message like this.",'"{MSG}"',"From {S_NAME}, with care."],
   ],
   birthday:[
-    ["Today is your day. ✨","{S_HE} made sure I delivered this:",'"{MSG}"',"{S_HE} wanted you to know how much your existence means to {S_him}.","Happy Birthday. 🎂"],
-    ["{S_HE} is smiling right now just because today is your birthday.",'"{MSG}"',"May today be as wonderful as you are. 🎉"],
-    ["Birthday alert! 🎂","{S_HE} programmed me with one specific message for you today:",'"{MSG}"',"Enjoy every second — you deserve it."],
+    ["It's your special day, and {S_NAME} didn't want to let it pass without saying this:",'"{MSG}"',"Happy birthday. They hope it's as wonderful as you are."],
+    ["{S_NAME} is smiling just thinking about you today.",'"{MSG}"',"Enjoy every moment — you deserve it. 🎂"],
+    ["A birthday wish coming your way from {S_NAME}:",'"{MSG}"',"Make a wish, and know they're thinking of you."],
   ],
   apology:[
-    ["This message wasn't easy to send.","{S_HE} rewrote it seven times.","But {S_he} finally wanted to say:",'"{MSG}"',"{S_HE} means every word."],
-    ["Sorry is the hardest word.","But {S_he} found the courage:",'"{MSG}"',"{S_HE} is hoping you'll still give {S_him} a chance."],
-    ["An apology arrived for you.","Quietly. Sincerely. From {S_NAME}.",'"{MSG}"',"Whether you accept it is up to you."],
+    ["{S_NAME} asked me to pass this along. They've been meaning to say it for a while.",'"{MSG}"',"They mean every word, and they hope you can hear it."],
+    ["Sometimes the hardest words are the most important.",'"{MSG}"',"That's what {S_NAME} wanted you to know. No excuses, just the truth."],
+    ["An apology, quietly delivered. From {S_NAME}.",'"{MSG}"',"They're hoping you'll give them a chance to make things right."],
   ],
   wedding:[
-    ["On this beautiful occasion...","{S_HE} wanted to send you something from the heart:",'"{MSG}"',"May your love story be long and full of joy. 💍"],
-    ["Two souls, one journey. 💍","{S_HE} sends this with all {S_his} love:",'"{MSG}"',"Congratulations and endless blessings."],
+    ["On this beautiful day, {S_NAME} wanted to send you something from the heart:",'"{MSG}"',"Wishing you a lifetime of happiness together. 💍"],
+    ["Two people, one journey. {S_NAME} sends this with love:",'"{MSG}"',"Congratulations, and all the best for the road ahead."],
   ],
   anniversary:[
-    ["Another year of love. 🥂","{S_HE} wanted to celebrate it with these words:",'"{MSG}"',"Here's to many more years together."],
-    ["Time passes. Love deepens.",'"{MSG}"',"Happy Anniversary. 🥂 — from {S_NAME}"],
+    ["Another year of love, and {S_NAME} wanted to celebrate it with you:",'"{MSG}"',"Here's to many more years, side by side. 🥂"],
+    ["Time moves fast, but love like yours only grows deeper.",'"{MSG}"',"Happy anniversary from {S_NAME}."],
   ],
   funny:[
-    ["Okay okay okay. Listen.","{S_HE} sent me here with a very URGENT message:",'"{MSG}"',"{S_HE} is definitely laughing right now. 😂"],
-    ["Breaking news 📰","A very reliable source — {S_NAME} — has issued this statement:",'"{MSG}"',"No further comment. 😂"],
-    ["This is a legally binding message. 📜",'"{MSG}"',"You've been served. By {S_NAME}. 😂"],
+    ["Okay, okay — {S_NAME} made me promise to send this exactly as-is:",'"{MSG}"',"They're probably laughing right now, just so you know. 😂"],
+    ["Breaking news: {S_NAME} has an urgent message for you.",'"{MSG}"',"That's it. That's the news. 😂"],
+    ["This is an official, certified message from {S_NAME}:",'"{MSG}"',"You've been served. With laughter. 😂"],
   ],
   encouragement:[
-    ["Hey. Listen.","{S_HE} believes in you more than you know.",'"{MSG}"',"Now go. Do the thing. You've got this. 💪"],
-    ["You're stronger than you think.","{S_HE} wanted to make sure you know that.",'"{MSG}"',"Keep going."],
-    ["{S_HE} sent this to remind you:",'"{MSG}"',"{S_HE} believes in you. So do I. 💪"],
+    ["Hey — {S_NAME} believes in you more than you might realize.",'"{MSG}"',"Now go do your thing. You've got this. 💪"],
+    ["You're stronger than you feel right now. {S_NAME} wanted you to remember that.",'"{MSG}"',"Keep going, one step at a time."],
+    ["A little boost from {S_NAME}:",'"{MSG}"',"They believe in you. And so do I."],
   ],
   christmas:[
-    ["Ho ho ho 🎄","{S_HE} asked me to deliver a special message:",'"{MSG}"',"Merry Christmas — with love from {S_NAME}."],
-    ["The snow is falling somewhere...","{S_HE} is thinking of you. 🎄",'"{MSG}"',"Warmest wishes this Christmas."],
+    ["Warm wishes from {S_NAME} this Christmas:",'"{MSG}"',"May your holiday be filled with joy and peace. 🎄"],
+    ["While the snow falls somewhere out there, {S_NAME} is thinking of you.",'"{MSG}"',"Merry Christmas, from them to you."],
   ],
   eid:[
-    ["Eid Mubarak! 🌙","{S_HE} sent this beautiful message for you:",'"{MSG}"',"May your Eid be filled with blessings and joy."],
-    ["On this blessed occasion...","{S_HE} sends {S_his} warmest Eid greetings. 🌙",'"{MSG}"',"Eid Mubarak!"],
+    ["Eid Mubarak! {S_NAME} sends this message with a full heart:",'"{MSG}"',"May your day be blessed and bright. 🌙"],
+    ["On this special occasion, {S_NAME} wanted you to feel their warmth:",'"{MSG}"',"Eid Mubarak, from them to you."],
   ],
   condolence:[
-    ["Words are never enough in moments like these.","{S_HE} wanted you to know {S_he} is thinking of you.",'"{MSG}"',"You are not alone. 🕊️"],
-    ["In the quiet of grief, a message arrived.","From {S_NAME}, who cares deeply.",'"{MSG}"',"May you find peace and comfort."],
+    ["There are no perfect words at times like this. But {S_NAME} wanted you to know they're thinking of you.",'"{MSG}"',"You're not alone. 🕊️"],
+    ["In the quiet, a message arrived. From {S_NAME}, who cares deeply.",'"{MSG}"',"May you find moments of peace and comfort."],
   ],
   flirt:[
-    ["Alright, I'll just say it.","{S_HE} couldn't stop thinking about you.","{S_HE} finally worked up the nerve:",'"{MSG}"',"Your move. 😏"],
-    ["Plot twist: {S_he} likes you.","{S_HE} asked me to deliver this:",'"{MSG}"',"{S_HE} is probably checking {S_his} phone right now waiting for you to reply. 😏"],
-    ["New message. From a very flustered {S_NAME}.",'"{MSG}"',"{S_HE} said it took {S_him} three days to send this. 😏"],
+    ["Alright, I'll just say it: {S_NAME} can't stop thinking about you.",'"{MSG}"',"Your move. 😏"],
+    ["Plot twist: {S_NAME} likes you. A lot.",'"{MSG}"',"They're probably checking their phone right now, hoping you reply. 😏"],
+    ["A very flustered {S_NAME} asked me to send this:",'"{MSG}"',"They took a deep breath before hitting send. 😏"],
   ],
 };
 
-// ===================== VIDEO COMMENTARY — 5 segments × lyric-aligned, pronoun-aware =====================
+// ===================== VIDEO COMMENTARY — natural, flowing =====================
 const VIDEO_COMMENTARY = {
   love:[
-    ["{S_HE} chose this song for you. Listen to how it opens — that gentle ache in the first notes.","That feeling right there? That's {S_him}. That's exactly how {S_he} feels when {S_he} thinks of you."],
-    ["Did you catch that line just now?","{S_HE} said those words are the ones {S_he} never knew how to say out loud to you."],
-    ["This part of the song — right here — {S_he} has replayed it a hundred times.","Every single time, your face is what {S_he} sees."],
-    ["That bridge. Hear the way the melody shifts?","{S_HE} said that's the moment {S_he} knew {S_he} had to send you this message. That exact moment."],
-    ["And now this final stretch of the song.","{S_HE} said: if this reaches you, then {S_he} hopes you finally understand just how much {S_he} means it."],
+    ["{S_NAME} chose this song for you. Listen to how it opens — that gentle feeling in the first few notes.","That's exactly how they feel when they think of you."],
+    ["Did you catch that line just now?","{S_NAME} said those are the words they've never quite known how to say to you in person."],
+    ["This part of the song — right here — they've played it over and over.","Every time, your face is what comes to mind."],
+    ["That bridge, where the melody shifts.","{S_NAME} said that's the moment they knew they had to send you this message."],
+    ["And now the final stretch.","{S_NAME} hopes you finally understand just how much they mean it."],
   ],
   romantic:[
-    ["This opening — {S_he} picked it because it sounds like how {S_he} feels standing near you.","Let it wash over you."],
-    ["That verse carries a confession {S_he} couldn't make in person.","{S_HE} let the music say it instead."],
-    ["Right here — this is where the melody exhales.","{S_HE} said this is the part that sounds like {S_his} heart when {S_he} is with you."],
-    ["That chorus again. {S_HE} said {S_he} sang this line under {S_his} breath thinking of you.","And {S_he} didn't even realise it until later."],
-    ["{S_HE} said the last verse says everything {S_he} couldn't find words for.","Now you've heard it all. Every bit of it."],
+    ["This opening — they picked it because it sounds like how they feel when you're near.","Let it wash over you."],
+    ["That verse carries a confession they couldn't make in person.","So they let the music say it instead."],
+    ["Right here — this is where the melody breathes.","{S_NAME} says this is the part that sounds like their heart when they're with you."],
+    ["That chorus again. They've hummed this line under their breath, thinking of you.","Without even realizing it."],
+    ["{S_NAME} says the last verse says everything they couldn't find words for.","Now you've heard it all."],
   ],
   birthday:[
-    ["{S_HE} chose this to make today feel like a celebration from the very first second.","Happy Birthday — this song is for you. 🎂"],
-    ["This part reminded {S_him} of your smile.","{S_HE} said {S_he} hopes you're smiling right now."],
-    ["Hear that melody? That's the joy {S_he} wishes for you — every single day of this new year."],
-    ["{S_HE} said this section feels like all the memories you've built together.","Precious ones. Every single one."],
-    ["And to close it out 🎉 — {S_HE} said: may every day this year feel exactly this special.","You deserve it, {R_NAME}."],
+    ["{S_NAME} chose this to make your birthday feel special from the very first note.","This song is for you. 🎂"],
+    ["This part reminded them of your smile.","They hope you're smiling right now."],
+    ["Hear that melody? That's the joy they wish for you — every single day of this new year."],
+    ["{S_NAME} says this section feels like all the good memories you've shared.","The precious ones."],
+    ["And to close it out — they hope every day this year feels exactly this special.","You deserve it, {R_NAME}."],
   ],
   apology:[
-    ["{S_HE} chose this because it says sorry better than {S_he} ever could.","Please listen carefully."],
-    ["This part — this is where the weight of regret lives in this song.","{S_HE} has listened to this section many times, thinking of you."],
-    ["That quiet moment? {S_HE} said that silence is exactly how {S_he} feels waiting to hear back from you."],
-    ["{S_HE} said this line in the song says what {S_he} wishes {S_he} had said sooner.","It's too late to go back. But {S_he} wants you to know {S_he} knows that."],
-    ["And this ending — it's an open hand. A question.","{S_HE} hopes you can find it in your heart to listen. That's all {S_he} is asking."],
+    ["{S_NAME} chose this because it says 'sorry' better than they ever could.","Please listen closely."],
+    ["This part — this is where the weight of regret lives in the song.","They've listened to this section many times, thinking of you."],
+    ["That quiet moment? That silence is exactly how they feel, waiting to hear back from you."],
+    ["{S_NAME} says this line in the song says what they wish they'd said sooner.","They want you to know they realize that now."],
+    ["And this ending — it's an open hand. A question.","They hope you can find it in your heart to listen. That's all they're asking."],
   ],
   wedding:[
-    ["{S_HE} chose this to honour the most beautiful moment of your lives. 💍","Let it fill the room."],
-    ["This section speaks of devotion.","{S_HE} said: may your love always carry this weight, even years from now."],
-    ["That swell in the music? {S_HE} said that's what it feels like watching you two together.","Pure joy. Pure love."],
-    ["{S_HE} said this part of the song sounds like a promise.","The kind that lasts a lifetime. 💍"],
-    ["The final notes — a blessing wrapped in melody.","{S_HE} sends every good wish through this song. Congratulations."],
+    ["{S_NAME} chose this to honor the most beautiful moment of your lives. 💍","Let it fill the room."],
+    ["This section speaks of devotion.","They say: may your love always carry this weight, even years from now."],
+    ["That swell in the music? That's what it feels like watching you two together.","Pure joy. Pure love."],
+    ["{S_NAME} says this part of the song sounds like a promise.","The kind that lasts a lifetime."],
+    ["The final notes — a blessing wrapped in melody.","They send every good wish through this song. Congratulations."],
   ],
   anniversary:[
-    ["This song carries years of feeling in every note. 🥂","{S_HE} chose it because anniversaries deserve more than words."],
-    ["This part is about growth.","{S_HE} said: you've both come so far. {S_HE} is grateful for every step."],
-    ["That line just now — {S_he} said that's how {S_he} feels every morning waking up beside you.","Still grateful. Still chosen."],
-    ["{S_HE} said this section is the part of your story you're still writing together.","And {S_he} wouldn't want to write it with anyone else."],
-    ["And this final stretch — about choosing each other, again and again.","Happy Anniversary. 🥂 — from {S_NAME}, with everything."],
+    ["This song carries years of feeling in every note. 🥂","{S_NAME} chose it because anniversaries deserve more than words."],
+    ["This part is about growth.","They say: look how far you've come together."],
+    ["That line just now — that's how they feel every morning waking up beside you.","Still grateful. Still chosen."],
+    ["{S_NAME} says this section is the part of your story you're still writing together.","And they wouldn't want to write it with anyone else."],
+    ["And this final stretch — about choosing each other, again and again.","Happy anniversary, from {S_NAME}, with everything."],
   ],
   funny:[
-    ["{S_HE} picked THIS song. 😂 Of all the songs in the world.","You have to admit — it's kind of perfect."],
-    ["Still going 😂","{S_HE} was laughing while setting this up. {S_HE} knew exactly how you'd react."],
-    ["That lyric right there — {S_he} said that line is basically {S_his} life motto.","Make of that what you will. 😂"],
-    ["{S_HE} said this part is dedicated specifically to you.","No further explanation was given. 😂"],
-    ["THE FINALE 😂🎉 — {S_HE} said: if you're not laughing by now, {S_he}'s failed.","But {S_he} probably hasn't."],
+    ["{S_NAME} picked THIS song. 😂 Of all the songs in the world.","You have to admit — it's kind of perfect."],
+    ["Still going 😂","They were laughing while setting this up. They knew exactly how you'd react."],
+    ["That lyric right there — they say that line is basically their life motto.","Make of that what you will. 😂"],
+    ["{S_NAME} says this part is dedicated specifically to you.","No further explanation given. 😂"],
+    ["THE FINALE 😂 — They say if you're not laughing by now, they've failed.","But they probably haven't."],
   ],
   encouragement:[
-    ["This song was chosen to push you forward. 💪","{S_HE} believes in what you're capable of. Let the music remind you."],
-    ["This part is the climb.","{S_HE} said: when it gets hard, remember this exact feeling. Keep going."],
-    ["That lyric — {S_he} said it's the line {S_he} replays on {S_his} own hardest days.","Now {S_he} sends it to you."],
-    ["{S_HE} said this section sounds like everything you've already survived.","Look how far you've come."],
-    ["The peak of the song. 💪 — {S_HE} wants you to carry this energy.","You are more powerful than you know, {R_NAME}."],
+    ["This song was chosen to push you forward. 💪","{S_NAME} believes in what you're capable of. Let the music remind you."],
+    ["This part is the climb.","They say: when it gets hard, remember this exact feeling. Keep going."],
+    ["That lyric — they replay it on their own hardest days.","Now they send it to you."],
+    ["{S_NAME} says this section sounds like everything you've already survived.","Look how far you've come."],
+    ["The peak of the song. 💪 They want you to carry this energy.","You are more powerful than you know, {R_NAME}."],
   ],
   christmas:[
-    ["{S_HE} chose this to fill your Christmas with warmth from the very first note. 🎄"],
-    ["This part feels like firelight and family.","{S_HE} hopes you're somewhere warm and surrounded by love."],
-    ["That verse — {S_he} said it reminds {S_him} of the best Christmas memories {S_he} has with you."],
-    ["{S_HE} said this section sounds like the feeling of coming home.","And {S_he} hopes every Christmas feels like coming home for you."],
-    ["The final chime of the song. 🎄 Merry Christmas, {R_NAME} — with all {S_his} heart, from {S_NAME}."],
+    ["{S_NAME} chose this to fill your Christmas with warmth from the very first note. 🎄"],
+    ["This part feels like firelight and family.","They hope you're somewhere warm and surrounded by love."],
+    ["That verse — it reminds them of the best Christmas memories they have with you."],
+    ["{S_NAME} says this section sounds like the feeling of coming home.","May every Christmas feel like coming home for you."],
+    ["The final chime of the song. 🎄 Merry Christmas, {R_NAME} — with all their heart, from {S_NAME}."],
   ],
   eid:[
-    ["A blessed melody for a blessed occasion. 🌙","{S_HE} chose this to celebrate Eid with you across the distance."],
-    ["This part carries the spirit of gratitude.","{S_HE} is grateful for you — for your presence in {S_his} life. Eid Mubarak."],
-    ["That lyric — {S_he} said it captures exactly what {S_he} prays for you this Eid.","Peace. Health. Joy."],
-    ["{S_HE} said this part feels like the warmth of the celebration.","{S_HE} wishes {S_he} could share it with you in person."],
+    ["A blessed melody for a blessed occasion. 🌙","{S_NAME} chose this to celebrate Eid with you, even across the distance."],
+    ["This part carries the spirit of gratitude.","They are grateful for you — for your presence in their life. Eid Mubarak."],
+    ["That lyric captures exactly what they pray for you this Eid.","Peace. Health. Joy."],
+    ["{S_NAME} says this part feels like the warmth of the celebration.","They wish they could share it with you in person."],
     ["And in the final notes — a prayer for your peace, your family, your joy. 🌙 Eid Mubarak, {R_NAME}!"],
   ],
   condolence:[
-    ["{S_HE} chose this music gently and thoughtfully. 🕊️","There are no perfect words. But there is this."],
-    ["This section is calm.","{S_HE} hopes it brings even a small moment of peace to your heart."],
-    ["That quiet passage — {S_he} said it sounds like sitting beside someone in silence.","Sometimes that's all we can offer. And it's enough."],
-    ["{S_HE} said this part sounds like remembrance.","Soft. Tender. Real. 🕊️"],
-    ["And in the quiet of this final part — {S_NAME} is thinking of you.","You are not alone, {R_NAME}. You are not alone."],
+    ["{S_NAME} chose this music gently and thoughtfully. 🕊️","There are no perfect words. But there is this."],
+    ["This section is calm.","They hope it brings even a small moment of peace to your heart."],
+    ["That quiet passage — it sounds like sitting beside someone in silence.","Sometimes that's all we can offer. And it's enough."],
+    ["{S_NAME} says this part sounds like remembrance.","Soft. Tender. Real. 🕊️"],
+    ["And in the quiet of this final part — {S_NAME} is thinking of you.","You are not alone, {R_NAME}."],
   ],
   flirt:[
-    ["{S_HE} sent you THIS song. 😏 That already says a lot.","The sender is definitely nervous right now."],
-    ["That lyric — {S_he} said that line is basically {S_his} situation right now.","Interpret that however you like. 😏"],
-    ["This part is giving main character energy. 😏","{S_HE} said this song makes {S_him} think of you specifically. Only you."],
-    ["{S_HE} replayed this section three times before hitting send.","Three times, {R_NAME}. Think about that. 😏"],
+    ["{S_NAME} sent you THIS song. 😏 That already says a lot.","They're probably nervous right now."],
+    ["That lyric — they say that line is basically their situation right now.","Interpret that however you like. 😏"],
+    ["This part is giving main character energy. 😏","{S_NAME} says this song makes them think of you specifically. Only you."],
+    ["They replayed this section three times before hitting send.","Three times, {R_NAME}. Think about that. 😏"],
     ["The last bit of the song. 😏 — Your move.","{S_NAME} is waiting. 👀"],
   ],
 };
@@ -1549,7 +1549,7 @@ function initVideoExperience(payload, msgs, typing, onDone) {
   setTimeout(() => {
     typing.classList.remove('show');
     const introText = resolvePronouns(
-      '{S_NAME} attached a video for you. \uD83C\uDFAC<br><em>Playing it in five parts \u2014 with emotional notes after each one.</em>',
+      '{S_NAME} included a video for you. 🎬<br><em>We\'ll play it in five short parts, with some thoughts in between.</em>',
       payload
     );
     addBubble('ai', introText, msgs);
@@ -1617,13 +1617,13 @@ function playSegment(index, msgs, typing) {
 
 function createSegBubble(index, total) {
   const isLast = index === total-1;
-  const label  = isLast ? `Part ${index+1} of ${total} \u2014 Final segment` : `Part ${index+1} of ${total} \u2014 Playing now`;
+  const label  = isLast ? `Part ${index+1} of ${total} — Final segment` : `Part ${index+1} of ${total} — Playing now`;
   const dots   = Array.from({length:total},(_,i)=>`<div class="sdot ${i===index?'active':''}" id="sdot-${index}-${i}"></div>`).join('');
   const div = document.createElement('div');
   div.className = 'video-seg-bubble';
   div.innerHTML = `
     <div class="video-seg-header">
-      <div class="video-seg-icon">\uD83C\uDFAC</div>
+      <div class="video-seg-icon">🎬</div>
       <div class="video-seg-title">${label}</div>
       <div class="video-seg-badge">${index+1} / ${total}</div>
     </div>
@@ -1631,13 +1631,13 @@ function createSegBubble(index, total) {
     <div class="video-seg-frame-wrap">
       <iframe src="" allow="autoplay; encrypted-media" allowfullscreen playsinline title="Video part ${index+1}"></iframe>
       <div class="video-seg-veil">
-        <div class="veil-icon">\u23f8</div>
-        <div class="veil-text">Reading this moment...</div>
+        <div class="veil-icon">⏸️</div>
+        <div class="veil-text">Reflecting on this moment...</div>
       </div>
     </div>
     <div class="video-seg-footer">
       <div class="seg-progress">${dots}</div>
-      <button class="video-full-btn" onclick="watchFullVideoInBubble(this,'${ytVideoId}')">&#9654; Watch full</button>
+      <button class="video-full-btn" onclick="watchFullVideoInBubble(this,'${ytVideoId}')">▶ Watch full</button>
     </div>
   `;
   return div;
@@ -1669,14 +1669,14 @@ function showFinalLoop(payload) {
   setTimeout(() => {
     typing.classList.remove('show');
     const sName = payload.s || 'someone';
-    addBubble('ai', `That's the message. \uD83D\uDC8C<br><br>Now... ${sName} out there is waiting to know you received this.`, msgs);
+    addBubble('ai', `That's the whole message. 💌<br><br>Now... ${sName} is out there hoping you received this.`, msgs);
     msgs.scrollTop = msgs.scrollHeight;
     setTimeout(() => {
       typing.classList.add('show');
       msgs.scrollTop = msgs.scrollHeight;
       setTimeout(() => {
         typing.classList.remove('show');
-        const closingLine = `This message is from <strong>${payload.s||'your sender'}</strong>, delivered by <strong>VODDIC</strong>. \uD83D\uDC8C`;
+        const closingLine = `This message comes from <strong>${payload.s||'your sender'}</strong>, delivered through <strong>VODDIC</strong>. 💌`;
         addBubble('ai', closingLine, msgs);
         speakBold(`This message is from ${payload.s||'your sender'}, delivered by VODDIC.`);
         msgs.scrollTop = msgs.scrollHeight;
@@ -1712,28 +1712,28 @@ function speak(text) {
 }
 
 const BOOT_SEQUENCE = [
-  "Initializing SecretMsg engine v2.4...",
-  "Decrypting sender instructions...",
-  "Analyzing emotional context...",
-  "Scanning contact list...",
+  "Starting SecretMsg engine v2.4...",
+  "Decoding sender instructions...",
+  "Understanding emotional tone...",
+  "Looking through contact list...",
   "Matching recipient profile...",
-  "Message package located.",
-  "Preparing delivery sequence...",
+  "Message package found.",
+  "Preparing to deliver...",
 ];
 
 const POSTER_THEMES = {
-  love:          {bg:['#1a0010','#3a0020'],accent:'#ff4488',emoji:'\u2764\ufe0f'},
-  romantic:      {bg:['#1a0010','#2a0818'],accent:'#ff6699',emoji:'\uD83C\uDF39'},
-  birthday:      {bg:['#0a0a1a','#1a1040'],accent:'#ffd700',emoji:'\uD83C\uDF82'},
-  apology:       {bg:['#0a0a0a','#1a1a1a'],accent:'#aaaaff',emoji:'\uD83D\uDE4F'},
-  wedding:       {bg:['#0a0810','#1a1525'],accent:'#e0c0ff',emoji:'\uD83D\uDC8D'},
-  anniversary:   {bg:['#0a0808','#1a1010'],accent:'#ffa040',emoji:'\uD83E\uDD42'},
-  funny:         {bg:['#0a1800','#0f2800'],accent:'#aaff00',emoji:'\uD83D\uDE02'},
-  encouragement: {bg:['#0a0500','#1a0d00'],accent:'#ff8800',emoji:'\uD83D\uDCAA'},
-  christmas:     {bg:['#060a02','#0d1504'],accent:'#44ff44',emoji:'\uD83C\uDF84'},
-  eid:           {bg:['#02060a','#041020'],accent:'#44aaff',emoji:'\uD83C\uDF19'},
-  condolence:    {bg:['#060606','#0f0f0f'],accent:'#aaaaaa',emoji:'\uD83D\uDD4A\uFE0F'},
-  flirt:         {bg:['#0a0008','#1a0018'],accent:'#ff44cc',emoji:'\uD83D\uDE0F'},
+  love:          {bg:['#1a0010','#3a0020'],accent:'#ff4488',emoji:'❤️'},
+  romantic:      {bg:['#1a0010','#2a0818'],accent:'#ff6699',emoji:'🌹'},
+  birthday:      {bg:['#0a0a1a','#1a1040'],accent:'#ffd700',emoji:'🎂'},
+  apology:       {bg:['#0a0a0a','#1a1a1a'],accent:'#aaaaff',emoji:'🙏'},
+  wedding:       {bg:['#0a0810','#1a1525'],accent:'#e0c0ff',emoji:'💍'},
+  anniversary:   {bg:['#0a0808','#1a1010'],accent:'#ffa040',emoji:'🥂'},
+  funny:         {bg:['#0a1800','#0f2800'],accent:'#aaff00',emoji:'😂'},
+  encouragement: {bg:['#0a0500','#1a0d00'],accent:'#ff8800',emoji:'💪'},
+  christmas:     {bg:['#060a02','#0d1504'],accent:'#44ff44',emoji:'🎄'},
+  eid:           {bg:['#02060a','#041020'],accent:'#44aaff',emoji:'🌙'},
+  condolence:    {bg:['#060606','#0f0f0f'],accent:'#aaaaaa',emoji:'🕊️'},
+  flirt:         {bg:['#0a0008','#1a0018'],accent:'#ff44cc',emoji:'😏'},
 };
 
 // ===================== STATE =====================
@@ -1799,7 +1799,7 @@ function copyLink() {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(url).then(()=>{
       const el = document.getElementById('share-link-display');
-      el.textContent = '\u2713 Copied!';
+      el.textContent = '✓ Copied!';
       setTimeout(()=>el.textContent=url, 2000);
     });
   } else {
@@ -1810,13 +1810,13 @@ function copyLink() {
 }
 
 function renderShareButtons(url, container) {
-  const shareText  = encodeURIComponent("I saw a name in my contacts inside this message \uD83D\uDC40 Check if it's you:");
+  const shareText  = encodeURIComponent("I saw a name in my contacts inside this message 👀 Check if it's you:");
   const encodedUrl = encodeURIComponent(url);
   const btns = [
-    {label:'\uD83D\uDCAC WhatsApp', href:`https://wa.me/?text=${shareText}%20${encodedUrl}`},
-    {label:'\uD83D\uDCD8 Facebook', href:`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`},
-    {label:'\u2708\uFE0F Telegram', href:`https://t.me/share/url?url=${encodedUrl}&text=${shareText}`},
-    {label:'\uD83D\uDC26 Twitter',  href:`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`},
+    {label:'💬 WhatsApp', href:`https://wa.me/?text=${shareText}%20${encodedUrl}`},
+    {label:'📘 Facebook', href:`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`},
+    {label:'✈️ Telegram', href:`https://t.me/share/url?url=${encodedUrl}&text=${shareText}`},
+    {label:'🐦 Twitter',  href:`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`},
   ];
   container.innerHTML = btns.map(b=>`<a class="share-social-btn" href="${b.href}" target="_blank" rel="noopener">${b.label}</a>`).join('');
 }
@@ -1832,7 +1832,7 @@ function renderPoster(url, payload) {
   ctx.strokeRect(12,12,W-24,H-24); ctx.globalAlpha=1;
   ctx.font='60px serif'; ctx.textAlign='center'; ctx.fillText(theme.emoji,W/2,90);
   ctx.fillStyle='#ffffff'; ctx.font='bold 22px serif'; ctx.fillText('Someone left you a',W/2,140);
-  ctx.fillStyle=theme.accent; ctx.font='bold italic 26px serif'; ctx.fillText('secret message \uD83D\uDC40',W/2,172);
+  ctx.fillStyle=theme.accent; ctx.font='bold italic 26px serif'; ctx.fillText('secret message 👀',W/2,172);
   ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font='14px monospace'; ctx.fillText('Scan the QR code to reveal it',W/2,200);
   const qrDiv=document.createElement('div'); qrDiv.style.position='absolute'; qrDiv.style.left='-9999px';
   document.body.appendChild(qrDiv);
@@ -1854,7 +1854,7 @@ function renderPoster(url, payload) {
 
 function drawPosterFooter(ctx,W,H,payload,theme){
   ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='11px monospace'; ctx.textAlign='center';
-  ctx.fillText('Delivered by VODDIC  \u00b7  secretmsg.ai',W/2,H-24);
+  ctx.fillText('Delivered by VODDIC  ·  secretmsg.ai',W/2,H-24);
   if(payload.r){ctx.fillStyle=theme.accent;ctx.font='italic 13px serif';ctx.fillText(`For: ${payload.r}`,W/2,H-48);}
 }
 
@@ -1919,7 +1919,7 @@ function verifyName(){
   const expected=(window._verifyPayload?.r||'').toLowerCase();
   const result=document.getElementById('verify-result');
   if(expected&&entered&&entered===expected){
-    result.textContent=`\u2713 Yes... this message was prepared for you, ${window._verifyPayload.r}.`;
+    result.textContent=`✓ Yes... this message was prepared for you, ${window._verifyPayload.r}.`;
     result.className='verify-result match';
   } else {
     result.textContent=`This message might not be for you.\n\nBut ${window._verifyPayload?.s||'the sender'} still thinks you are a wonderful person.`;
@@ -1938,7 +1938,7 @@ function showChat(payload){
   const typing=document.getElementById('typing-indicator');
   msgs.innerHTML=''; msgs.appendChild(typing);
 
-  document.getElementById('chat-avatar').textContent=POSTER_THEMES[payload.e]?.emoji||'\uD83E\uDD16';
+  document.getElementById('chat-avatar').textContent=POSTER_THEMES[payload.e]?.emoji||'🤖';
 
   const templates=TEMPLATES[payload.e]||TEMPLATES.love;
   const template=templates[Math.floor(Math.random()*templates.length)];
@@ -1978,7 +1978,7 @@ function addBubble(type, text, container){
   bubble.innerHTML=text+`<span class="bubble-time">${getTime()}</span>`;
   if(type==='ai'){
     const ttsBtn=document.createElement('button');
-    ttsBtn.className='tts-btn'; ttsBtn.textContent='\uD83D\uDD0A Read aloud';
+    ttsBtn.className='tts-btn'; ttsBtn.textContent='🔊 Read aloud';
     ttsBtn.onclick=()=>speakBold(text.replace(/<[^>]+>/g,'').replace(/"/g,''));
     bubble.appendChild(ttsBtn);
   }
