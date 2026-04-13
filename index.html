@@ -1,232 +1,2058 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SecretQR — Send Viral Secret Messages via QR Code</title>
-  <meta name="description" content="Create secret messages that reveal themselves dramatically. Share via QR code on WhatsApp, TikTok, Instagram and more.">
-  <meta property="og:title" content="Someone left you a secret message 👀">
-  <meta property="og:description" content="Scan to reveal a secret message made just for you.">
-  <meta property="og:type" content="website">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecretMsg — Someone left you a message 👀</title>
+<meta property="og:title" content="Someone sent you a secret message 👀">
+<meta property="og:description" content="Scan or open to reveal who's thinking about you...">
+<meta property="og:image" content="https://via.placeholder.com/400x200/1a0a00/ffa500?text=Secret+Message">
 
-  <!-- Google Analytics — replace G-XXXXXXXXXX with your ID -->
-  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX');
-  </script> -->
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
-  <!-- QR Code Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- QR Code library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+/* ===================== RESET & VARIABLES ===================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d0806;
+  --surface: #1a1008;
+  --surface2: #231610;
+  --border: #3a2010;
+  --gold: #e8a020;
+  --gold-dim: #7a4a10;
+  --amber: #ff7a20;
+  --cream: #f5e8d0;
+  --text: #d4b896;
+  --text-dim: #7a5a3a;
+  --chat-bg: #0f1a12;
+  --bubble-ai: #1e2d20;
+  --bubble-user: #1a2d1a;
+  --green: #4caf50;
+  --font-mono: 'Space Mono', monospace;
+  --font-serif: 'Lora', serif;
+  --radius: 14px;
+  --glow: 0 0 20px rgba(232,160,32,0.3);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-serif);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===================== GRAIN OVERLAY ===================== */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999; opacity: 0.4;
+}
+
+/* ===================== SECTIONS ===================== */
+.page { display: none; min-height: 100vh; }
+.page.active { display: flex; flex-direction: column; }
+
+/* ===================== HOMEPAGE ===================== */
+#home-page {
+  padding: 0;
+  background: radial-gradient(ellipse at 20% 0%, #2a1505 0%, var(--bg) 60%);
+}
+
+.home-header {
+  text-align: center;
+  padding: 48px 24px 32px;
+  position: relative;
+}
+
+.home-header::after {
+  content: '';
+  display: block;
+  width: 60px; height: 2px;
+  background: var(--gold);
+  margin: 20px auto 0;
+}
+
+.site-logo {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.home-title {
+  font-size: clamp(28px, 6vw, 48px);
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.home-title span {
+  color: var(--gold);
+  font-style: normal;
+}
+
+.home-subtitle {
+  font-size: 14px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+}
+
+/* ===================== FORM ===================== */
+.form-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+  width: 100%;
+}
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.form-section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.form-group { margin-bottom: 18px; }
+
+label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+input, textarea, select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--cream);
+  font-family: var(--font-serif);
+  font-size: 15px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(232,160,32,0.12);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 90px;
+  font-style: italic;
+}
+
+select option { background: #1a1008; }
+
+/* Emotion grid */
+.emotion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.emotion-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 4px;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+
+.emotion-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+.emotion-btn.selected { border-color: var(--gold); color: var(--gold); background: rgba(232,160,32,0.08); }
+.emotion-btn .emo-icon { font-size: 20px; }
+
+/* Generate button */
+.generate-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--gold);
+  color: #0d0806;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.generate-btn:hover {
+  background: var(--amber);
+  box-shadow: var(--glow);
+  transform: translateY(-1px);
+}
+
+.generate-btn:active { transform: translateY(0); }
+
+/* Ad slot */
+.ad-slot {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin: 16px 0;
+}
+
+/* ===================== MANDATORY AD MODAL ===================== */
+#ad-modal {
+  position: fixed; inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.ad-modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(6px);
+}
+
+.ad-modal-box {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: #0d0d0d;
+  border-top: 2px solid var(--gold);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  animation: slideUp 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.ad-modal-header {
+  padding: 16px 20px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ad-modal-logo {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  flex-shrink: 0;
+}
+
+.ad-modal-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+
+/* 16:9 video */
+.ad-modal-video-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  background: #000;
+}
+
+.ad-modal-video-wrap iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+
+.ad-video-shimmer {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.5s;
+}
+
+.ad-video-shimmer.hide { opacity: 0; pointer-events: none; }
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.ad-modal-footer {
+  padding: 14px 20px 20px;
+}
+
+.ad-progress-bar-track {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.ad-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+
+.ad-modal-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ad-countdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  flex: 1;
+  min-width: 0;
+}
+
+.ad-countdown strong {
+  color: var(--gold);
+}
+
+.ad-skip-btn {
+  padding: 10px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: not-allowed;
+  transition: all 0.3s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ad-skip-btn:not(:disabled) {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #0d0806;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: var(--glow);
+}
+
+.ad-skip-btn:not(:disabled):hover {
+  background: var(--amber);
+}
+
+.ad-disclaimer {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  opacity: 0.5;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* ===================== INLINE VIDEO BUBBLE (dynamic, per-segment) ===================== */
+.video-seg-bubble {
+  align-self: flex-start;
+  width: calc(100% - 0px);
+  max-width: 100%;
+  margin: 8px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(232,160,32,0.35);
+  background: #000;
+  box-shadow: 0 4px 28px rgba(0,0,0,0.7);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.video-seg-bubble.in { opacity: 1; transform: translateY(0); }
+
+.video-seg-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(232,160,32,0.1);
+  border-bottom: 1px solid rgba(232,160,32,0.2);
+}
+
+.video-seg-icon { font-size: 16px; flex-shrink: 0; }
+
+.video-seg-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 1px;
+  flex: 1;
+}
+
+.video-seg-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  background: rgba(232,160,32,0.15);
+  color: var(--gold);
+  border: 1px solid rgba(232,160,32,0.35);
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+.video-seg-frame-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  background: #000;
+}
+
+.video-seg-frame-wrap iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+
+/* Paused veil — shown while commentary plays after segment */
+.video-seg-veil {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+
+.video-seg-veil.show { opacity: 1; }
+
+.veil-icon { font-size: 28px; }
+.veil-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 1px;
+}
+
+.video-seg-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: rgba(0,0,0,0.5);
+  border-top: 1px solid rgba(232,160,32,0.12);
+}
+
+.seg-progress {
+  display: flex; gap: 6px; align-items: center;
+}
+
+.sdot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.3s;
+}
+
+.sdot.done { background: var(--gold); }
+.sdot.active { background: var(--amber); box-shadow: 0 0 5px var(--amber); animation: dotPulse 1s infinite; }
+
+.video-full-btn {
+  background: transparent;
+  border: 1px solid rgba(232,160,32,0.35);
+  border-radius: 20px;
+  padding: 4px 12px;
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, background 0.2s;
+}
+
+.video-full-btn.show { opacity: 1; pointer-events: all; }
+.video-full-btn:hover { background: rgba(232,160,32,0.1); }
+
+/* playing countdown bar inside each segment bubble */
+.seg-play-bar-track {
+  height: 2px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+
+.seg-play-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--gold);
+  transition: width linear;
+}
+
+/* ===================== SHARE PAGE ===================== */
+#share-page {
+  background: radial-gradient(ellipse at 80% 100%, #1a0a05 0%, var(--bg) 60%);
+  padding: 32px 20px 48px;
+  align-items: center;
+}
+
+.share-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.share-header h2 {
+  font-size: 22px;
+  font-style: italic;
+  color: var(--cream);
+  margin-bottom: 6px;
+}
+
+.share-header p {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.share-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 440px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.share-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+/* Link box */
+.link-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  word-break: break-all;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.link-box:hover { border-color: var(--gold); }
+
+.copy-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 20px;
+}
+
+.copy-btn:hover { background: rgba(232,160,32,0.1); }
+
+/* Poster */
+#poster-canvas-wrap {
+  margin: 0 auto 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#poster-canvas {
+  border-radius: 12px;
+  max-width: 100%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+
+.download-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--gold);
+  color: #0d0806;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.download-btn:hover { background: var(--amber); }
+
+/* Social share */
+.share-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.share-social-btn {
+  padding: 12px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.share-social-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.back-btn {
+  margin-top: 20px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 8px;
+}
+
+/* ===================== REVEAL PAGE ===================== */
+#reveal-page {
+  background: var(--bg);
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Boot sequence */
+#boot-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px 28px;
+  background: #000;
+  font-family: var(--font-mono);
+}
+
+.boot-line {
+  font-size: 13px;
+  color: #00e640;
+  margin-bottom: 6px;
+  opacity: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.boot-line.shown { opacity: 1; }
+
+.boot-cursor {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: #00e640;
+  margin-left: 4px;
+  animation: blink 0.8s infinite;
+  vertical-align: middle;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.boot-thinking {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gold);
+  margin-top: 20px;
+  display: none;
+}
+
+.boot-thinking.show { display: block; }
+
+/* Name verify */
+#name-verify-screen {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 24px;
+  text-align: center;
+  background: linear-gradient(180deg, #000 0%, var(--bg) 100%);
+}
+
+.verify-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  max-width: 360px;
+  width: 100%;
+  position: relative;
+}
+
+.verify-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.verify-ai-icon {
+  width: 64px; height: 64px;
+  background: radial-gradient(circle, #2a2a00, #0d0806);
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 20px;
+  box-shadow: var(--glow);
+}
+
+.verify-text {
+  font-style: italic;
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+
+.verify-input {
+  margin-bottom: 14px;
+}
+
+.verify-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: #0d0806;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.verify-btn:hover { background: var(--amber); }
+
+.verify-result {
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  display: none;
+}
+
+.verify-result.match {
+  background: rgba(76,175,80,0.15);
+  border: 1px solid rgba(76,175,80,0.4);
+  color: #4caf50;
+  display: block;
+}
+
+.verify-result.no-match {
+  background: rgba(232,160,32,0.1);
+  border: 1px solid rgba(232,160,32,0.3);
+  color: var(--gold);
+  display: block;
+}
+
+/* ===================== CHAT UI ===================== */
+#chat-screen {
+  display: none;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--chat-bg);
+}
+
+.chat-header {
+  background: #1a2d1a;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(76,175,80,0.2);
+  position: sticky; top: 0; z-index: 10;
+}
+
+.chat-avatar {
+  width: 42px; height: 42px;
+  background: radial-gradient(circle, #2a3a2a, #1a2d1a);
+  border: 2px solid var(--green);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.chat-avatar-info h3 {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #e8f5e8;
+  font-weight: 700;
+}
+
+.chat-avatar-info p {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--green);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.bubble {
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  font-style: italic;
+  position: relative;
+}
+
+.bubble.ai {
+  background: var(--bubble-ai);
+  color: #c8e6c8;
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+  border: 1px solid rgba(76,175,80,0.15);
+}
+
+.bubble.ai::before {
+  content: '';
+  position: absolute; left: -8px; bottom: 0;
+  border: 8px solid transparent;
+  border-right-color: var(--bubble-ai);
+  border-bottom-color: var(--bubble-ai);
+}
+
+.bubble.user {
+  background: #1a2d3a;
+  color: #c8dce8;
+  border-bottom-right-radius: 4px;
+  align-self: flex-end;
+  border: 1px solid rgba(100,160,200,0.15);
+}
+
+.bubble-time {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: rgba(255,255,255,0.3);
+  margin-top: 4px;
+  display: block;
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 16px;
+  background: var(--bubble-ai);
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+  display: none;
+}
+
+.typing-indicator.show { display: flex; }
+
+.typing-dot {
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: typingBounce 1.2s infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%,80%,100%{transform:scale(0.8);opacity:0.5}
+  40%{transform:scale(1.2);opacity:1}
+}
+
+/* Chat footer */
+.chat-footer {
+  padding: 20px 16px;
+  text-align: center;
+  border-top: 1px solid rgba(76,175,80,0.1);
+  background: var(--chat-bg);
+}
+
+.chat-footer-ad { margin-bottom: 16px; }
+
+.create-own-btn {
+  display: inline-block;
+  padding: 14px 32px;
+  background: var(--gold);
+  color: #0d0806;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.create-own-btn:hover { background: var(--amber); box-shadow: var(--glow); }
+
+.chat-share-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* TTS button */
+.tts-btn {
+  background: transparent;
+  border: 1px solid rgba(76,175,80,0.3);
+  border-radius: 20px;
+  padding: 4px 10px;
+  color: var(--green);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 6px;
+}
+
+.tts-btn:hover { background: rgba(76,175,80,0.1); }
+
+/* ===================== SCROLL ANIMATION ===================== */
+.bubble { opacity: 0; transform: translateY(10px); transition: opacity 0.4s, transform 0.4s; }
+.bubble.in { opacity: 1; transform: translateY(0); }
+
+/* ===================== UTILS ===================== */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+
+/* QR container for generation */
+#qr-hidden-gen { position: absolute; left: -9999px; top: -9999px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 400px) {
+  .emotion-grid { grid-template-columns: repeat(3, 1fr); }
+  .form-card { padding: 20px 16px; }
+  .emotion-btn .emo-icon { font-size: 18px; }
+}
+</style>
 </head>
 <body>
 
-<!-- ══════════════════════════════
-     MAIN PAGE
-══════════════════════════════ -->
-<div id="main-page">
+<!-- ===================== HOME PAGE ===================== -->
+<div id="home-page" class="page active">
+  <div class="home-header">
+    <div class="site-logo">⬡ SecretMsg AI</div>
+    <h1 class="home-title">Send a <span>secret message</span><br>they'll never forget.</h1>
+    <p class="home-subtitle">// anonymous · emotional · viral</p>
+  </div>
 
-  <!-- NAV -->
-  <nav>
-    <div class="nav-logo">Secret<span>QR</span> 🤫</div>
-    <button class="nav-cta" onclick="openCreateModal()">+ Create Message</button>
-  </nav>
-
-  <!-- AD: TOP BANNER -->
-  <div style="max-width:1200px;margin:0 auto;padding:0 24px">
+  <!-- Ad slot top -->
+  <div class="form-container">
     <div class="ad-slot">
-      <!-- Google AdSense / Adsterra / PropellerAds top banner -->
-      <span>Advertisement — Top Banner</span>
+      <!-- Google AdSense / Adsterra / PropellerAds — place script here -->
+      [ AD SPACE — 320×50 banner ]
+    </div>
+
+    <div class="form-card">
+      <div class="form-section-label">// Compose Message</div>
+
+      <div class="form-group">
+        <label>Recipient Name <span style="color:var(--text-dim)">(optional)</span></label>
+        <input type="text" id="recipient-name" placeholder="e.g. Sarah..." autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="sender-name" placeholder="e.g. A secret admirer..." autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label>Your Message</label>
+        <textarea id="message-text" placeholder="Write one sentence — the AI will turn it into something unforgettable..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>YouTube Video URL <span style="color:var(--text-dim)">(optional — paste any YouTube link)</span></label>
+        <input type="url" id="music-url" placeholder="https://youtube.com/watch?v=...">
+      </div>
+
+      <div class="form-section-label" style="margin-top:4px;">// Choose Emotion</div>
+
+      <div class="emotion-grid" id="emotion-grid">
+        <button class="emotion-btn selected" data-emotion="love"><span class="emo-icon">❤️</span>Love</button>
+        <button class="emotion-btn" data-emotion="romantic"><span class="emo-icon">🌹</span>Romantic</button>
+        <button class="emotion-btn" data-emotion="birthday"><span class="emo-icon">🎂</span>Birthday</button>
+        <button class="emotion-btn" data-emotion="apology"><span class="emo-icon">🙏</span>Apology</button>
+        <button class="emotion-btn" data-emotion="wedding"><span class="emo-icon">💍</span>Wedding</button>
+        <button class="emotion-btn" data-emotion="anniversary"><span class="emo-icon">🥂</span>Anniversary</button>
+        <button class="emotion-btn" data-emotion="funny"><span class="emo-icon">😂</span>Funny</button>
+        <button class="emotion-btn" data-emotion="encouragement"><span class="emo-icon">💪</span>Courage</button>
+        <button class="emotion-btn" data-emotion="christmas"><span class="emo-icon">🎄</span>Christmas</button>
+        <button class="emotion-btn" data-emotion="eid"><span class="emo-icon">🌙</span>Eid</button>
+        <button class="emotion-btn" data-emotion="condolence"><span class="emo-icon">🕊️</span>Condolence</button>
+        <button class="emotion-btn" data-emotion="flirt"><span class="emo-icon">😏</span>Flirt</button>
+      </div>
+
+      <!-- Ad before generate -->
+      <div class="ad-slot">
+        <!-- PropellerAds / Adsterra interstitial trigger point -->
+        [ AD SPACE — 300×250 ]
+      </div>
+
+      <button class="generate-btn" onclick="showAdThenDo('create')">✦ Generate Secret Message</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SHARE PAGE ===================== -->
+<div id="share-page" class="page">
+  <div class="share-header">
+    <h2>Your secret is ready ✦</h2>
+    <p>// share the link or poster below</p>
+  </div>
+
+  <div class="share-card">
+    <!-- Ad slot -->
+    <div class="ad-slot" style="margin-bottom:20px;">
+      [ AD SPACE — 300×250 ]
+    </div>
+
+    <div class="form-section-label">// Shareable Link</div>
+    <div class="link-box" id="share-link-display" onclick="copyLink()">Tap to copy link...</div>
+    <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
+
+    <div class="form-section-label">// QR Poster</div>
+    <div id="poster-canvas-wrap">
+      <canvas id="poster-canvas" width="400" height="480"></canvas>
+      <div id="qr-hidden-gen"></div>
+      <button class="download-btn" onclick="downloadPoster()">⬇ Download Poster</button>
+    </div>
+
+    <div class="form-section-label">// Share On</div>
+    <div class="share-btns" id="share-btns"></div>
+
+    <button class="back-btn" onclick="showPage('home-page')">← Make another</button>
+  </div>
+</div>
+
+<!-- ===================== REVEAL PAGE ===================== -->
+<div id="reveal-page" class="page">
+
+  <!-- Boot screen -->
+  <div id="boot-screen">
+    <div id="boot-lines"></div>
+    <div class="boot-thinking" id="boot-thinking">
+      <span class="boot-cursor"></span> AI is thinking...
     </div>
   </div>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-glow"></div>
-    <div class="hero-glow2"></div>
-    <div class="hero-content">
-      <div class="hero-badge">🔥 Going viral on WhatsApp &amp; TikTok</div>
-      <h1>Someone left you a<br><em>secret message</em> 👀</h1>
-      <p class="hero-sub">Create a mysterious QR code that reveals your message in a dramatic AI-style chat. Share it on WhatsApp, TikTok, Instagram &amp; more.</p>
-      <div class="hero-actions">
-        <button class="btn-primary" onclick="openCreateModal()">✨ Create a Secret Message</button>
-        <button class="btn-secondary" onclick="document.getElementById('templates-section').scrollIntoView({behavior:'smooth'})">Browse Templates →</button>
+  <!-- Name verify -->
+  <div id="name-verify-screen">
+    <div class="verify-card">
+      <div class="verify-ai-icon">🤖</div>
+      <p class="verify-text" id="verify-intro-text">
+        I detected a possible match<br>in the sender's contact list.<br><br>
+        <em>Type your name to confirm.</em>
+      </p>
+      <div class="verify-input">
+        <input type="text" id="verify-name-input" placeholder="Your name..." autocomplete="off">
       </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section>
-    <h2 class="section-title">How It <span>Works</span></h2>
-    <p class="section-sub">Three steps to send a viral secret message</p>
-    <div class="steps">
-      <div class="step fade-up">
-        <div class="step-num">1</div>
-        <h3>Pick a Template</h3>
-        <p>Choose from dozens of categories — birthday, love, flirts, pranks and more.</p>
-      </div>
-      <div class="step fade-up">
-        <div class="step-num">2</div>
-        <h3>Generate QR Code</h3>
-        <p>A beautiful shareable QR poster is created instantly with your secret inside.</p>
-      </div>
-      <div class="step fade-up">
-        <div class="step-num">3</div>
-        <h3>Share &amp; Go Viral</h3>
-        <p>Share the poster on WhatsApp, TikTok, Instagram. Watch the reactions come in.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- TRENDING -->
-  <section>
-    <h2 class="section-title">Trending <span>Today 🔥</span></h2>
-    <p class="section-sub">The most shared secret messages right now</p>
-    <div class="trending-grid" id="trending-grid"></div>
-  </section>
-
-  <!-- AD: MID PAGE -->
-  <div style="max-width:1200px;margin:0 auto;padding:0 24px">
-    <div class="ad-slot">
-      <!-- Ad between template rows -->
-      <span>Advertisement — Mid Page</span>
+      <button class="verify-btn" onclick="verifyName()">Confirm Identity →</button>
+      <div class="verify-result" id="verify-result"></div>
     </div>
   </div>
 
-  <!-- TEMPLATES -->
-  <section id="templates-section">
-    <h2 class="section-title">Message <span>Templates</span></h2>
-    <p class="section-sub">Pick a template and create your viral QR message in seconds</p>
-    <div class="category-tabs" id="category-tabs"></div>
-    <div class="template-grid" id="template-grid"></div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <p>Made with ❤️ by <strong>SecretQR</strong> — Share secrets. Go viral.</p>
-    <p style="margin-top:8px"><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Contact</a></p>
-  </footer>
-
-</div><!-- /main-page -->
-
-
-<!-- ══════════════════════════════
-     CHAT REVEAL PAGE
-══════════════════════════════ -->
-<div id="chat-page">
-  <div class="chat-header">
-    <div class="chat-avatar">🤫</div>
-    <div class="chat-header-info">
-      <h3>SecretQR Bot</h3>
-      <span>● Online — Unlocking your message</span>
-    </div>
-  </div>
-  <div class="chat-body" id="chat-body"></div>
-  <div style="width:100%;background:var(--bg2);border-top:1px solid var(--border);padding:16px 24px;">
-    <div style="display:flex;gap:12px;align-items:center;max-width:640px;margin:0 auto;">
-      <input
-        type="text"
-        class="chat-input"
-        id="chat-input"
-        placeholder="Type your name to unlock..."
-        disabled
-        autocomplete="off"
-      >
-      <button class="chat-send" id="chat-send">➤</button>
-    </div>
-  </div>
-</div><!-- /chat-page -->
-
-
-<!-- ══════════════════════════════
-     CREATE MESSAGE MODAL
-══════════════════════════════ -->
-<div class="modal-overlay" id="create-modal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('create-modal')">✕</button>
-
-    <!-- STEP 1: Configure -->
-    <div id="create-modal-step1">
-      <h2>Create Your Secret Message 🤫</h2>
-      <p class="modal-sub">Fill in the details below to generate your viral QR code.</p>
-
-      <div class="field-group">
-        <label>Choose a Template</label>
-        <select id="create-template-select">
-          <option value="">Loading templates...</option>
-        </select>
+  <!-- Chat screen -->
+  <div id="chat-screen">
+    <div class="chat-header">
+      <div class="chat-avatar" id="chat-avatar">🤖</div>
+      <div class="chat-avatar-info">
+        <h3>SecretMsg AI</h3>
+        <p id="chat-status">● online</p>
       </div>
-
-      <div class="field-group">
-        <label>Recipient's Name (optional)</label>
-        <input type="text" id="recipient-name" placeholder="e.g. Sarah — leave blank for anyone">
-      </div>
-
-      <div class="field-group">
-        <label>Your Name / Alias (optional)</label>
-        <input type="text" id="sender-name" placeholder="e.g. Your Secret Admirer">
-      </div>
-
-      <div class="field-group">
-        <label>Choose a Viral Heading 👇</label>
-        <p style="font-size:.82rem;color:var(--text2);margin-bottom:10px">This text will appear when you share the QR poster.</p>
-        <div class="heading-options" id="heading-options"></div>
-      </div>
-
-      <button class="btn-primary" style="width:100%" onclick="generateLink()">Generate QR Code →</button>
     </div>
 
-    <!-- STEP 2: QR + Share -->
-    <div id="create-modal-step2" class="hidden">
-      <h2>Your QR Code is Ready! 🎉</h2>
-      <p class="modal-sub">Download the poster or share the link directly.</p>
-
-      <!-- Poster Theme Picker -->
-      <label>Choose a Poster Theme</label>
-      <div class="poster-themes">
-        <button class="poster-theme-btn selected" onclick="selectPosterTheme('romantic',this)"><span>❤️</span>Romantic</button>
-        <button class="poster-theme-btn" onclick="selectPosterTheme('birthday',this)"><span>🎂</span>Birthday</button>
-        <button class="poster-theme-btn" onclick="selectPosterTheme('funny',this)"><span>😂</span>Funny</button>
-        <button class="poster-theme-btn" onclick="selectPosterTheme('wedding',this)"><span>💍</span>Wedding</button>
-        <button class="poster-theme-btn" onclick="selectPosterTheme('christmas',this)"><span>🎄</span>Xmas</button>
+    <div class="chat-messages" id="chat-messages">
+      <div class="typing-indicator" id="typing-indicator">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
       </div>
+    </div>
 
-      <!-- Poster Preview Canvas -->
-      <canvas id="poster-canvas" style="width:100%;border-radius:12px;display:block;margin-bottom:12px;border:1px solid var(--border)"></canvas>
-
-      <!-- Hidden QR (used by canvas) -->
-      <div id="qrcode" style="position:absolute;opacity:0;pointer-events:none"></div>
-
-      <button class="btn-primary" style="width:100%;margin-bottom:12px" onclick="downloadPoster()">⬇️ Download Poster (1080×1080)</button>
-
-      <label>Your Share Link</label>
-      <input type="text" id="generated-link" readonly style="font-size:.8rem;cursor:pointer" onclick="this.select()">
-
-      <div id="share-buttons" class="share-buttons"></div>
-
-      <button class="btn-secondary" style="width:100%;margin-top:16px" onclick="document.getElementById('create-modal-step1').classList.remove('hidden');document.getElementById('create-modal-step2').classList.add('hidden')">← Edit Message</button>
+    <div class="chat-footer">
+      <div class="ad-slot chat-footer-ad">
+        <!-- Ad after message reveal -->
+        [ AD SPACE — 320×50 ]
+      </div>
+      <a href="#" class="create-own-btn" onclick="showPage('home-page');return false;">✦ Create Your Own Secret Message</a>
+      <div class="chat-share-btns" id="chat-share-btns"></div>
     </div>
   </div>
-</div><!-- /create-modal -->
+</div>
 
+<!-- Hidden QR generator -->
+<div id="qr-hidden-gen" style="position:absolute;left:-9999px;top:-9999px;"></div>
 
-<!-- ══════════════════════════════
-     PREVIEW MODAL
-══════════════════════════════ -->
-<div class="modal-overlay" id="preview-modal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('preview-modal')">✕</button>
-    <h2 id="preview-title">Preview</h2>
-    <p class="modal-sub">This is how the message will reveal itself to the recipient.</p>
-    <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px" id="preview-messages"></div>
-    <button class="btn-primary" style="width:100%;margin-top:24px" onclick="closeModal('preview-modal');openQRFlow(selectedTemplate?.id)">Use This Template →</button>
+<!-- ===================== MANDATORY AD MODAL ===================== -->
+<div id="ad-modal" style="display:none">
+  <div class="ad-modal-backdrop"></div>
+  <div class="ad-modal-box">
+    <div class="ad-modal-header">
+      <div class="ad-modal-logo">⬡ SecretMsg AI</div>
+      <div class="ad-modal-title" id="ad-modal-title">Watch this short video to continue</div>
+    </div>
+
+    <div class="ad-modal-video-wrap">
+      <iframe id="ad-yt-iframe"
+        src=""
+        allow="autoplay; encrypted-media; fullscreen"
+        allowfullscreen
+        title="Ad video">
+      </iframe>
+      <!-- Shimmer while loading -->
+      <div class="ad-video-shimmer" id="ad-video-shimmer"></div>
+    </div>
+
+    <div class="ad-modal-footer">
+      <div class="ad-progress-bar-track">
+        <div class="ad-progress-bar-fill" id="ad-progress-fill"></div>
+      </div>
+      <div class="ad-modal-bottom">
+        <div class="ad-countdown" id="ad-countdown">
+          <span id="ad-countdown-icon">⏳</span>
+          <span id="ad-countdown-text">Watch to unlock — <strong id="ad-secs">30</strong>s remaining</span>
+        </div>
+        <button class="ad-skip-btn" id="ad-skip-btn" onclick="skipAd()" disabled>
+          Continue →
+        </button>
+      </div>
+      <div class="ad-disclaimer">Powered by SecretMsg · Ad supports free messaging</div>
+    </div>
   </div>
-</div><!-- /preview-modal -->
+</div>
+
+<script>
+// ===================== EMOTION TEMPLATES =====================
+const TEMPLATES = {
+  love: [
+    ["Hey...", "Someone asked me to deliver something to you.", "They weren't sure how to say it directly.", "But they asked me to pass along this message:", '"{MSG}"', "They said they hope you still think about them too."],
+    ["I was given a secret mission tonight.", "To find you. And to tell you something important.", "The person who sent this message has been holding this inside for too long.", '"{MSG}"', "That's it. That's all they wanted you to know."],
+    ["Someone out there is thinking about you right now.", "They couldn't sleep. They wrote this instead:", '"{MSG}"', "I hope it reaches your heart the way they intended."],
+  ],
+  romantic: [
+    ["Close your eyes for a second.", "Now open them.", "The person who sent this wants you to know:", '"{MSG}"', "They said every time they see you, the room gets a little warmer."],
+    ["This message was composed at night.", "When the city is quiet and hearts speak louder.", '"{MSG}"', "The sender hopes you smile when you read this."],
+    ["Romance isn't always grand gestures.", "Sometimes it's a quiet message sent in the dark.", '"{MSG}"'],
+  ],
+  birthday: [
+    ["Today is your day. ✨", "Someone very special made sure I delivered this:", '"{MSG}"', "They wanted you to know how much your existence means to them.", "Happy Birthday. 🎂"],
+    ["Somewhere out there, someone is smiling just because today is your birthday.", '"{MSG}"', "May today be as wonderful as you are. 🎉"],
+    ["Birthday alert! 🎂", "I've been programmed with one specific message for you today:", '"{MSG}"', "Enjoy every second of today — you deserve it."],
+  ],
+  apology: [
+    ["This message wasn't easy to send.", "The person who wrote it rewrote it seven times.", "But they finally wanted to say:", '"{MSG}"', "They mean every word."],
+    ["Sometimes sorry is the hardest word.", "But this person found the courage:", '"{MSG}"', "They're hoping you'll still give them a chance."],
+    ["An apology arrived for you.", "Quietly. Sincerely.", '"{MSG}"', "Whether you accept it is up to you."],
+  ],
+  wedding: [
+    ["On this beautiful occasion...", "Someone wanted to send you something from the heart:", '"{MSG}"', "May your love story be long and full of joy. 💍"],
+    ["Two souls, one journey. 💍", "And a message from someone who loves you both:", '"{MSG}"', "Congratulations and endless blessings."],
+  ],
+  anniversary: [
+    ["Another year of love. 🥂", "Someone wanted to celebrate it with these words:", '"{MSG}"', "Here's to many more years together."],
+    ["Time passes. Love deepens.", '"{MSG}"', "Happy Anniversary. 🥂"],
+  ],
+  funny: [
+    ["Okay okay okay. Listen.", "I was sent here with a very URGENT message:", '"{MSG}"', "I hope you're laughing. Because the sender is definitely laughing right now. 😂"],
+    ["Breaking news 📰", "A very reliable source (your friend) has issued the following statement:", '"{MSG}"', "No further comment. 😂"],
+    ["This is a legally binding message. 📜", '"{MSG}"', "You've been served. 😂"],
+  ],
+  encouragement: [
+    ["Hey. I need you to listen.", "Someone believes in you more than you know.", '"{MSG}"', "Now go. Do the thing. You've got this. 💪"],
+    ["You're stronger than you think.", "And someone wanted to make sure you know that.", '"{MSG}"', "Keep going."],
+    ["This message was sent to remind you:", '"{MSG}"', "The person who sent this believes in you. So do I. 💪"],
+  ],
+  christmas: [
+    ["Ho ho ho 🎄", "Santa asked me to deliver a special message:", '"{MSG}"', "Merry Christmas and all the joy in the world to you."],
+    ["The snow is falling somewhere...", "And someone warm is thinking of you. 🎄", '"{MSG}"', "Warmest wishes this Christmas."],
+  ],
+  eid: [
+    ["Eid Mubarak! 🌙", "A beautiful message has arrived for you:", '"{MSG}"', "May your Eid be filled with blessings and joy."],
+    ["On this blessed occasion...", "Someone sent you their warmest Eid greetings. 🌙", '"{MSG}"', "Eid Mubarak!"],
+  ],
+  condolence: [
+    ["Words are never enough in moments like these.", "But someone wanted you to know they're thinking of you.", '"{MSG}"', "You are not alone. 🕊️"],
+    ["In the quiet of grief, a message arrived.", "From someone who cares deeply.", '"{MSG}"', "May you find peace and comfort."],
+  ],
+  flirt: [
+    ["Alright, I'll just say it.", "Someone couldn't stop thinking about you.", "They finally worked up the nerve to send this:", '"{MSG}"', "Your move. 😏"],
+    ["Plot twist: someone likes you.", "They asked me to deliver this:", '"{MSG}"', "They're probably checking their phone right now waiting for you to reply. 😏"],
+    ["New message. From a very flustered human.", '"{MSG}"', "They said it took them three days to send this. 😏"],
+  ],
+};
+
+// ===================== VIDEO COMMENTARY (per emotion, 3 rounds each) =====================
+const VIDEO_COMMENTARY = {
+  love: [
+    ["🎬 This is the first part of the song the sender chose for you.", "Listen to the melody. They said this part sounds exactly like how they feel when they think of you."],
+    ["Did you feel that?", "The sender said this section plays in their head every time they miss you. They wanted you to hear it the same way they do."],
+    ["And this last part...", "They said when they first heard this, they thought of you immediately. That's why they sent it. That's why you're hearing it now."],
+  ],
+  romantic: [
+    ["🎬 This opening melody... the sender said it's the closest thing to the feeling of being near you.", "Let it wash over you."],
+    ["This part of the song carries a confession.", "The sender couldn't say it directly, so they let the music say it instead."],
+    ["The final verse. The sender said this is where the song says everything they couldn't find words for.", "Now you've heard it all."],
+  ],
+  birthday: [
+    ["🎬 A birthday song — chosen just for you! 🎂", "The sender wanted today to feel like a celebration from the moment you pressed play."],
+    ["Keep listening!", "This part reminded the sender of your smile. They said they hope you're smiling right now."],
+    ["And to close it out... 🎉", "The sender said: may every day this year feel as special as this moment. Happy Birthday!"],
+  ],
+  apology: [
+    ["🎬 The sender chose this song because it says sorry better than they ever could.", "Please listen carefully."],
+    ["This part is where the weight of regret lives.", "The sender said they've listened to this section many times thinking of you."],
+    ["And this ending...", "It's an open hand. A question. The sender hopes you can find it in your heart to listen."],
+  ],
+  wedding: [
+    ["🎬 A wedding melody — chosen to honour this beautiful moment. 💍", "The sender wanted to be part of your celebration through this song."],
+    ["This section is about commitment.", "The sender said: may your love always feel this strong, even years from now."],
+    ["The final notes of this song...", "Are a blessing. The sender sends every good wish wrapped inside this melody. 💍"],
+  ],
+  anniversary: [
+    ["🎬 This song carries years of feeling in every note. 🥂", "The sender chose it because anniversaries deserve more than words."],
+    ["This part is about growth.", "The sender said: we've come a long way. And they're grateful for every step with you."],
+    ["And this final stretch...", "Is about choosing each other again and again. Happy Anniversary. 🥂"],
+  ],
+  funny: [
+    ["🎬 Okay... they picked THIS song? 😂", "You have to admit, it's kind of perfect. The sender knew you'd react exactly like this."],
+    ["Still going 😂", "The sender said they were laughing while setting this up. They hope you are too."],
+    ["THE FINALE 😂🎉", "The sender said: if you're not laughing by now, they've failed. But they probably haven't. 😂"],
+  ],
+  encouragement: [
+    ["🎬 This song was chosen to push you forward. 💪", "The sender believes in what you're capable of. Let the music remind you."],
+    ["This part is the climb.", "The sender said: when it gets hard, remember this feeling. Keep going."],
+    ["The peak of the song. 💪", "The sender wants you to carry this energy. You're more powerful than you know."],
+  ],
+  christmas: [
+    ["🎬 A Christmas melody just for you! 🎄", "The sender wanted your holiday season to start with something warm and joyful."],
+    ["This is the part that feels like firelight and family. 🎄", "The sender hopes you're somewhere warm and surrounded by love."],
+    ["The final chime of the song. 🎄", "Merry Christmas from the sender — and from this little AI messenger too."],
+  ],
+  eid: [
+    ["🎬 A blessed melody for a blessed occasion. 🌙", "The sender chose this to celebrate Eid with you across the distance."],
+    ["This part carries the spirit of gratitude. 🌙", "The sender is grateful for you. For your presence in their life. Eid Mubarak."],
+    ["And in the final notes... 🌙", "A prayer for your peace, your joy, and your family. Eid Mubarak!"],
+  ],
+  condolence: [
+    ["🎬 The sender chose this music gently and thoughtfully. 🕊️", "There are no perfect words. But there is this."],
+    ["This section is calm. 🕊️", "The sender hopes it brings even a small moment of peace."],
+    ["And in the quiet of this final part...", "The sender is thinking of you. You are not alone. 🕊️"],
+  ],
+  flirt: [
+    ["🎬 Okay so... they sent you THIS song. 😏", "That says everything about how they feel. The sender is definitely nervous right now."],
+    ["This part is giving main character energy. 😏", "The sender said: this song makes them think of you specifically. Interpret that however you like."],
+    ["The last bit of the song. 😏", "Your move. The sender is waiting. 👀"],
+  ],
+};
+
+// ===================== YOUTUBE UTILS =====================
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/,
+  ];
+  for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
+  return null;
+}
+
+function buildYTSrc(videoId, startSec, autoplay) {
+  return `https://www.youtube-nocookie.com/embed/${videoId}?start=${startSec}&autoplay=${autoplay}&rel=0&modestbranding=1&playsinline=1`;
+}
+
+// Segment config: start time in seconds, play duration in ms
+const SEGMENTS = [
+  { start: 0,  dur: 20000 },
+  { start: 30, dur: 20000 },
+  { start: 60, dur: 20000 },
+];
+
+// ===================== MANDATORY AD SYSTEM =====================
+// Placeholder ad video IDs — replace with your actual ad video IDs
+// These are used in rotation. Each is a YouTube video ID.
+const AD_VIDEO_IDS = [
+  'jNQXAC9IVRw',  // placeholder — replace with real ad video IDs
+  'dQw4w9WgXcQ',  // placeholder
+  'L_jWHffIx5E',  // placeholder
+];
+const AD_DURATION = 30; // seconds the user must watch
+
+let adCallback = null;
+let adTimerInterval = null;
+let adSecsLeft = AD_DURATION;
+
+function showAdThenDo(context) {
+  // context = 'create' | 'reveal'
+  const modal = document.getElementById('ad-modal');
+  const title = document.getElementById('ad-modal-title');
+  const iframe = document.getElementById('ad-yt-iframe');
+  const skipBtn = document.getElementById('ad-skip-btn');
+  const secsEl = document.getElementById('ad-secs');
+  const progressFill = document.getElementById('ad-progress-fill');
+  const shimmer = document.getElementById('ad-video-shimmer');
+  const countdownIcon = document.getElementById('ad-countdown-icon');
+
+  title.textContent = context === 'create'
+    ? 'Watch this short video to generate your message'
+    : 'Watch this short video to unlock your message';
+
+  // Pick random ad video
+  const adId = AD_VIDEO_IDS[Math.floor(Math.random() * AD_VIDEO_IDS.length)];
+  iframe.src = buildYTSrc(adId, 0, 1);
+
+  // Reset state
+  adSecsLeft = AD_DURATION;
+  secsEl.textContent = adSecsLeft;
+  skipBtn.disabled = true;
+  progressFill.style.transition = 'none';
+  progressFill.style.width = '0%';
+  shimmer.classList.remove('hide');
+
+  modal.style.display = 'flex';
+
+  // Hide shimmer after brief delay (video loading)
+  setTimeout(() => shimmer.classList.add('hide'), 2500);
+
+  // Start countdown
+  clearInterval(adTimerInterval);
+  // Trigger smooth progress bar start
+  setTimeout(() => {
+    progressFill.style.transition = `width ${AD_DURATION}s linear`;
+    progressFill.style.width = '100%';
+  }, 100);
+
+  adTimerInterval = setInterval(() => {
+    adSecsLeft--;
+    secsEl.textContent = adSecsLeft;
+    if (adSecsLeft <= 0) {
+      clearInterval(adTimerInterval);
+      skipBtn.disabled = false;
+      skipBtn.textContent = 'Continue →';
+      countdownIcon.textContent = '✓';
+      document.getElementById('ad-countdown-text').innerHTML = '<strong>Ad complete — you may continue</strong>';
+    }
+  }, 1000);
+
+  // Store what to do after ad
+  if (context === 'create') {
+    adCallback = () => generateMessage();
+  } else if (context === 'reveal') {
+    adCallback = () => {
+      runBootSequence(window._pendingRevealPayload);
+    };
+  }
+}
+
+function skipAd() {
+  // Only callable when ad is done (button enabled)
+  clearInterval(adTimerInterval);
+  const modal = document.getElementById('ad-modal');
+  const iframe = document.getElementById('ad-yt-iframe');
+  modal.style.display = 'none';
+  iframe.src = ''; // stop video
+  if (adCallback) { adCallback(); adCallback = null; }
+}
+
+// ===================== FULLY AUTOMATIC INLINE VIDEO EXPERIENCE =====================
+let ytVideoId = null;
+let ytSegmentIndex = 0;
+let ytSegmentTimer = null;
+let ytCommentaryLines = [];
+let ytOnDone = null;
+// Shared progress dots tracker across all 3 segment bubbles
+let segBubbles = [];
+
+function initVideoExperience(payload, msgs, typing, onDone) {
+  ytVideoId = extractYouTubeId(payload.mu);
+  if (!ytVideoId) { onDone(); return; }
+
+  ytCommentaryLines = VIDEO_COMMENTARY[payload.e || 'love'] || VIDEO_COMMENTARY.love;
+  ytSegmentIndex = 0;
+  ytOnDone = onDone;
+  segBubbles = [];
+
+  // AI intro bubble
+  typing.classList.add('show');
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    typing.classList.remove('show');
+    addBubble('ai', `🎬 The sender attached a video for you.<br><em>I'll play it in three parts — with emotional notes after each one.</em>`, msgs);
+    speak('The sender attached a video for you. Playing it in three parts.');
+    setTimeout(() => playSegment(0, msgs, typing), 1200);
+  }, 1400);
+}
+
+function playSegment(index, msgs, typing) {
+  if (index >= SEGMENTS.length) {
+    // Show "watch full" on the last bubble
+    if (segBubbles[2]) {
+      segBubbles[2].querySelector('.video-full-btn').classList.add('show');
+    }
+    if (ytOnDone) ytOnDone();
+    return;
+  }
+
+  const seg = SEGMENTS[index];
+  const commentaryLines = ytCommentaryLines[index] || [];
+
+  // Create a new inline video bubble for this segment
+  const bubble = createSegBubble(index);
+  const typing2 = document.getElementById('typing-indicator');
+  msgs.insertBefore(bubble, typing2);
+  segBubbles[index] = bubble;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Animate in
+  requestAnimationFrame(() => setTimeout(() => bubble.classList.add('in'), 60));
+
+  // Set iframe src to autoplay this segment
+  const iframe = bubble.querySelector('iframe');
+  iframe.src = buildYTSrc(ytVideoId, seg.start, 1);
+
+  // Update progress dots on all existing bubbles
+  updateAllDots(index);
+
+  // Progress bar animation
+  const barFill = bubble.querySelector('.seg-play-bar-fill');
+  setTimeout(() => {
+    barFill.style.transition = `width ${seg.dur}ms linear`;
+    barFill.style.width = '100%';
+  }, 100);
+
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // After play duration, pause and deliver commentary
+  clearTimeout(ytSegmentTimer);
+  ytSegmentTimer = setTimeout(() => {
+    // Freeze video (replace src to stop it)
+    const endSec = seg.start + Math.floor(seg.dur / 1000);
+    iframe.src = buildYTSrc(ytVideoId, endSec, 0);
+
+    // Show veil on this bubble
+    const veil = bubble.querySelector('.video-seg-veil');
+    veil.classList.add('show');
+
+    // Mark this dot as done
+    updateAllDots(index + 1); // next = upcoming
+
+    // Deliver commentary lines one by one
+    let ci = 0;
+    function nextComment() {
+      if (ci >= commentaryLines.length) {
+        // Commentary done — automatically start next segment
+        veil.classList.remove('show');
+        setTimeout(() => playSegment(index + 1, msgs, typing), 800);
+        return;
+      }
+      typing.classList.add('show');
+      msgs.scrollTop = msgs.scrollHeight;
+      setTimeout(() => {
+        typing.classList.remove('show');
+        addBubble('ai', commentaryLines[ci], msgs);
+        speak(commentaryLines[ci]);
+        ci++;
+        setTimeout(nextComment, 1500);
+      }, 1200);
+    }
+    setTimeout(nextComment, 500);
+  }, seg.dur);
+}
+
+function createSegBubble(index) {
+  const labels = ['Part 1 of 3 — Playing now', 'Part 2 of 3 — Playing now', 'Part 3 of 3 — Final segment'];
+  const div = document.createElement('div');
+  div.className = 'video-seg-bubble';
+  div.innerHTML = `
+    <div class="video-seg-header">
+      <div class="video-seg-icon">🎬</div>
+      <div class="video-seg-title">${labels[index]}</div>
+      <div class="video-seg-badge">${index + 1} / 3</div>
+    </div>
+    <div class="seg-play-bar-track"><div class="seg-play-bar-fill"></div></div>
+    <div class="video-seg-frame-wrap">
+      <iframe src="" allow="autoplay; encrypted-media" allowfullscreen playsinline title="Video part ${index+1}"></iframe>
+      <div class="video-seg-veil">
+        <div class="veil-icon">⏸</div>
+        <div class="veil-text">AI reading this moment...</div>
+      </div>
+    </div>
+    <div class="video-seg-footer">
+      <div class="seg-progress">
+        <div class="sdot ${index === 0 ? 'active' : ''}" id="sdot-${index}-0"></div>
+        <div class="sdot ${index === 1 ? 'active' : ''}" id="sdot-${index}-1"></div>
+        <div class="sdot ${index === 2 ? 'active' : ''}" id="sdot-${index}-2"></div>
+      </div>
+      <button class="video-full-btn" onclick="watchFullVideoInBubble(this, '${ytVideoId}')">▶ Watch full</button>
+    </div>
+  `;
+  return div;
+}
+
+// Update progress dots across ALL existing segment bubbles to reflect current state
+function updateAllDots(currentIdx) {
+  segBubbles.forEach((b, bi) => {
+    if (!b) return;
+    for (let di = 0; di < 3; di++) {
+      const dot = b.querySelector(`#sdot-${bi}-${di}`);
+      if (!dot) continue;
+      dot.className = 'sdot' + (di < currentIdx ? ' done' : di === currentIdx ? ' active' : '');
+    }
+  });
+}
+
+function watchFullVideoInBubble(btn, videoId) {
+  // Find the iframe in the same bubble
+  const bubble = btn.closest('.video-seg-bubble');
+  const iframe = bubble.querySelector('iframe');
+  const veil = bubble.querySelector('.video-seg-veil');
+  iframe.src = buildYTSrc(videoId, 0, 1);
+  veil.classList.remove('show');
+  btn.classList.remove('show'); // hide button after tap
+}
+
+// ===================== FINAL LOOP =====================
+function showFinalLoop(payload) {
+  const msgs = document.getElementById('chat-messages');
+  const typing = document.getElementById('typing-indicator');
+  typing.classList.add('show');
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    typing.classList.remove('show');
+    addBubble('ai', `That's the message. 💌<br><br>Now... someone out there is waiting to know you received this.`, msgs);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 1200);
+}
+
+const BOOT_SEQUENCE = [
+  "Initializing SecretMsg engine v2.4...",
+  "Decrypting sender instructions...",
+  "Analyzing emotional context...",
+  "Scanning contact list...",
+  "Matching recipient profile...",
+  "Message package located.",
+  "Preparing delivery sequence...",
+];
+
+const POSTER_THEMES = {
+  love:        { bg: ['#1a0010','#3a0020'], accent: '#ff4488', emoji: '❤️' },
+  romantic:    { bg: ['#1a0010','#2a0818'], accent: '#ff6699', emoji: '🌹' },
+  birthday:    { bg: ['#0a0a1a','#1a1040'], accent: '#ffd700', emoji: '🎂' },
+  apology:     { bg: ['#0a0a0a','#1a1a1a'], accent: '#aaaaff', emoji: '🙏' },
+  wedding:     { bg: ['#0a0810','#1a1525'], accent: '#e0c0ff', emoji: '💍' },
+  anniversary: { bg: ['#0a0808','#1a1010'], accent: '#ffa040', emoji: '🥂' },
+  funny:       { bg: ['#0a1800','#0f2800'], accent: '#aaff00', emoji: '😂' },
+  encouragement: { bg: ['#0a0500','#1a0d00'], accent: '#ff8800', emoji: '💪' },
+  christmas:   { bg: ['#060a02','#0d1504'], accent: '#44ff44', emoji: '🎄' },
+  eid:         { bg: ['#02060a','#041020'], accent: '#44aaff', emoji: '🌙' },
+  condolence:  { bg: ['#060606','#0f0f0f'], accent: '#aaaaaa', emoji: '🕊️' },
+  flirt:       { bg: ['#0a0008','#1a0018'], accent: '#ff44cc', emoji: '😏' },
+};
+
+// ===================== STATE =====================
+let currentEmotion = 'love';
+let currentMsgData = null;
+
+// ===================== EMOTION SELECTOR =====================
+document.querySelectorAll('.emotion-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    currentEmotion = btn.dataset.emotion;
+  });
+});
+
+// ===================== PAGE NAVIGATION =====================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ===================== GENERATE =====================
+function generateMessage() {
+  const recipient = document.getElementById('recipient-name').value.trim();
+  const sender = document.getElementById('sender-name').value.trim();
+  const msgText = document.getElementById('message-text').value.trim();
+  const musicUrl = document.getElementById('music-url').value.trim();
+
+  if (!msgText) { alert('Please write a message first!'); return; }
+  if (!sender) { alert('Please enter your name or a sender name!'); return; }
+
+  const payload = { r: recipient, s: sender, m: msgText, e: currentEmotion, mu: musicUrl };
+  const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
+  const shareUrl = `${location.origin}${location.pathname}#msg=${encoded}`;
+
+  currentMsgData = { ...payload, url: shareUrl };
+  renderSharePage(shareUrl, payload);
+  showPage('share-page');
+}
+
+// ===================== SHARE PAGE =====================
+function renderSharePage(url, payload) {
+  document.getElementById('share-link-display').textContent = url;
+  renderPoster(url, payload);
+  renderShareButtons(url, document.getElementById('share-btns'));
+}
+
+function copyLink() {
+  const url = currentMsgData?.url || '';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      const el = document.getElementById('share-link-display');
+      el.textContent = '✓ Copied!';
+      setTimeout(() => el.textContent = url, 2000);
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+}
+
+function renderShareButtons(url, container) {
+  const shareText = encodeURIComponent("I saw a name in my contacts inside this message 👀 Check if it's you:");
+  const encodedUrl = encodeURIComponent(url);
+  const btns = [
+    { label: '💬 WhatsApp', href: `https://wa.me/?text=${shareText}%20${encodedUrl}` },
+    { label: '📘 Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
+    { label: '✈️ Telegram', href: `https://t.me/share/url?url=${encodedUrl}&text=${shareText}` },
+    { label: '🐦 Twitter', href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}` },
+  ];
+  container.innerHTML = btns.map(b =>
+    `<a class="share-social-btn" href="${b.href}" target="_blank" rel="noopener">${b.label}</a>`
+  ).join('');
+}
+
+// ===================== POSTER CANVAS =====================
+function renderPoster(url, payload) {
+  const canvas = document.getElementById('poster-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = 400, H = 480;
+  const theme = POSTER_THEMES[payload.e] || POSTER_THEMES.love;
+
+  // Background gradient
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, theme.bg[0]);
+  grad.addColorStop(1, theme.bg[1]);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Border glow
+  ctx.strokeStyle = theme.accent;
+  ctx.lineWidth = 2;
+  ctx.globalAlpha = 0.6;
+  ctx.strokeRect(12, 12, W-24, H-24);
+  ctx.globalAlpha = 1;
+
+  // Emoji
+  ctx.font = '60px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(theme.emoji, W/2, 90);
+
+  // Headline
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 22px serif';
+  ctx.fillText('Someone left you a', W/2, 140);
+
+  ctx.fillStyle = theme.accent;
+  ctx.font = 'bold italic 26px serif';
+  ctx.fillText('secret message 👀', W/2, 172);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '14px monospace';
+  ctx.fillText('Scan the QR code to reveal it', W/2, 200);
+
+  // QR code (generate in hidden div, draw to canvas)
+  const qrDiv = document.createElement('div');
+  qrDiv.style.position = 'absolute';
+  qrDiv.style.left = '-9999px';
+  document.body.appendChild(qrDiv);
+
+  try {
+    new QRCode(qrDiv, { text: url, width: 160, height: 160, colorDark: '#ffffff', colorLight: 'transparent' });
+    setTimeout(() => {
+      const qrImg = qrDiv.querySelector('img') || qrDiv.querySelector('canvas');
+      if (qrImg) {
+        // Draw QR background
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        roundRect(ctx, W/2 - 90, 218, 180, 180, 12);
+        ctx.fill();
+
+        if (qrImg.tagName === 'IMG') {
+          qrImg.onload = () => { ctx.drawImage(qrImg, W/2 - 80, 228, 160, 160); drawPosterFooter(ctx, W, H, payload, theme); };
+          if (qrImg.complete) { ctx.drawImage(qrImg, W/2 - 80, 228, 160, 160); drawPosterFooter(ctx, W, H, payload, theme); }
+        } else {
+          ctx.drawImage(qrImg, W/2 - 80, 228, 160, 160);
+          drawPosterFooter(ctx, W, H, payload, theme);
+        }
+      }
+      document.body.removeChild(qrDiv);
+    }, 200);
+  } catch(e) {
+    document.body.removeChild(qrDiv);
+    drawPosterFooter(ctx, W, H, payload, theme);
+  }
+}
+
+function drawPosterFooter(ctx, W, H, payload, theme) {
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '11px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('secretmsg.ai  ·  anonymous · emotional · viral', W/2, H - 24);
+
+  if (payload.r) {
+    ctx.fillStyle = theme.accent;
+    ctx.font = 'italic 13px serif';
+    ctx.fillText(`For: ${payload.r}`, W/2, H - 48);
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function downloadPoster() {
+  const canvas = document.getElementById('poster-canvas');
+  const link = document.createElement('a');
+  link.download = 'secret-message-poster.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// ===================== REVEAL FLOW =====================
+function startReveal(payload) {
+  // Store payload for after ad
+  window._pendingRevealPayload = payload;
+  showPage('reveal-page');
+  document.getElementById('boot-screen').style.display = 'none';
+  document.getElementById('name-verify-screen').style.display = 'none';
+  document.getElementById('chat-screen').style.display = 'none';
+  // Show mandatory ad before reveal
+  showAdThenDo('reveal');
+}
+
+function runBootSequence(payload) {
+  document.getElementById('boot-screen').style.display = 'flex';
+  const container = document.getElementById('boot-lines');
+  const thinking = document.getElementById('boot-thinking');
+  container.innerHTML = '';
+
+  let i = 0;
+  function showNext() {
+    if (i < BOOT_SEQUENCE.length) {
+      const div = document.createElement('div');
+      div.className = 'boot-line';
+      div.textContent = `> ${BOOT_SEQUENCE[i]}`;
+      container.appendChild(div);
+      requestAnimationFrame(() => { setTimeout(() => div.classList.add('shown'), 50); });
+      i++;
+      setTimeout(showNext, 500 + Math.random() * 300);
+    } else {
+      thinking.classList.add('show');
+      setTimeout(() => {
+        document.getElementById('boot-screen').style.display = 'none';
+        if (payload.r) {
+          showVerify(payload);
+        } else {
+          showChat(payload);
+        }
+      }, 1800);
+    }
+  }
+  showNext();
+}
+
+// ===================== NAME VERIFY =====================
+function showVerify(payload) {
+  document.getElementById('name-verify-screen').style.display = 'flex';
+  document.getElementById('verify-result').className = 'verify-result';
+  document.getElementById('verify-name-input').value = '';
+  window._verifyPayload = payload;
+}
+
+function verifyName() {
+  const entered = document.getElementById('verify-name-input').value.trim().toLowerCase();
+  const expected = (window._verifyPayload?.r || '').toLowerCase();
+  const result = document.getElementById('verify-result');
+
+  if (expected && entered && entered === expected) {
+    result.textContent = `✓ Yes... this message was prepared for you, ${window._verifyPayload.r}.`;
+    result.className = 'verify-result match';
+  } else {
+    result.textContent = `This message might not be for you.\n\nBut the sender still thinks you are a wonderful person.`;
+    result.className = 'verify-result no-match';
+    result.style.whiteSpace = 'pre-line';
+  }
+
+  setTimeout(() => {
+    document.getElementById('name-verify-screen').style.display = 'none';
+    showChat(window._verifyPayload);
+  }, 2500);
+}
+
+// ===================== CHAT =====================
+function showChat(payload) {
+  document.getElementById('chat-screen').style.display = 'flex';
+  const msgs = document.getElementById('chat-messages');
+  const typing = document.getElementById('typing-indicator');
+  msgs.innerHTML = '';
+  msgs.appendChild(typing);
+
+  // Set avatar emoji from theme
+  const themeEmoji = POSTER_THEMES[payload.e]?.emoji || '🤖';
+  document.getElementById('chat-avatar').textContent = themeEmoji;
+
+  // Build conversation lines
+  const templates = TEMPLATES[payload.e] || TEMPLATES.love;
+  const template = templates[Math.floor(Math.random() * templates.length)];
+  const lines = template.map(line => line.replace('{MSG}', payload.m));
+
+  // Share buttons in chat footer
+  renderShareButtons(location.href, document.getElementById('chat-share-btns'));
+
+  let queue = [...lines];
+  let videoInserted = false;
+  const hasVideo = !!(payload.mu && extractYouTubeId(payload.mu));
+
+  function nextMessage() {
+    typing.classList.add('show');
+    msgs.scrollTop = msgs.scrollHeight;
+    const delay = 1000 + Math.floor(Math.random() * 800);
+    setTimeout(() => {
+      typing.classList.remove('show');
+      if (queue.length === 0) {
+        if (hasVideo && !videoInserted) {
+          videoInserted = true;
+          initVideoExperience(payload, msgs, typing, () => showFinalLoop(payload));
+          return;
+        }
+        showFinalLoop(payload);
+        return;
+      }
+      const text = queue.shift();
+      addBubble('ai', text, msgs);
+      speak(text.replace(/"/g, ''));
+      if (queue.length > 0) {
+        nextMessage();
+      } else {
+        if (hasVideo && !videoInserted) {
+          videoInserted = true;
+          setTimeout(() => initVideoExperience(payload, msgs, typing, () => showFinalLoop(payload)), 900);
+        } else {
+          setTimeout(() => showFinalLoop(payload), 800);
+        }
+      }
+    }, delay);
+  }
+
+  nextMessage();
+}
+
+function addBubble(type, text, container) {
+  const typing = document.getElementById('typing-indicator');
+  const bubble = document.createElement('div');
+  bubble.className = `bubble ${type}`;
+  bubble.innerHTML = text + `<span class="bubble-time">${getTime()}</span>`;
+  if (type === 'ai') {
+    const ttsBtn = document.createElement('button');
+    ttsBtn.className = 'tts-btn';
+    ttsBtn.textContent = '🔊 Read aloud';
+    ttsBtn.onclick = () => speak(text.replace(/"/g, ''));
+    bubble.appendChild(ttsBtn);
+  }
+  container.insertBefore(bubble, typing);
+  requestAnimationFrame(() => { setTimeout(() => bubble.classList.add('in'), 50); });
+  container.scrollTop = container.scrollHeight;
+  return bubble;
+}
 
 
-<script src="script.js"></script>
+
+
+// ===================== TTS =====================
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  const clean = text.replace(/<[^>]+>/g, '').replace(/[""]/g, '');
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.rate = 0.9; utt.pitch = 1.05;
+  window.speechSynthesis.speak(utt);
+}
+
+// ===================== UTILS =====================
+function getTime() {
+  const now = new Date();
+  return `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+}
+
+// ===================== HASH ROUTING =====================
+function checkHash() {
+  const hash = location.hash;
+  if (hash && hash.startsWith('#msg=')) {
+    try {
+      const encoded = hash.slice(5);
+      const json = decodeURIComponent(atob(encoded));
+      const payload = JSON.parse(json);
+      startReveal(payload);
+    } catch(e) {
+      // Bad hash, just show home
+      showPage('home-page');
+    }
+  } else {
+    showPage('home-page');
+  }
+}
+
+window.addEventListener('hashchange', checkHash);
+window.addEventListener('DOMContentLoaded', checkHash);
+</script>
+
+<!-- ===================== ANALYTICS ===================== -->
+<!-- Google Analytics — replace G-XXXXXXXXXX with your ID -->
+<!--
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+-->
+
+<!-- Google AdSense — replace ca-pub-XXXXXXXXXXXXXXXX with your publisher ID -->
+<!--
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+-->
+
 </body>
 </html>
