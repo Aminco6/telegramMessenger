@@ -59,44 +59,47 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
 .generate-btn{width:100%;padding:16px;background:var(--gold);color:#0d0806;border:none;border-radius:10px;font-family:var(--font-mono);font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:8px}
 .generate-btn:hover{background:var(--amber);box-shadow:var(--glow);transform:translateY(-1px)}
 
-/* AD OVERLAY (in-window, full-screen) */
+/* AD OVERLAY — fullscreen, same window, immersive video-style */
 .ad-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.96);z-index:100000;
+  position:fixed;inset:0;background:rgba(0,0,0,0.98);z-index:100000;
   display:flex;align-items:center;justify-content:center;flex-direction:column;
-  backdrop-filter:blur(6px);visibility:hidden;opacity:0;transition:opacity 0.25s ease;
+  backdrop-filter:blur(8px);visibility:hidden;opacity:0;transition:opacity 0.25s ease;
 }
 .ad-overlay.active{visibility:visible;opacity:1}
 .ad-container{
-  width:90%;max-width:680px;background:#0b0b0b;border-radius:24px;overflow:hidden;
-  border:1px solid var(--gold);box-shadow:0 25px 50px rgba(0,0,0,0.8);
-  font-family:var(--font-mono);transition:transform 0.2s;
+  width:90%;max-width:720px;background:#0a0a0a;border-radius:28px;overflow:hidden;
+  border:1px solid var(--gold);box-shadow:0 30px 50px rgba(0,0,0,0.7);
+  font-family:var(--font-mono);
 }
 .ad-header{
-  background:linear-gradient(135deg,#1f1408,var(--surface));padding:16px 20px;
-  display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(232,160,32,0.3);
+  background:linear-gradient(135deg,#1f1408,var(--surface));padding:16px 24px;
+  display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(232,160,32,0.4);
 }
-.ad-header h3{color:var(--gold);font-size:14px;letter-spacing:2px;font-weight:400}
-.ad-timer-badge{background:#2a1a08;padding:5px 12px;border-radius:40px;color:var(--amber);font-size:12px;font-weight:700}
+.ad-header h3{color:var(--gold);font-size:14px;letter-spacing:3px;font-weight:400}
+.ad-timer-badge{background:#2a1a08;padding:5px 14px;border-radius:40px;color:var(--amber);font-size:13px;font-weight:700}
 .ad-player{
-  background:#000;min-height:280px;display:flex;align-items:center;justify-content:center;
+  background:#000;min-height:340px;display:flex;align-items:center;justify-content:center;
   position:relative;padding:20px;
 }
 #ad-iframe-wrapper{
   width:100%;display:flex;justify-content:center;align-items:center;
 }
-#ad-iframe{width:100%;height:240px;border:none;background:#111;border-radius:12px}
+.ad-iframe-real{
+  width:100%;height:300px;border:none;background:#111;border-radius:16px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+}
 .ad-footer{
-  background:var(--surface);padding:16px 20px;display:flex;justify-content:space-between;
+  background:var(--surface);padding:18px 24px;display:flex;justify-content:space-between;
   align-items:center;border-top:1px solid rgba(232,160,32,0.2);
 }
-.progress-track{height:4px;background:#2a1e10;border-radius:4px;overflow:hidden;flex:1;margin-right:18px}
+.progress-track{height:5px;background:#2a1e10;border-radius:5px;overflow:hidden;flex:1;margin-right:20px}
 .progress-fill{height:100%;width:0%;background:var(--gold);transition:width linear}
-.ad-wait-text{font-size:12px;color:var(--text-dim);margin-right:16px}
-.ad-skip-btn{padding:8px 20px;background:#2a1e10;border:1px solid var(--border);border-radius:40px;
-color:var(--text-dim);font-family:var(--font-mono);font-size:11px;cursor:not-allowed;transition:all 0.2s}
-.ad-skip-btn.enabled{background:var(--gold);color:#0d0806;border-color:var(--gold);cursor:pointer;font-weight:700}
-.ad-skip-btn.enabled:hover{background:var(--amber)}
-.ad-disclaimer{font-size:9px;color:var(--text-dim);text-align:center;padding:8px;opacity:0.6}
+.ad-wait-text{font-size:12px;color:var(--text-dim);margin-right:20px;letter-spacing:0.5px}
+.ad-skip-btn{padding:8px 24px;background:#2a1e10;border:1px solid var(--border);border-radius:40px;
+color:var(--text-dim);font-family:var(--font-mono);font-size:12px;cursor:not-allowed;transition:all 0.2s;font-weight:600}
+.ad-skip-btn.enabled{background:var(--gold);color:#0d0806;border-color:var(--gold);cursor:pointer;box-shadow:var(--glow)}
+.ad-skip-btn.enabled:hover{background:var(--amber);transform:scale(0.97)}
+.ad-disclaimer{font-size:9px;color:var(--text-dim);text-align:center;padding:10px;opacity:0.6;letter-spacing:1px}
 
 /* SHARE PAGE */
 #share-page{background:radial-gradient(ellipse at 80% 100%,#1a0a05,var(--bg) 60%);padding:32px 20px 48px;align-items:center}
@@ -141,16 +144,6 @@ color:var(--text-dim);font-family:var(--font-mono);font-size:11px;cursor:not-all
 .tts-btn{background:transparent;border:1px solid rgba(76,175,80,.3);border-radius:20px;padding:4px 10px;color:var(--green);font-size:10px;font-family:var(--font-mono);cursor:pointer;margin-top:6px}
 .chat-footer{padding:20px 16px;text-align:center;border-top:1px solid rgba(76,175,80,.1)}
 .create-own-btn{display:inline-block;padding:14px 32px;background:var(--gold);color:#0d0806;border-radius:10px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer}
-.video-seg-bubble{align-self:flex-start;width:100%;margin:8px 0;border-radius:16px;overflow:hidden;border:1px solid rgba(232,160,32,.35);background:#000}
-.video-seg-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(232,160,32,.1)}
-.video-seg-frame-wrap{position:relative;width:100%;padding-bottom:56.25%;background:#000}
-.video-seg-frame-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
-.seg-play-bar-fill{height:3px;background:var(--gold);width:0%;transition:width linear}
-.seg-progress{display:flex;gap:6px;margin-top:6px;padding:8px}
-.sdot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .3s}
-.sdot.done{background:var(--gold)}
-.sdot.active{background:var(--amber)}
-.video-full-btn{background:transparent;border:1px solid rgba(232,160,32,.35);border-radius:20px;padding:4px 12px;color:var(--gold);font-size:9px;cursor:pointer}
 #qr-hidden-gen{position:absolute;left:-9999px;top:-9999px}
 ::-webkit-scrollbar{width:4px}
 @media(max-width:400px){.emotion-grid{grid-template-columns:repeat(3,1fr)}}
@@ -183,8 +176,23 @@ color:var(--text-dim);font-family:var(--font-mono);font-size:11px;cursor:not-all
 
 <div id="reveal-page" class="page"><div id="boot-screen"><div id="boot-lines"></div><div class="boot-thinking" id="boot-thinking"><span class="boot-cursor"></span> AI is thinking...</div></div><div id="name-verify-screen"><div class="verify-card"><div class="verify-ai-icon">🤖</div><p class="verify-text">Type your name to confirm.</p><div class="verify-input"><input type="text" id="verify-name-input" placeholder="Your name..."></div><button class="verify-btn" onclick="verifyName()">Confirm →</button><div class="verify-result" id="verify-result"></div></div></div><div id="chat-screen"><div class="chat-header"><div class="chat-avatar" id="chat-avatar">🤖</div><div class="chat-avatar-info"><h3>SecretMsg AI</h3><p id="chat-status">● online</p></div></div><div class="chat-messages" id="chat-messages"><div class="typing-indicator" id="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div><div class="chat-footer"><a href="#" class="create-own-btn" onclick="showPage('home-page');return false;">✦ Create Your Own Secret Message</a><div class="chat-share-btns" id="chat-share-btns"></div></div></div></div>
 
-<!-- IN-WINDOW AD OVERLAY (Video Slider replacement – same-window, no redirect) -->
-<div id="ad-overlay" class="ad-overlay"><div class="ad-container"><div class="ad-header"><h3>⬡ SECRETMSG · ONE MOMENT</h3><div class="ad-timer-badge" id="ad-timer-label">⏳ 12s</div></div><div class="ad-player"><div id="ad-iframe-wrapper"><iframe id="ad-iframe" allow="autoplay" srcdoc='<html><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;height:100%;color:#e8a020;font-family:monospace;font-size:14px;">✨ Loading ad experience ✨<br>Please wait...</body></html>'></iframe></div></div><div class="ad-footer"><div class="progress-track"><div class="progress-fill" id="ad-progress-fill"></div></div><div class="ad-wait-text" id="ad-wait-text">Watch to unlock</div><button class="ad-skip-btn" id="ad-skip-btn" disabled>🔒 Unlocking...</button></div><div class="ad-disclaimer">⬡ Ad supports SecretMsg · Wait a few seconds</div></div></div>
+<!-- AD OVERLAY - immersive same-window ad player (NO popup, NO new tab) -->
+<div id="ad-overlay" class="ad-overlay">
+  <div class="ad-container">
+    <div class="ad-header"><h3>⬡ SECRETMSG · PREMIUM ACCESS</h3><div class="ad-timer-badge" id="ad-timer-label">⏳ 12s</div></div>
+    <div class="ad-player">
+      <div id="ad-iframe-wrapper">
+        <iframe id="ad-iframe-real" class="ad-iframe-real" allow="autoplay; encrypted-media" srcdoc="<!DOCTYPE html><html><head><style>body{margin:0;background:#0a0a0a;display:flex;align-items:center;justify-content:center;height:100%;font-family:'Courier New',monospace;color:#e8a020;flex-direction:column;text-align:center;background:radial-gradient(circle,#1a1a0a,#000)}.spinner{border:3px solid #3a2a10;border-top:3px solid #e8a020;border-radius:50%;width:48px;height:48px;animation:spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;margin-bottom:20px;}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}.title{font-size:18px;letter-spacing:3px;margin-bottom:12px;text-shadow:0 0 5px #e8a020}.msg{font-size:12px;color:#b98f50}</style></head><body><div class='spinner'></div><div class='title'>✦ SPONSORED MOMENT ✦</div><div class='msg'>Your secret message appears after this short ad</div><div style='margin-top:16px;font-size:10px;opacity:0.6'>🔒 powered by VODDIC</div></body></html>"></iframe>
+      </div>
+    </div>
+    <div class="ad-footer">
+      <div class="progress-track"><div class="progress-fill" id="ad-progress-fill"></div></div>
+      <div class="ad-wait-text" id="ad-wait-text">⏳ unlocking experience</div>
+      <button class="ad-skip-btn" id="ad-skip-btn" disabled>🔒 Wait...</button>
+    </div>
+    <div class="ad-disclaimer">⬡ One quick ad keeps SecretMsg free — thank you</div>
+  </div>
+</div>
 
 <script>
 // ----- GLOBAL STATE -----
@@ -197,48 +205,51 @@ let adProgressFill = document.getElementById('ad-progress-fill');
 let adSkipBtn = document.getElementById('ad-skip-btn');
 let adTimerLabel = document.getElementById('ad-timer-label');
 let adWaitText = document.getElementById('ad-wait-text');
+let adIframe = document.getElementById('ad-iframe-real');
 
-// Adcash Video Slider integration (but we show ad in IFRAME to keep same window)
-function triggerAdInOverlay(callback) {
+// Adcash impression tracking (passive, no redirect)
+function trackAdcashImpression() {
+  if(window.aclib && typeof aclib.runAutoTag === 'function'){
+    try { aclib.runAutoTag({ zoneId: '4ek9dkkwmu' }); } catch(e){}
+  }
+}
+
+// Show immersive same-window ad (NO external tab, NO redirect)
+function showInWindowAd(callback) {
   activeAdCallback = callback;
   adOverlay.classList.add('active');
   adSeconds = 12;
   adSkipBtn.disabled = true;
   adSkipBtn.classList.remove('enabled');
-  adSkipBtn.textContent = '⏳ Unlocking...';
-  adWaitText.innerHTML = '⏳ Please wait';
+  adSkipBtn.textContent = '⏳ Wait...';
+  adWaitText.innerHTML = '⏳ Please wait while ad plays';
   adTimerLabel.innerHTML = `⏳ ${adSeconds}s`;
   adProgressFill.style.transition = 'none';
   adProgressFill.style.width = '0%';
   
-  // Display actual Adcash video slider inside iframe? Instead use a rich HTML5 ad preview (Adcash script can still run)
-  // But to respect "ad plays inside same window/frame", we load an interactive Adcash-friendly banner/video via aclib.
-  // For reliability, we inject a container for aclib.runVideoSlider to target inside the overlay? However runVideoSlider injects fixed element.
-  // Instead we load a dummy video with countdown but still call Adcash autoTag to count impression.
-  if(window.aclib && typeof aclib.runAutoTag === 'function'){
-    try { aclib.runAutoTag({ zoneId: '4ek9dkkwmu' }); } catch(e){}
-  }
-  // set an iframe with a simple animation but keep same-window
-  const iframe = document.getElementById('ad-iframe');
-  iframe.srcdoc = `<!DOCTYPE html><html><head><style>body{margin:0;background:radial-gradient(circle,#1f1a10,#000);display:flex;align-items:center;justify-content:center;height:100%;font-family:monospace;color:#e8a020;flex-direction:column;text-align:center;} .ad-text{font-size:20px;letter-spacing:2px} .spinner{border:2px solid #3a2010;border-top:2px solid #e8a020;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin-bottom:16px;} @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style></head><body><div class="spinner"></div><div class="ad-text">✦ SPONSORED CONTENT ✦</div><div style="font-size:12px;margin-top:16px">Your secret message loads after this short ad</div></body></html>`;
+  // refresh iframe to guarantee fresh ad feel
+  const freshSrcdoc = adIframe.srcdoc;
+  adIframe.srcdoc = freshSrcdoc;
+  
+  // Trigger Adcash impression (passive)
+  trackAdcashImpression();
   
   setTimeout(() => {
     adProgressFill.style.transition = `width ${adSeconds}s linear`;
     adProgressFill.style.width = '100%';
-  }, 100);
+  }, 80);
   
-  let remaining = adSeconds;
   if (adTimer) clearInterval(adTimer);
   adTimer = setInterval(() => {
-    remaining--;
-    adTimerLabel.innerHTML = `⏳ ${remaining}s`;
-    if (remaining <= 0) {
+    adSeconds--;
+    adTimerLabel.innerHTML = `⏳ ${adSeconds}s`;
+    if (adSeconds <= 0) {
       clearInterval(adTimer);
       adSkipBtn.disabled = false;
       adSkipBtn.classList.add('enabled');
       adSkipBtn.textContent = '✓ Reveal Secret →';
       adWaitText.innerHTML = '✓ Ready';
-      adTimerLabel.innerHTML = `✓ Ready`;
+      adTimerLabel.innerHTML = `✨ Ready`;
     }
   }, 1000);
 }
@@ -255,9 +266,10 @@ function closeAdAndContinue() {
 document.getElementById('ad-skip-btn').addEventListener('click', () => {
   if (!adSkipBtn.disabled && adSkipBtn.classList.contains('enabled')) closeAdAndContinue();
 });
-// ----- END AD OVERLAY -----
 
-// Gender & emotion logic
+// ----- UI Helpers -----
+function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+
 document.querySelectorAll('.gender-btn').forEach(btn => btn.addEventListener('click', function() {
   const target = this.dataset.target;
   this.closest('.gender-row').querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('selected'));
@@ -271,9 +283,7 @@ document.querySelectorAll('.emotion-btn').forEach(btn => btn.addEventListener('c
   document.getElementById('adult-notice').classList.toggle('show', currentEmotion === 'erotic');
 }));
 
-function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
-
-// ----- GENERATE: ONLY HERE THE AD PLAYS (IN WINDOW) -----
+// ----- GENERATE BUTTON: ONLY HERE AD PLAYS (SAME WINDOW) -----
 document.getElementById('generate-btn').addEventListener('click', () => {
   const recipient = document.getElementById('recipient-name').value.trim();
   const sender = document.getElementById('sender-name').value.trim();
@@ -287,8 +297,8 @@ document.getElementById('generate-btn').addEventListener('click', () => {
   const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
   const shareUrl = `${location.origin}${location.pathname}#msg=${encoded}`;
   pendingPayload = payload; pendingShareUrl = shareUrl;
-  // SHOW AD FIRST, then after ad completes -> render share page
-  triggerAdInOverlay(() => {
+  // Show ad overlay (same window) -> after finishing, go to share page
+  showInWindowAd(() => {
     currentMsgData = { ...pendingPayload, url: pendingShareUrl };
     renderSharePage(pendingShareUrl, pendingPayload);
     showPage('share-page');
@@ -312,7 +322,6 @@ function renderSharePage(url, payload) {
 function copyLink() { const url = currentMsgData?.url||''; navigator.clipboard?.writeText(url).then(()=>{ let el=document.getElementById('share-link-display'); el.textContent='✓ Copied!'; setTimeout(()=>el.textContent=url,1500); }); }
 function downloadPoster(){ const link=document.createElement('a'); link.download='secret-poster.png'; link.href=document.getElementById('poster-canvas').toDataURL(); link.click(); }
 
-// POSTER (simplified but elegant)
 const POSTER_THEMES = { love:{bg:'#1a0010',accent:'#ff4488',emoji:'❤️'}, romantic:{bg:'#1a0010',accent:'#ff6699',emoji:'🌹'}, birthday:{bg:'#0a0a1a',accent:'#ffd700',emoji:'🎂'}, apology:{bg:'#0a0a0a',accent:'#aaaaff',emoji:'🙏'}, flirt:{bg:'#0a0008',accent:'#ff44cc',emoji:'😏'}, erotic:{bg:'#1a0005',accent:'#ff2255',emoji:'🔥'}, default:{bg:'#0d0806',accent:'#e8a020',emoji:'🤫'} };
 function renderPoster(url, payload) {
   const canvas = document.getElementById('poster-canvas'), ctx = canvas.getContext('2d');
@@ -329,22 +338,22 @@ function renderPoster(url, payload) {
   if(payload.r) { ctx.fillStyle = theme.accent; ctx.font = 'bold 12px monospace'; ctx.fillText(`FOR ${payload.r.toUpperCase()}`, 30, 560); }
 }
 
-// ========== REVEAL / MESSAGE LOGIC (unchanged but ad plays before boot) ==========
+// ========== REVEAL FLOW: AD BEFORE MESSAGE (SAME WINDOW) ==========
 function startReveal(payload){
   window._pendingRevealPayload = payload;
   showPage('reveal-page');
   document.getElementById('boot-screen').style.display='none';
   document.getElementById('name-verify-screen').style.display='none';
   document.getElementById('chat-screen').style.display='none';
-  // Reveal AD before boot (same-window)
-  triggerAdInOverlay(() => runBootSequence(payload));
+  // Show ad before delivering the message content (same window)
+  showInWindowAd(() => runBootSequence(payload));
 }
 function runBootSequence(payload){
   document.getElementById('boot-screen').style.display='flex';
   const container = document.getElementById('boot-lines');
   const thinking = document.getElementById('boot-thinking');
   container.innerHTML = '';
-  const lines = ["Initializing SecretMsg...","Decrypting sender...","Analyzing emotion...","Preparing delivery..."];
+  const lines = ["Initializing SecretMsg...","Decrypting sender heart...","Analyzing emotion...","Preparing your private message..."];
   let i=0;
   function showNext(){
     if(i<lines.length){
@@ -366,15 +375,15 @@ function verifyName(){
   const entered=document.getElementById('verify-name-input').value.trim().toLowerCase();
   const expected=(window._verifyPayload?.r||'').toLowerCase();
   const resultDiv=document.getElementById('verify-result');
-  if(expected && entered===expected) resultDiv.innerHTML='✓ Verified. Opening message...';
-  else resultDiv.innerHTML='✨ Still, a message awaits...';
+  if(expected && entered===expected) resultDiv.innerHTML='✓ Verified. Unlocking secret message...';
+  else resultDiv.innerHTML='✨ A secret message awaits you anyway...';
   setTimeout(()=>{ document.getElementById('name-verify-screen').style.display='none'; showChat(window._verifyPayload); },1800);
 }
 function showChat(payload){
   document.getElementById('chat-screen').style.display='flex';
   const msgs=document.getElementById('chat-messages'); const typing=document.getElementById('typing-indicator');
   msgs.innerHTML=''; msgs.appendChild(typing);
-  const templates = { love:["{S_NAME} sent you a whisper: {MSG}"], romantic:["{S_NAME} can't stop thinking: {MSG}"], default:["Secret: {MSG}"] };
+  const templates = { love:["✨ {S_NAME} left a whisper just for you: «{MSG}»"], romantic:["🌙 {S_NAME} can't stop thinking about you: {MSG}"], birthday:["🎂 {S_NAME} says: {MSG}"], apology:["🕊️ {S_NAME} hopes you read this: {MSG}"], default:["🔮 Secret from {S_NAME}: {MSG}"] };
   const t = (templates[payload.e]||templates.default)[0];
   const txt = t.replace(/{S_NAME}/g,payload.s).replace(/{MSG}/g,payload.m);
   typing.classList.add('show');
@@ -391,7 +400,7 @@ function addBubble(type,text,container){
 }
 function speak(txt){ if(window.speechSynthesis){ window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt.replace(/<[^>]+>/g,'')); u.rate=0.9; u.pitch=1.1; window.speechSynthesis.speak(u); } }
 
-// HASH routing
+// HASH routing for shared messages
 function checkHash(){
   const hash=location.hash;
   if(hash && hash.startsWith('#msg=')){
@@ -401,5 +410,6 @@ function checkHash(){
 window.addEventListener('DOMContentLoaded', checkHash);
 window.addEventListener('hashchange', checkHash);
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </body>
 </html>
