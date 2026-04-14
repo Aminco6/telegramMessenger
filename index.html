@@ -1,29 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
-    
-    
-   <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
- 
-    
-    
-    
-    <script type="text/javascript">
-    aclib.runVideoSlider({
-        zoneId: '11191486',
-    });
-</script>
-    
-    
-    
-    
-    
-    
-    <meta http-equiv="Delegate-CH" content="Sec-CH-UA https://s.magsrv.com; Sec-CH-UA-Mobile https://s.magsrv.com; Sec-CH-UA-Arch https://s.magsrv.com; Sec-CH-UA-Model https://s.magsrv.com; Sec-CH-UA-Platform https://s.magsrv.com; Sec-CH-UA-Platform-Version https://s.magsrv.com; Sec-CH-UA-Bitness https://s.magsrv.com; Sec-CH-UA-Full-Version-List https://s.magsrv.com; Sec-CH-UA-Full-Version https://s.magsrv.com;">
-    
-    
-    
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SecretMsg — Someone left you a message 👀</title>
@@ -33,11 +10,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<!-- MagSrv ad provider — loaded once globally -->
-<script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script>
-
-
-
+<!-- Adcash library — loaded once, as high as possible (per Adcash docs) -->
+<script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
+<!-- Adcash Autotag zone — passive, always-on, auto-detects best ad format -->
+<script>
+  window.addEventListener('load', function(){
+    if(window.aclib && typeof window.aclib.runAutoTag === 'function'){
+      try { aclib.runAutoTag({ zoneId: '4ek9dkkwmu' }); } catch(e){}
+    } else {
+      document.addEventListener('aclib_ready', function(){
+        try { aclib.runAutoTag({ zoneId: '4ek9dkkwmu' }); } catch(e){}
+      }, { once: true });
+    }
+  });
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -287,13 +273,6 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
 </head>
 <body>
 
-
-<script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script> 
- <ins class="eas6a97888e10" data-zoneid="5899948"></ins> 
- <script>(AdProvider = window.AdProvider || []).push({"serve": {}});</script>
-
-
-
 <!-- ========== HOME PAGE ========== -->
 <div id="home-page" class="page active">
   <div class="home-header">
@@ -389,7 +368,7 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
     <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
     <div class="form-section-label">// QR Poster</div>
     <div id="poster-canvas-wrap">
-      <canvas id="poster-canvas" width="400" height="520"></canvas>
+      <canvas id="poster-canvas" width="400" height="600"></canvas>
       <div id="qr-hidden-gen"></div>
       <button class="download-btn" onclick="downloadPoster()">⬇ Download Poster</button>
     </div>
@@ -438,7 +417,7 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
   </div>
 </div>
 
-<!-- ========== GENERATING OVERLAY (ad plays while message generates) ========== -->
+<!-- ========== GENERATING OVERLAY (Adcash Video Slider plays while message generates) ========== -->
 <div id="generating-overlay">
   <div class="gen-overlay-ad-wrap">
     <div class="gen-overlay-ad-header">
@@ -446,8 +425,9 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
       <div class="gen-overlay-status">● Generating your message...</div>
     </div>
     <div class="gen-overlay-ad-inner">
-      <div class="magsrv-ad-zone" id="gen-ad-zone">
-        <ins class="eas6a97888e31" data-zoneid="5899874"></ins>
+      <!-- Adcash Video Slider fires via aclib.runVideoSlider() on show -->
+      <div id="gen-ad-zone" style="width:100%;text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center;">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:2px;opacity:.6">Loading ad...</div>
       </div>
     </div>
     <div class="gen-overlay-footer">
@@ -465,7 +445,7 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
   </div>
 </div>
 
-<!-- ========== REVEAL AD OVERLAY (plays before delivering message) ========== -->
+<!-- ========== REVEAL AD OVERLAY (Adcash Video Slider plays before delivering message) ========== -->
 <div id="reveal-ad-overlay">
   <div class="rev-ad-box">
     <div class="rev-ad-header">
@@ -473,8 +453,9 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
       <div class="rev-ad-title" id="rev-ad-title">Unlocking your message...</div>
     </div>
     <div class="rev-ad-inner">
-      <div id="rev-ad-zone">
-        <ins class="eas6a97888e31" data-zoneid="5899874"></ins>
+      <!-- Adcash Video Slider fires via aclib.runVideoSlider() on show -->
+      <div id="rev-ad-zone" style="width:100%;text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center;">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);letter-spacing:2px;opacity:.6">Loading ad...</div>
       </div>
     </div>
     <div class="rev-ad-footer">
@@ -496,18 +477,50 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
 <div id="qr-hidden-gen" style="position:absolute;left:-9999px;top:-9999px;"></div>
 
 <script>
-// ===================== AD CLICK COUNTER =====================
+// ===================== AD CLICK COUNTER + ADCASH VIDEO SLIDER =====================
 let totalAdViews = 0;
+
 function incrementAdCount() {
   totalAdViews++;
   const el = document.getElementById('global-ad-count');
   if (el) el.textContent = totalAdViews;
 }
 
-// Trigger MagSrv ad serving
-function serveMagsrvAd() {
-  if (window.AdProvider) {
-    try { window.AdProvider.push({"serve": {}}); } catch(e) {}
+// ---- Adcash Video Slider — per official docs: aclib.runVideoSlider({ zoneId }) ----
+// The Video Slider is a floating sticky player that Adcash renders into the page.
+// We boost its z-index so it appears above our overlays (which sit at ~99997-99998).
+function _boostAdcashZIndex() {
+  // Adcash slider renders a fixed div injected into <body>; target by position:fixed + known patterns
+  try {
+    document.querySelectorAll('body > div').forEach(el => {
+      const cs = window.getComputedStyle(el);
+      if (cs.position === 'fixed' && !el.id.match(/generating|reveal|overlay|boot|chat|home|share|verify/)) {
+        el.style.zIndex = '2147483640';
+      }
+    });
+  } catch(e){}
+}
+
+function _runSlider() {
+  if (window.aclib && typeof window.aclib.runVideoSlider === 'function') {
+    window.aclib.runVideoSlider({ zoneId: '11191486' });
+    // Boost z-index after Adcash injects the player element
+    setTimeout(_boostAdcashZIndex, 400);
+    setTimeout(_boostAdcashZIndex, 1200);
+    return true;
+  }
+  return false;
+}
+
+function triggerAdcashVideoSlider() {
+  incrementAdCount();
+  if (!_runSlider()) {
+    // aclib not yet ready — poll every 400ms up to 5s
+    let attempts = 0;
+    const poll = setInterval(() => {
+      attempts++;
+      if (_runSlider() || attempts >= 12) clearInterval(poll);
+    }, 400);
   }
 }
 
@@ -781,8 +794,7 @@ function showGeneratingOverlay(payload, shareUrl) {
   secsEl.textContent = genSecsLeft;
 
   overlay.classList.add('show');
-  serveMagsrvAd();
-  incrementAdCount();
+  triggerAdcashVideoSlider();
 
   setTimeout(() => {
     fill.style.transition = `width 10s linear`;
@@ -833,8 +845,7 @@ function showRevealAd(callback) {
   cdText.innerHTML = `Please wait — <strong id="rev-secs">10</strong>s`;
 
   overlay.classList.add('show');
-  serveMagsrvAd();
-  incrementAdCount();
+  triggerAdcashVideoSlider();
 
   setTimeout(() => {
     fill.style.transition = `width 10s linear`;
@@ -928,80 +939,304 @@ function renderShareButtons(url, container) {
   container.innerHTML = btns.map(b=>`<a class="share-social-btn" href="${b.href}" target="_blank" rel="noopener">${b.label}</a>`).join('');
 }
 
-// ===================== POSTER CANVAS — bold recipient name =====================
-function renderPoster(url, payload) {
-  const canvas=document.getElementById('poster-canvas'), ctx=canvas.getContext('2d');
-  const W=400, H=520;
-  canvas.width=W; canvas.height=H;
-  const theme=POSTER_THEMES[payload.e]||POSTER_THEMES.love;
-  const grad=ctx.createLinearGradient(0,0,W,H);
-  grad.addColorStop(0,theme.bg[0]); grad.addColorStop(1,theme.bg[1]);
-  ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
-
-  // border glow
-  ctx.strokeStyle=theme.accent; ctx.lineWidth=2; ctx.globalAlpha=0.6;
-  ctx.strokeRect(12,12,W-24,H-24); ctx.globalAlpha=1;
-
-  // emoji
-  ctx.font='60px serif'; ctx.textAlign='center';
-  ctx.fillText(theme.emoji, W/2, 90);
-
-  // headline
-  ctx.fillStyle='#ffffff'; ctx.font='bold 22px serif';
-  ctx.fillText('Someone left you a', W/2, 140);
-  ctx.fillStyle=theme.accent; ctx.font='bold italic 26px serif';
-  ctx.fillText('secret message 👀', W/2, 172);
-  ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font='14px monospace';
-  ctx.fillText('Scan the QR code to reveal it', W/2, 200);
-
-  // QR code
-  const qrDiv=document.createElement('div');
-  qrDiv.style.position='absolute'; qrDiv.style.left='-9999px';
-  document.body.appendChild(qrDiv);
-  try {
-    new QRCode(qrDiv,{text:url,width:160,height:160,colorDark:'#ffffff',colorLight:'transparent'});
-    setTimeout(()=>{
-      const qrImg=qrDiv.querySelector('img')||qrDiv.querySelector('canvas');
-      if(qrImg){
-        ctx.fillStyle='rgba(255,255,255,0.08)';
-        roundRect(ctx,W/2-90,218,180,180,12); ctx.fill();
-        const draw = () => {
-          ctx.drawImage(qrImg,W/2-80,228,160,160);
-          drawPosterFooter(ctx,W,H,payload,theme);
-        };
-        if(qrImg.tagName==='IMG'){ qrImg.complete?draw():(qrImg.onload=draw); }
-        else { draw(); }
-      }
-      try{document.body.removeChild(qrDiv);}catch(e){}
-    },250);
-  } catch(e){ try{document.body.removeChild(qrDiv);}catch(ex){} drawPosterFooter(ctx,W,H,payload,theme); }
+// ===================== POSTER CANVAS — luxury cinematic redesign =====================
+function lightenHex(hex, amt) {
+  const n=parseInt(hex.replace('#',''),16);
+  return '#'+[n>>16,(n>>8)&0xff,n&0xff].map(v=>Math.min(255,v+amt).toString(16).padStart(2,'0')).join('');
 }
+function roundRectPath(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+function roundRect(ctx,x,y,w,h,r){roundRectPath(ctx,x,y,w,h,r);}
 
-function drawPosterFooter(ctx,W,H,payload,theme){
-  // Recipient name — BOLD, prominent
-  if(payload.r){
-    // background pill
-    const nameText = `For: ${payload.r}`;
-    ctx.font='bold 18px serif';
-    const tw = ctx.measureText(nameText).width;
-    ctx.fillStyle='rgba(0,0,0,0.45)';
-    roundRect(ctx, W/2-tw/2-16, H-88, tw+32, 34, 8); ctx.fill();
-    ctx.fillStyle=theme.accent;
-    ctx.font='bold 18px serif';
-    ctx.textAlign='center';
-    ctx.fillText(nameText, W/2, H-65);
+// Draw decorative sparkle / star at position
+function drawStar(ctx, cx, cy, r, color, alpha){
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  for(let i=0;i<8;i++){
+    const angle = (i/8)*Math.PI*2;
+    const rr = i%2===0 ? r : r*0.38;
+    ctx.lineTo(cx+Math.cos(angle)*rr, cy+Math.sin(angle)*rr);
   }
-  // Footer line
-  ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='bold 10px monospace'; ctx.textAlign='center';
-  ctx.fillText('Delivered by VODDIC  ·  secretmsg.ai', W/2, H-24);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
 }
 
-function roundRect(ctx,x,y,w,h,r){
-  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
-  ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r);
-  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h);
-  ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r);
-  ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+// Draw elegant lace / filigree corner ornament
+function drawCornerOrnament(ctx, cx, cy, size, color, flipX, flipY){
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 0.8;
+  ctx.globalAlpha = 0.7;
+  ctx.translate(cx, cy);
+  ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+  // L-bracket base
+  ctx.beginPath(); ctx.moveTo(0, size); ctx.lineTo(0, 0); ctx.lineTo(size, 0); ctx.stroke();
+  // inner flourish
+  ctx.beginPath(); ctx.moveTo(0, size*0.55); ctx.quadraticCurveTo(size*0.3, size*0.3, size*0.55, 0); ctx.stroke();
+  // tiny diamond
+  ctx.fillStyle = color; ctx.globalAlpha = 0.9;
+  ctx.beginPath(); ctx.moveTo(0,-4); ctx.lineTo(4,0); ctx.lineTo(0,4); ctx.lineTo(-4,0); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+function renderPoster(url, payload) {
+  const canvas = document.getElementById('poster-canvas'), ctx = canvas.getContext('2d');
+  const W = 400, H = 600;
+  canvas.width = W; canvas.height = H;
+  const theme = POSTER_THEMES[payload.e] || POSTER_THEMES.love;
+  const acc = theme.accent;
+
+  // ── 1. DEEP MULTI-STOP BACKGROUND ──────────────────────────────────────────
+  const bg = ctx.createRadialGradient(W/2, H*0.28, 0, W/2, H*0.5, W*1.1);
+  bg.addColorStop(0,   lightenHex(theme.bg[0], 28));
+  bg.addColorStop(0.3, theme.bg[0]);
+  bg.addColorStop(0.7, theme.bg[1] || theme.bg[0]);
+  bg.addColorStop(1,   '#040202');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+  // Subtle vignette overlay
+  const vig = ctx.createRadialGradient(W/2, H/2, H*0.18, W/2, H/2, H*0.82);
+  vig.addColorStop(0, 'rgba(0,0,0,0)');
+  vig.addColorStop(1, 'rgba(0,0,0,0.55)');
+  ctx.fillStyle = vig; ctx.fillRect(0,0,W,H);
+
+  // ── 2. FINE GRID TEXTURE ──────────────────────────────────────────────────
+  ctx.strokeStyle = 'rgba(255,255,255,0.018)'; ctx.lineWidth = 0.5;
+  for(let x=0;x<W;x+=20){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  // ── 3. DECORATIVE SPARKLES (background) ──────────────────────────────────
+  const sparkles = [
+    [32,55,3],[W-28,70,2.5],[50,H-80,2],[W-45,H-95,3],[W/2-80,H-180,2],
+    [W/2+85,H-160,2.5],[60,H/2-60,2],[W-55,H/2+40,2],[W/2-120,H/3,1.8],[W/2+100,H/3-20,2],
+  ];
+  sparkles.forEach(([sx,sy,sr]) => drawStar(ctx, sx, sy, sr, acc, 0.35 + Math.random()*0.2));
+
+  // ── 4. DOUBLE BORDER ──────────────────────────────────────────────────────
+  // Outer glowing border
+  const borderGrad = ctx.createLinearGradient(0,0,W,H);
+  borderGrad.addColorStop(0,   acc+'44');
+  borderGrad.addColorStop(0.25, acc+'cc');
+  borderGrad.addColorStop(0.5,  acc+'ff');
+  borderGrad.addColorStop(0.75, acc+'cc');
+  borderGrad.addColorStop(1,   acc+'44');
+  ctx.shadowColor = acc; ctx.shadowBlur = 8;
+  ctx.strokeStyle = borderGrad; ctx.lineWidth = 1.8;
+  roundRectPath(ctx, 11, 11, W-22, H-22, 20); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Inner thin border
+  ctx.strokeStyle = acc+'30'; ctx.lineWidth = 0.8;
+  roundRectPath(ctx, 18, 18, W-36, H-36, 16); ctx.stroke();
+
+  // ── 5. CORNER ORNAMENTS ───────────────────────────────────────────────────
+  const co = 32;
+  drawCornerOrnament(ctx, 28, 28, co, acc+'cc', false, false);
+  drawCornerOrnament(ctx, W-28, 28, co, acc+'cc', true, false);
+  drawCornerOrnament(ctx, 28, H-28, co, acc+'cc', false, true);
+  drawCornerOrnament(ctx, W-28, H-28, co, acc+'cc', true, true);
+
+  // ── 6. LOGO BAR ───────────────────────────────────────────────────────────
+  ctx.fillStyle = acc+'bb'; ctx.font = 'bold 8px monospace'; ctx.textAlign = 'center';
+  ctx.letterSpacing = '4px';
+  ctx.fillText('✦  S E C R E T M S G  A I  ✦', W/2, 46);
+
+  // Thin divider under logo
+  const ldg = ctx.createLinearGradient(60,0,W-60,0);
+  ldg.addColorStop(0,'transparent'); ldg.addColorStop(0.5,acc+'55'); ldg.addColorStop(1,'transparent');
+  ctx.strokeStyle = ldg; ctx.lineWidth = 0.6;
+  ctx.beginPath(); ctx.moveTo(60,52); ctx.lineTo(W-60,52); ctx.stroke();
+
+  // ── 7. CENTRAL GLOW + EMOJI SEAL ─────────────────────────────────────────
+  // Outer atmospheric glow
+  const eg = ctx.createRadialGradient(W/2, 98, 0, W/2, 98, 70);
+  eg.addColorStop(0,   acc+'44');
+  eg.addColorStop(0.5, acc+'18');
+  eg.addColorStop(1,   'transparent');
+  ctx.fillStyle = eg; ctx.beginPath(); ctx.arc(W/2, 98, 70, 0, Math.PI*2); ctx.fill();
+
+  // Seal ring — outer
+  ctx.shadowColor = acc; ctx.shadowBlur = 14;
+  ctx.strokeStyle = acc+'77'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(W/2, 98, 40, 0, Math.PI*2); ctx.stroke();
+  // Inner ring
+  ctx.strokeStyle = acc+'44'; ctx.lineWidth = 0.7;
+  ctx.beginPath(); ctx.arc(W/2, 98, 46, 0, Math.PI*2); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Tiny tick marks around ring
+  for(let i=0;i<24;i++){
+    const a = (i/24)*Math.PI*2;
+    const r1 = 50, r2 = i%6===0 ? 56 : 53;
+    ctx.strokeStyle = i%6===0 ? acc+'99' : acc+'44';
+    ctx.lineWidth = i%6===0 ? 1.2 : 0.6;
+    ctx.beginPath();
+    ctx.moveTo(W/2+Math.cos(a)*r1, 98+Math.sin(a)*r1);
+    ctx.lineTo(W/2+Math.cos(a)*r2, 98+Math.sin(a)*r2);
+    ctx.stroke();
+  }
+
+  // Emoji
+  ctx.font = '44px serif'; ctx.textAlign = 'center';
+  ctx.fillText(theme.emoji, W/2, 114);
+
+  // ── 8. HEADLINE TEXT ──────────────────────────────────────────────────────
+  ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 6;
+  ctx.fillStyle = 'rgba(255,255,255,0.93)';
+  ctx.font = 'italic 700 19px serif'; ctx.textAlign = 'center';
+  ctx.fillText('Someone left you a', W/2, 158);
+
+  // Accent headline with subtle glow
+  ctx.shadowColor = acc; ctx.shadowBlur = 12;
+  ctx.fillStyle = acc;
+  ctx.font = 'italic 700 24px serif';
+  ctx.fillText('secret message 👀', W/2, 187);
+  ctx.shadowBlur = 0;
+
+  // Sub-caption
+  const capGrad = ctx.createLinearGradient(W/2-100,0,W/2+100,0);
+  capGrad.addColorStop(0,'transparent'); capGrad.addColorStop(0.5,acc+'cc'); capGrad.addColorStop(1,'transparent');
+  ctx.strokeStyle = capGrad; ctx.lineWidth = 0.7;
+  ctx.beginPath(); ctx.moveTo(W/2-100,198); ctx.lineTo(W/2+100,198); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.42)'; ctx.font = '10px monospace'; ctx.textAlign = 'center';
+  ctx.fillText('scan to reveal your message', W/2, 215);
+
+  // ── 9. QR CODE FRAME — luxury card ───────────────────────────────────────
+  const QX = W/2-96, QY = 226, QS = 192, QR = 18;
+
+  // Card shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 6;
+  ctx.fillStyle = '#0a0a0a';
+  roundRectPath(ctx, QX, QY, QS, QS, QR); ctx.fill();
+  ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+  // Card background gradient
+  const cardBg = ctx.createLinearGradient(QX, QY, QX+QS, QY+QS);
+  cardBg.addColorStop(0, '#141414');
+  cardBg.addColorStop(1, '#0c0c0c');
+  ctx.fillStyle = cardBg;
+  roundRectPath(ctx, QX, QY, QS, QS, QR); ctx.fill();
+
+  // Inner glow on card
+  const cardGlow = ctx.createRadialGradient(W/2, QY+QS/2, 20, W/2, QY+QS/2, QS*0.7);
+  cardGlow.addColorStop(0, acc+'14');
+  cardGlow.addColorStop(1, 'transparent');
+  ctx.fillStyle = cardGlow;
+  roundRectPath(ctx, QX, QY, QS, QS, QR); ctx.fill();
+
+  // Card border — glowing accent
+  ctx.shadowColor = acc; ctx.shadowBlur = 10;
+  const cardBorder = ctx.createLinearGradient(QX, QY, QX+QS, QY+QS);
+  cardBorder.addColorStop(0,   acc+'88');
+  cardBorder.addColorStop(0.5, acc+'ff');
+  cardBorder.addColorStop(1,   acc+'66');
+  ctx.strokeStyle = cardBorder; ctx.lineWidth = 1.5;
+  roundRectPath(ctx, QX, QY, QS, QS, QR); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Card inner fine border
+  ctx.strokeStyle = acc+'22'; ctx.lineWidth = 0.6;
+  roundRectPath(ctx, QX+5, QY+5, QS-10, QS-10, QR-4); ctx.stroke();
+
+  // Corner bracket accents on QR frame
+  [[QX+8,QY+8],[QX+QS-8,QY+8],[QX+8,QY+QS-8],[QX+QS-8,QY+QS-8]].forEach(([bx,by],i)=>{
+    const sx = i%2===0?1:-1, sy = i<2?1:-1;
+    ctx.strokeStyle = acc+'dd'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(bx+sx*16, by); ctx.lineTo(bx, by); ctx.lineTo(bx, by+sy*16);
+    ctx.stroke();
+  });
+
+  // ── 10. RENDER QR CODE ────────────────────────────────────────────────────
+  const qrDiv = document.createElement('div');
+  qrDiv.style.cssText = 'position:absolute;left:-9999px;top:-9999px;';
+  document.body.appendChild(qrDiv);
+  const QR_SIZE = 158;
+  const QR_X = W/2 - QR_SIZE/2;
+  const QR_Y = QY + (QS - QR_SIZE)/2;
+  try {
+    new QRCode(qrDiv, { text: url, width: QR_SIZE, height: QR_SIZE, colorDark: '#ffffff', colorLight: 'transparent' });
+    setTimeout(() => {
+      const qi = qrDiv.querySelector('img') || qrDiv.querySelector('canvas');
+      if (qi) {
+        const draw = () => {
+          ctx.drawImage(qi, QR_X, QR_Y, QR_SIZE, QR_SIZE);
+          drawPosterFooter(ctx, W, H, payload, theme);
+        };
+        qi.tagName==='IMG' ? (qi.complete ? draw() : (qi.onload=draw)) : draw();
+      }
+      try{ document.body.removeChild(qrDiv); }catch(e){}
+    }, 300);
+  } catch(e) {
+    try{ document.body.removeChild(qrDiv); }catch(ex){}
+    drawPosterFooter(ctx, W, H, payload, theme);
+  }
+}
+
+function drawPosterFooter(ctx, W, H, payload, theme){
+  const acc = theme.accent;
+
+  // ── RECIPIENT NAME PILL ────────────────────────────────────────────────────
+  if (payload.r) {
+    const label = '✦  FOR  ' + payload.r.toUpperCase() + '  ✦';
+    ctx.font = 'bold 13px monospace';
+    const tw = ctx.measureText(label).width;
+    const pw = tw + 40, ph = 36, px = W/2 - pw/2, py = H - 110;
+
+    // Pill shadow
+    ctx.shadowColor = acc; ctx.shadowBlur = 20;
+    // Pill background — gradient fill
+    const pg = ctx.createLinearGradient(px, py, px+pw, py+ph);
+    pg.addColorStop(0, acc+'22');
+    pg.addColorStop(0.5, acc+'44');
+    pg.addColorStop(1, acc+'22');
+    ctx.fillStyle = pg;
+    roundRectPath(ctx, px, py, pw, ph, 18); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Pill border
+    const pb = ctx.createLinearGradient(px, py, px+pw, py);
+    pb.addColorStop(0, acc+'66'); pb.addColorStop(0.5, acc+'ff'); pb.addColorStop(1, acc+'66');
+    ctx.strokeStyle = pb; ctx.lineWidth = 1.2;
+    roundRectPath(ctx, px, py, pw, ph, 18); ctx.stroke();
+
+    // Text
+    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 13px monospace'; ctx.textAlign = 'center';
+    ctx.fillText(label, W/2, py + 24);
+  }
+
+  // ── BOTTOM DIVIDER ─────────────────────────────────────────────────────────
+  const dg = ctx.createLinearGradient(40, 0, W-40, 0);
+  dg.addColorStop(0, 'transparent');
+  dg.addColorStop(0.3, acc+'55');
+  dg.addColorStop(0.5, acc+'99');
+  dg.addColorStop(0.7, acc+'55');
+  dg.addColorStop(1, 'transparent');
+  ctx.strokeStyle = dg; ctx.lineWidth = 0.7;
+  ctx.beginPath(); ctx.moveTo(40, H-60); ctx.lineTo(W-40, H-60); ctx.stroke();
+
+  // Small diamonds on divider
+  [[W/2-90,H-60],[W/2,H-60],[W/2+90,H-60]].forEach(([dx,dy])=>{
+    ctx.fillStyle = acc+'88'; ctx.beginPath();
+    ctx.moveTo(dx,dy-3.5); ctx.lineTo(dx+3.5,dy); ctx.lineTo(dx,dy+3.5); ctx.lineTo(dx-3.5,dy); ctx.closePath(); ctx.fill();
+  });
+
+  // ── BRANDING ──────────────────────────────────────────────────────────────
+  ctx.fillStyle = 'rgba(255,255,255,0.50)'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center';
+  ctx.fillText('D E L I V E R E D  B Y  V O D D I C', W/2, H-40);
+  ctx.fillStyle = acc+'77'; ctx.font = '8px monospace';
+  ctx.fillText('secretmessenger.voddic.com.ng', W/2, H-24);
+
+  // Bottom corner sparkles
+  drawStar(ctx, 36, H-36, 3.5, acc, 0.55);
+  drawStar(ctx, W-36, H-36, 3.5, acc, 0.55);
+  drawStar(ctx, 36, 36, 2.5, acc, 0.3);
+  drawStar(ctx, W-36, 36, 2.5, acc, 0.3);
 }
 
 function downloadPoster(){
@@ -1304,62 +1539,108 @@ function addBubble(type,text,container){
   return bubble;
 }
 
-// ===================== TTS — accurate, clear male voice =====================
-let _voicesLoaded = false;
-let _maleVoice = null;
+// ===================== TTS — guaranteed natural female voice =====================
+let _femaleVoice = null;
+let _voiceLoadAttempts = 0;
+
+// Patterns that indicate MALE voice — block all of these
+const MALE_VOICE_PAT = /\b(david|mark|james|daniel|george|jorge|fred|ralph|thomas|zarvox|trinoids|cellos|whisper|albert|deranged|good news|hysterical|junior|pipe organ|bad news|boing|bubbles|bruce|diego|carlos|eddy|grandpa|oliver|paulo|reed|luca|aaron|rishi|noel|mobius|lee|thomas|henrik|marijn|joana|damayanti|yuna|otoya|ichiro|mei|tian-tian|yu-shu|sin-ji|tommy)\b/i;
 
 function loadVoices(){
-  if(_voicesLoaded) return;
   const voices = window.speechSynthesis.getVoices();
-  if(voices.length===0) return;
-  _voicesLoaded = true;
+  if (!voices.length) return;
+  _voiceLoadAttempts++;
 
-  // Priority: Google UK English Male > Daniel (UK) > any en-GB > en-US male names > first English
+  // Step 1: English voices only
+  const enVoices = voices.filter(v => v.lang && v.lang.startsWith('en'));
+
+  // Step 2: Remove explicitly male voices
+  const nonMale = enVoices.filter(v => !MALE_VOICE_PAT.test(v.name));
+
+  // Step 3: Priority ladder — best neural female first
   const priority = [
-    v => /google uk english male/i.test(v.name),
-    v => /daniel/i.test(v.name) && v.lang.startsWith('en'),
-    v => /thomas/i.test(v.name) && v.lang.startsWith('en'),
-    v => /mark/i.test(v.name) && v.lang.startsWith('en'),
-    v => /david/i.test(v.name) && v.lang.startsWith('en'),
-    v => /alex/i.test(v.name) && v.lang==='en-US',
-    v => /male/i.test(v.name) && v.lang.startsWith('en'),
-    v => v.lang==='en-GB',
+    v => /google uk english female/i.test(v.name),           // Chrome — best quality
+    v => /google us english/i.test(v.name) && !/male/i.test(v.name), // Chrome fallback
+    v => /samantha/i.test(v.name),                            // macOS / iOS — warm, natural
+    v => /ava/i.test(v.name)  && v.lang.startsWith('en'),    // macOS (neural)
+    v => /allison/i.test(v.name) && v.lang.startsWith('en'), // macOS
+    v => /siri/i.test(v.name) && v.lang.startsWith('en'),    // iOS
+    v => /karen/i.test(v.name) && v.lang.startsWith('en'),   // macOS Australian
+    v => /moira/i.test(v.name) && v.lang.startsWith('en'),   // macOS Irish
+    v => /fiona/i.test(v.name) && v.lang.startsWith('en'),   // macOS Scottish
+    v => /victoria/i.test(v.name) && v.lang.startsWith('en'),
+    v => /zira/i.test(v.name) && v.lang.startsWith('en'),    // Windows female
+    v => /hazel/i.test(v.name) && v.lang.startsWith('en'),   // Windows UK female
+    v => /susan/i.test(v.name) && v.lang.startsWith('en'),
+    v => /heera/i.test(v.name) && v.lang.startsWith('en'),
+    v => /libby/i.test(v.name) && v.lang.startsWith('en'),   // Windows neural female
+    v => /aria/i.test(v.name) && v.lang.startsWith('en'),    // Windows neural female
+    v => /jenny/i.test(v.name) && v.lang.startsWith('en'),   // Windows neural female
+    v => /female|woman|girl/i.test(v.name) && v.lang.startsWith('en'),
+    v => v.lang === 'en-GB',   // UK voices tend to be female default
+    v => v.lang === 'en-US',
     v => v.lang.startsWith('en'),
   ];
-  for(const test of priority){
-    const found = voices.find(test);
-    if(found){ _maleVoice=found; break; }
+
+  let found = null;
+  for (const test of priority) {
+    found = nonMale.find(test);
+    if (found) break;
   }
+
+  // Absolute fallback — pick first non-male English voice, else first English
+  if (!found) found = nonMale[0] || enVoices[0] || voices[0];
+  if (found) _femaleVoice = found;
 }
 
+// Retry loading voices robustly — mobile browsers are slow to expose voices
+function ensureVoicesLoaded(cb) {
+  if (_femaleVoice) { if(cb) cb(); return; }
+  loadVoices();
+  if (_femaleVoice) { if(cb) cb(); return; }
+  // Poll every 200ms up to 3 seconds
+  let n = 0;
+  const t = setInterval(() => {
+    n++;
+    loadVoices();
+    if (_femaleVoice || n >= 15) { clearInterval(t); if(cb) cb(); }
+  }, 200);
+}
+
+// speakBold — warm, expressive delivery for AI narration
 function speakBold(rawText){
-  if(!window.speechSynthesis) return;
-  loadVoices();
-  window.speechSynthesis.cancel();
-  const clean = rawText.replace(/<[^>]+>/g,'').replace(/[""«»\u201c\u201d]/g,'"').replace(/\n+/g,' ').trim();
-  if(!clean) return;
-  const utt = new SpeechSynthesisUtterance(clean);
-  utt.rate   = 0.78;   // slower = more authoritative, clearer
-  utt.pitch  = 0.45;   // lower = deeper male tone
-  utt.volume = 1.0;
-  if(_maleVoice) utt.voice = _maleVoice;
-  // Small silence before speaking for clarity
-  setTimeout(()=>window.speechSynthesis.speak(utt), 80);
+  if (!window.speechSynthesis) return;
+  ensureVoicesLoaded(() => {
+    window.speechSynthesis.cancel();
+    const clean = rawText.replace(/<[^>]+>/g,'').replace(/[""«»\u201c\u201d]/g,'').replace(/\n+/g,' ').trim();
+    if (!clean) return;
+    const utt = new SpeechSynthesisUtterance(clean);
+    utt.rate   = 0.88;   // slow, warm, feels like a real person reading
+    utt.pitch  = 1.12;   // slight feminine lift
+    utt.volume = 1.0;
+    if (_femaleVoice) utt.voice = _femaleVoice;
+    setTimeout(() => window.speechSynthesis.speak(utt), 80);
+  });
 }
 
+// speak — used for chat message lines (slightly faster)
 function speak(rawText){
-  if(!window.speechSynthesis) return;
-  loadVoices();
-  window.speechSynthesis.cancel();
-  const clean = rawText.replace(/<[^>]+>/g,'').replace(/[""«»\u201c\u201d]/g,'"').trim();
-  if(!clean) return;
-  const utt = new SpeechSynthesisUtterance(clean);
-  utt.rate  = 0.88;
-  utt.pitch = 0.9;
-  utt.volume = 1.0;
-  if(_maleVoice) utt.voice = _maleVoice;
-  setTimeout(()=>window.speechSynthesis.speak(utt), 80);
+  if (!window.speechSynthesis) return;
+  ensureVoicesLoaded(() => {
+    window.speechSynthesis.cancel();
+    const clean = rawText.replace(/<[^>]+>/g,'').replace(/[""«»\u201c\u201d]/g,'').trim();
+    if (!clean) return;
+    const utt = new SpeechSynthesisUtterance(clean);
+    utt.rate  = 0.93;
+    utt.pitch = 1.08;
+    utt.volume = 1.0;
+    if (_femaleVoice) utt.voice = _femaleVoice;
+    setTimeout(() => window.speechSynthesis.speak(utt), 80);
+  });
 }
+
+// Load on voices-changed + DOMContentLoaded + user interaction (mobile)
+window.speechSynthesis.onvoiceschanged = loadVoices;
 
 // ===================== UTILS =====================
 function getTime(){
@@ -1378,13 +1659,18 @@ function checkHash(){
   } else { showPage('home-page'); }
 }
 
-// Load voices on first interaction AND on voices changed
-window.speechSynthesis.onvoiceschanged = loadVoices;
+// Load voices eagerly on DOMContentLoaded + on first user gesture (needed on some mobile browsers)
 window.addEventListener('DOMContentLoaded', () => {
   loadVoices();
+  // Retry after a short delay in case voices aren't populated yet
+  setTimeout(loadVoices, 500);
+  setTimeout(loadVoices, 1500);
   checkHash();
 });
 window.addEventListener('hashchange', checkHash);
+// Also try on first touch/click — iOS/Android often only expose voices after a gesture
+window.addEventListener('touchstart', loadVoices, { once: true });
+window.addEventListener('click', loadVoices, { once: true });
 </script>
 
 <!-- Google Analytics (optional) -->
@@ -1392,9 +1678,6 @@ window.addEventListener('hashchange', checkHash);
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
 -->
-
-
-
 
 </body>
 </html>
