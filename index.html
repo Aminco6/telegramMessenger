@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     
-<meta name="6a97888e-site-verification" content="8bbf3da9d68fe55f806d3d937f44e8d7">
+    <meta name="6a97888e-site-verification" content="8bbf3da9d68fe55f806d3d937f44e8d7">
+    
     
     
 <meta charset="UTF-8">
@@ -11,1081 +13,282 @@
 <meta property="og:title" content="Someone sent you a secret message 👀">
 <meta property="og:description" content="Scan or open to reveal who's thinking about you...">
 <meta property="og:image" content="https://via.placeholder.com/400x200/1a0a00/ffa500?text=Secret+Message">
-
-<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-
-<!-- QR Code library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
+<!-- MagSrv ad provider — loaded once globally -->
+<script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script>
 <style>
-/* ===================== RESET & VARIABLES ===================== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #0d0806;
-  --surface: #1a1008;
-  --surface2: #231610;
-  --border: #3a2010;
-  --gold: #e8a020;
-  --gold-dim: #7a4a10;
-  --amber: #ff7a20;
-  --cream: #f5e8d0;
-  --text: #d4b896;
-  --text-dim: #7a5a3a;
-  --chat-bg: #0f1a12;
-  --bubble-ai: #1e2d20;
-  --bubble-user: #1a2d1a;
-  --green: #4caf50;
-  --font-mono: 'Space Mono', monospace;
-  --font-serif: 'Lora', serif;
-  --radius: 14px;
-  --glow: 0 0 20px rgba(232,160,32,0.3);
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: var(--font-serif);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ===================== GRAIN OVERLAY ===================== */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 9999; opacity: 0.4;
-}
-
-/* ===================== SECTIONS ===================== */
-.page { display: none; min-height: 100vh; }
-.page.active { display: flex; flex-direction: column; }
-
-/* ===================== HOMEPAGE ===================== */
-#home-page {
-  padding: 0;
-  background: radial-gradient(ellipse at 20% 0%, #2a1505 0%, var(--bg) 60%);
-}
-
-.home-header {
-  text-align: center;
-  padding: 48px 24px 32px;
-  position: relative;
-}
-
-.home-header::after {
-  content: '';
-  display: block;
-  width: 60px; height: 2px;
-  background: var(--gold);
-  margin: 20px auto 0;
-}
-
-.site-logo {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 4px;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 16px;
-  opacity: 0.8;
-}
-
-.home-title {
-  font-size: clamp(28px, 6vw, 48px);
-  font-style: italic;
-  color: var(--cream);
-  line-height: 1.2;
-  margin-bottom: 8px;
-}
-
-.home-title span {
-  color: var(--gold);
-  font-style: normal;
-}
-
-.home-subtitle {
-  font-size: 14px;
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-  letter-spacing: 1px;
-}
-
-/* ===================== FORM ===================== */
-.form-container {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 0 20px 40px;
-  width: 100%;
-}
-
-.form-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-.form-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-}
-
-.form-section-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 3px;
-  color: var(--gold-dim);
-  text-transform: uppercase;
-  margin-bottom: 16px;
-}
-
-.form-group { margin-bottom: 18px; }
-
-label {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-input, textarea, select {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 14px;
-  color: var(--cream);
-  font-family: var(--font-serif);
-  font-size: 15px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;
-  -webkit-appearance: none;
-}
-
-input:focus, textarea:focus, select:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(232,160,32,0.12);
-}
-
-textarea {
-  resize: vertical;
-  min-height: 90px;
-  font-style: italic;
-}
-
-select option { background: #1a1008; }
-
-/* Emotion grid */
-.emotion-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 18px;
-}
-
-.emotion-btn {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 4px;
-  color: var(--text-dim);
-  font-size: 11px;
-  font-family: var(--font-mono);
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-}
-
-.emotion-btn:hover { border-color: var(--gold-dim); color: var(--text); }
-.emotion-btn.selected { border-color: var(--gold); color: var(--gold); background: rgba(232,160,32,0.08); }
-.emotion-btn .emo-icon { font-size: 20px; }
-
-/* Gender row */
-.gender-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.gender-btn {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 8px;
-  color: var(--text-dim);
-  font-size: 12px;
-  font-family: var(--font-mono);
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 1px;
-}
-
-.gender-btn:hover { border-color: var(--gold-dim); color: var(--text); }
-.gender-btn.selected { border-color: var(--gold); color: var(--gold); background: rgba(232,160,32,0.08); font-weight: 700; }
-
-/* Generate button */
-.generate-btn {
-  width: 100%;
-  padding: 16px;
-  background: var(--gold);
-  color: #0d0806;
-  border: none;
-  border-radius: 10px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 8px;
-}
-
-.generate-btn:hover {
-  background: var(--amber);
-  box-shadow: var(--glow);
-  transform: translateY(-1px);
-}
-
-.generate-btn:active { transform: translateY(0); }
-
-/* Ad slot */
-.ad-slot {
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  margin: 16px 0;
-}
-
-/* ===================== MANDATORY AD MODAL (Adsterra + PropellerAds) ===================== */
-#ad-modal {
-  position: fixed; inset: 0;
-  z-index: 99999;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.ad-modal-backdrop {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,0.92);
-  backdrop-filter: blur(6px);
-}
-
-.ad-modal-box {
-  position: relative;
-  width: 100%;
-  max-width: 520px;
-  background: #0d0d0d;
-  border-top: 2px solid var(--gold);
-  border-left: 1px solid var(--border);
-  border-right: 1px solid var(--border);
-  border-radius: 20px 20px 0 0;
-  overflow: hidden;
-  animation: slideUp 0.4s cubic-bezier(0.22,1,0.36,1);
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.ad-modal-header {
-  padding: 16px 20px 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid var(--border);
-}
-
-.ad-modal-logo {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--gold);
-  letter-spacing: 3px;
-  flex-shrink: 0;
-}
-
-.ad-modal-title {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text);
-  letter-spacing: 1px;
-}
-
-/* Ad provider container */
-.ad-modal-ad-wrap {
-  width: 100%;
-  min-height: 280px;
-  background: #0a0a0a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.ad-modal-ad-wrap::before {
-  content: 'Loading ad...';
-  position: absolute;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-dim);
-  letter-spacing: 2px;
-  z-index: 0;
-}
-
-/* Scripts loaded inside the wrap will render on top */
-.ad-modal-ad-wrap > * { position: relative; z-index: 1; }
-
-.ad-modal-footer {
-  padding: 14px 20px 20px;
-}
-
-.ad-progress-bar-track {
-  height: 3px;
-  background: var(--border);
-  border-radius: 2px;
-  margin-bottom: 14px;
-  overflow: hidden;
-}
-
-.ad-progress-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
-  border-radius: 2px;
-  transition: width 1s linear;
-}
-
-.ad-modal-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.ad-countdown {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  flex: 1;
-  min-width: 0;
-}
-
-.ad-countdown strong {
-  color: var(--gold);
-}
-
-.ad-skip-btn {
-  padding: 10px 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  cursor: not-allowed;
-  transition: all 0.3s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.ad-skip-btn:not(:disabled) {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: #0d0806;
-  cursor: pointer;
-  font-weight: 700;
-  box-shadow: var(--glow);
-}
-
-.ad-skip-btn:not(:disabled):hover {
-  background: var(--amber);
-}
-
-.ad-disclaimer {
-  margin-top: 10px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--text-dim);
-  opacity: 0.5;
-  text-align: center;
-  letter-spacing: 1px;
-}
-
-/* ===================== INLINE VIDEO BUBBLE ===================== */
-.video-seg-bubble {
-  align-self: flex-start;
-  width: calc(100% - 0px);
-  max-width: 100%;
-  margin: 8px 0;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid rgba(232,160,32,0.35);
-  background: #000;
-  box-shadow: 0 4px 28px rgba(0,0,0,0.7);
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.5s, transform 0.5s;
-}
-
-.video-seg-bubble.in { opacity: 1; transform: translateY(0); }
-
-.video-seg-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  background: rgba(232,160,32,0.1);
-  border-bottom: 1px solid rgba(232,160,32,0.2);
-}
-
-.video-seg-icon { font-size: 16px; flex-shrink: 0; }
-
-.video-seg-title {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--gold);
-  letter-spacing: 1px;
-  flex: 1;
-}
-
-.video-seg-badge {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  background: rgba(232,160,32,0.15);
-  color: var(--gold);
-  border: 1px solid rgba(232,160,32,0.35);
-  border-radius: 20px;
-  padding: 2px 8px;
-}
-
-.video-seg-frame-wrap {
-  position: relative;
-  width: 100%;
-  padding-bottom: 56.25%;
-  background: #000;
-}
-
-.video-seg-frame-wrap iframe {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  border: none;
-}
-
-.video-seg-veil {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  opacity: 0;
-  transition: opacity 0.4s;
-  pointer-events: none;
-}
-
-.video-seg-veil.show { opacity: 1; }
-
-.veil-icon { font-size: 28px; }
-.veil-text {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: rgba(255,255,255,0.6);
-  letter-spacing: 1px;
-}
-
-.video-seg-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 14px;
-  background: rgba(0,0,0,0.5);
-  border-top: 1px solid rgba(232,160,32,0.12);
-}
-
-.seg-progress {
-  display: flex; gap: 6px; align-items: center;
-}
-
-.sdot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--border);
-  transition: all 0.3s;
-}
-
-.sdot.done { background: var(--gold); }
-.sdot.active { background: var(--amber); box-shadow: 0 0 5px var(--amber); animation: dotPulse 1s infinite; }
-
-.video-full-btn {
-  background: transparent;
-  border: 1px solid rgba(232,160,32,0.35);
-  border-radius: 20px;
-  padding: 4px 12px;
-  color: var(--gold);
-  font-family: var(--font-mono);
-  font-size: 9px;
-  cursor: pointer;
-  transition: all 0.2s;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.video-full-btn.show { opacity: 1; pointer-events: all; }
-.video-full-btn:hover { background: rgba(232,160,32,0.1); }
-
-.seg-play-bar-track {
-  height: 2px;
-  background: rgba(255,255,255,0.08);
-  overflow: hidden;
-}
-
-.seg-play-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: var(--gold);
-  transition: width linear;
-}
-
-/* ===================== SHARE PAGE ===================== */
-#share-page {
-  background: radial-gradient(ellipse at 80% 100%, #1a0a05 0%, var(--bg) 60%);
-  padding: 32px 20px 48px;
-  align-items: center;
-}
-
-.share-header {
-  text-align: center;
-  margin-bottom: 28px;
-}
-
-.share-header h2 {
-  font-size: 22px;
-  font-style: italic;
-  color: var(--cream);
-  margin-bottom: 6px;
-}
-
-.share-header p {
-  font-size: 12px;
-  font-family: var(--font-mono);
-  color: var(--text-dim);
-}
-
-.share-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  max-width: 440px;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-.share-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-}
-
-.link-box {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  word-break: break-all;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.link-box:hover { border-color: var(--gold); }
-
-.copy-btn {
-  width: 100%;
-  padding: 12px;
-  background: transparent;
-  border: 1px solid var(--gold);
-  border-radius: 8px;
-  color: var(--gold);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 2px;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-bottom: 20px;
-}
-
-.copy-btn:hover { background: rgba(232,160,32,0.1); }
-
-#poster-canvas-wrap {
-  margin: 0 auto 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-#poster-canvas {
-  border-radius: 12px;
-  max-width: 100%;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-}
-
-.download-btn {
-  width: 100%;
-  padding: 13px;
-  background: var(--gold);
-  color: #0d0806;
-  border: none;
-  border-radius: 8px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.download-btn:hover { background: var(--amber); }
-
-.share-btns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.share-social-btn {
-  padding: 12px 8px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: all 0.2s;
-  text-decoration: none;
-}
-
-.share-social-btn:hover { border-color: var(--gold); color: var(--gold); }
-
-.back-btn {
-  margin-top: 20px;
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 8px;
-}
-
-/* ===================== REVEAL PAGE ===================== */
-#reveal-page {
-  background: var(--bg);
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-#boot-screen {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 40px 28px;
-  background: #000;
-  font-family: var(--font-mono);
-}
-
-.boot-line {
-  font-size: 13px;
-  color: #00e640;
-  margin-bottom: 6px;
-  opacity: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 100%;
-}
-
-.boot-line.shown { opacity: 1; }
-
-.boot-cursor {
-  display: inline-block;
-  width: 8px; height: 14px;
-  background: #00e640;
-  margin-left: 4px;
-  animation: blink 0.8s infinite;
-  vertical-align: middle;
-}
-
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-.boot-thinking {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--gold);
-  margin-top: 20px;
-  display: none;
-}
-
-.boot-thinking.show { display: block; }
-
-#name-verify-screen {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 40px 24px;
-  text-align: center;
-  background: linear-gradient(180deg, #000 0%, var(--bg) 100%);
-}
-
-.verify-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 32px 24px;
-  max-width: 360px;
-  width: 100%;
-  position: relative;
-}
-
-.verify-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-}
-
-.verify-ai-icon {
-  width: 64px; height: 64px;
-  background: radial-gradient(circle, #2a2a00, #0d0806);
-  border: 2px solid var(--gold);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  margin: 0 auto 20px;
-  box-shadow: var(--glow);
-}
-
-.verify-text {
-  font-style: italic;
-  font-size: 15px;
-  color: var(--text);
-  margin-bottom: 24px;
-  line-height: 1.7;
-}
-
-.verify-input {
-  margin-bottom: 14px;
-}
-
-.verify-btn {
-  width: 100%;
-  padding: 14px;
-  background: var(--gold);
-  color: #0d0806;
-  border: none;
-  border-radius: 8px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.verify-btn:hover { background: var(--amber); }
-
-.verify-result {
-  margin-top: 16px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  display: none;
-}
-
-.verify-result.match {
-  background: rgba(76,175,80,0.15);
-  border: 1px solid rgba(76,175,80,0.4);
-  color: #4caf50;
-  display: block;
-}
-
-.verify-result.no-match {
-  background: rgba(232,160,32,0.1);
-  border: 1px solid rgba(232,160,32,0.3);
-  color: var(--gold);
-  display: block;
-}
-
-/* ===================== CHAT UI ===================== */
-#chat-screen {
-  display: none;
-  flex-direction: column;
-  min-height: 100vh;
-  background: var(--chat-bg);
-}
-
-.chat-header {
-  background: #1a2d1a;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid rgba(76,175,80,0.2);
-  position: sticky; top: 0; z-index: 10;
-}
-
-.chat-avatar {
-  width: 42px; height: 42px;
-  background: radial-gradient(circle, #2a3a2a, #1a2d1a);
-  border: 2px solid var(--green);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.chat-avatar-info h3 {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: #e8f5e8;
-  font-weight: 700;
-}
-
-.chat-avatar-info p {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--green);
-}
-
-.chat-messages {
-  flex: 1;
-  padding: 20px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-}
-
-.bubble {
-  max-width: 80%;
-  padding: 12px 16px;
-  border-radius: 18px;
-  font-size: 14px;
-  line-height: 1.6;
-  font-style: italic;
-  position: relative;
-}
-
-.bubble.ai {
-  background: var(--bubble-ai);
-  color: #c8e6c8;
-  border-bottom-left-radius: 4px;
-  align-self: flex-start;
-  border: 1px solid rgba(76,175,80,0.15);
-}
-
-.bubble.ai::before {
-  content: '';
-  position: absolute; left: -8px; bottom: 0;
-  border: 8px solid transparent;
-  border-right-color: var(--bubble-ai);
-  border-bottom-color: var(--bubble-ai);
-}
-
-.bubble.user {
-  background: #1a2d3a;
-  color: #c8dce8;
-  border-bottom-right-radius: 4px;
-  align-self: flex-end;
-  border: 1px solid rgba(100,160,200,0.15);
-}
-
-.bubble-time {
-  font-size: 9px;
-  font-family: var(--font-mono);
-  color: rgba(255,255,255,0.3);
-  margin-top: 4px;
-  display: block;
-}
-
-.typing-indicator {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 12px 16px;
-  background: var(--bubble-ai);
-  border-radius: 18px;
-  border-bottom-left-radius: 4px;
-  align-self: flex-start;
-  display: none;
-}
-
-.typing-indicator.show { display: flex; }
-
-.typing-dot {
-  width: 7px; height: 7px;
-  background: var(--green);
-  border-radius: 50%;
-  animation: typingBounce 1.2s infinite;
-}
-
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes typingBounce {
-  0%,80%,100%{transform:scale(0.8);opacity:0.5}
-  40%{transform:scale(1.2);opacity:1}
-}
-
-.chat-footer {
-  padding: 20px 16px;
-  text-align: center;
-  border-top: 1px solid rgba(76,175,80,0.1);
-  background: var(--chat-bg);
-}
-
-.chat-footer-ad { margin-bottom: 16px; }
-
-.create-own-btn {
-  display: inline-block;
-  padding: 14px 32px;
-  background: var(--gold);
-  color: #0d0806;
-  border: none;
-  border-radius: 10px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.create-own-btn:hover { background: var(--amber); box-shadow: var(--glow); }
-
-.chat-share-btns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-.tts-btn {
-  background: transparent;
-  border: 1px solid rgba(76,175,80,0.3);
-  border-radius: 20px;
-  padding: 4px 10px;
-  color: var(--green);
-  font-size: 10px;
-  font-family: var(--font-mono);
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 6px;
-}
-
-.tts-btn:hover { background: rgba(76,175,80,0.1); }
-
-.bubble { opacity: 0; transform: translateY(10px); transition: opacity 0.4s, transform 0.4s; }
-.bubble.in { opacity: 1; transform: translateY(0); }
-
-.hidden { display: none !important; }
-.text-center { text-align: center; }
-
-#qr-hidden-gen { position: absolute; left: -9999px; top: -9999px; }
-
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-@media (max-width: 400px) {
-  .emotion-grid { grid-template-columns: repeat(3, 1fr); }
-  .form-card { padding: 20px 16px; }
-  .emotion-btn .emo-icon { font-size: 18px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0806;--surface:#1a1008;--surface2:#231610;--border:#3a2010;
+  --gold:#e8a020;--gold-dim:#7a4a10;--amber:#ff7a20;--cream:#f5e8d0;
+  --text:#d4b896;--text-dim:#7a5a3a;--chat-bg:#0f1a12;
+  --bubble-ai:#1e2d20;--green:#4caf50;
+  --font-mono:'Space Mono',monospace;--font-serif:'Lora',serif;
+  --radius:14px;--glow:0 0 20px rgba(232,160,32,0.3);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-serif);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.4}
+
+/* ======= PAGES ======= */
+.page{display:none;min-height:100vh}
+.page.active{display:flex;flex-direction:column}
+
+/* ======= HOME ======= */
+#home-page{background:radial-gradient(ellipse at 20% 0%,#2a1505,var(--bg) 60%)}
+.home-header{text-align:center;padding:48px 24px 32px;position:relative}
+.home-header::after{content:'';display:block;width:60px;height:2px;background:var(--gold);margin:20px auto 0}
+.site-logo{font-family:var(--font-mono);font-size:11px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;opacity:.8}
+.home-title{font-size:clamp(28px,6vw,48px);font-style:italic;color:var(--cream);line-height:1.2;margin-bottom:8px}
+.home-title span{color:var(--gold);font-style:normal}
+.home-subtitle{font-size:14px;color:var(--text-dim);font-family:var(--font-mono);letter-spacing:1px}
+
+/* ======= FORM ======= */
+.form-container{max-width:480px;margin:0 auto;padding:0 20px 40px;width:100%}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;position:relative;overflow:hidden}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.form-section-label{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:16px}
+.form-group{margin-bottom:18px}
+label{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px}
+input,textarea,select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--cream);font-family:var(--font-serif);font-size:15px;transition:border-color .2s,box-shadow .2s;outline:none;-webkit-appearance:none}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,160,32,.12)}
+textarea{resize:vertical;min-height:90px;font-style:italic}
+
+/* gender row */
+.gender-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gender-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 8px;color:var(--text-dim);font-size:12px;font-family:var(--font-mono);cursor:pointer;transition:all .2s;letter-spacing:1px}
+.gender-btn:hover{border-color:var(--gold-dim);color:var(--text)}
+.gender-btn.selected{border-color:var(--gold);color:var(--gold);background:rgba(232,160,32,.08);font-weight:700}
+
+/* emotion grid */
+.emotion-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.emotion-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 4px;color:var(--text-dim);font-size:11px;font-family:var(--font-mono);text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.emotion-btn:hover{border-color:var(--gold-dim);color:var(--text)}
+.emotion-btn.selected{border-color:var(--gold);color:var(--gold);background:rgba(232,160,32,.08)}
+.emotion-btn .emo-icon{font-size:20px}
+
+/* adult category notice */
+.adult-notice{background:rgba(255,0,80,.07);border:1px solid rgba(255,0,80,.25);border-radius:8px;padding:10px 14px;font-family:var(--font-mono);font-size:9px;color:rgba(255,100,120,.8);letter-spacing:1px;margin-bottom:18px;display:none}
+.adult-notice.show{display:block}
+
+.generate-btn{width:100%;padding:16px;background:var(--gold);color:#0d0806;border:none;border-radius:10px;font-family:var(--font-mono);font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:8px}
+.generate-btn:hover{background:var(--amber);box-shadow:var(--glow);transform:translateY(-1px)}
+.generate-btn:active{transform:translateY(0)}
+
+/* ad click counter badge */
+.ad-counter-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.3);border-radius:20px;padding:5px 12px;font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:12px}
+#global-ad-count{font-weight:700;font-size:13px}
+
+/* ======= GENERATING OVERLAY ======= */
+#generating-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.92);
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;z-index:99998;
+}
+#generating-overlay.show{display:flex}
+.gen-overlay-ad-wrap{
+  width:100%;max-width:480px;
+  background:#000;border-radius:16px 16px 0 0;
+  overflow:hidden;border:1px solid var(--border);
+  flex:1;display:flex;flex-direction:column;
+}
+.gen-overlay-ad-header{
+  padding:12px 18px;background:rgba(232,160,32,.08);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.gen-overlay-ad-title{font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:2px}
+.gen-overlay-status{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:10px;color:var(--green);
+  animation:statusPulse 1.5s infinite;
+}
+@keyframes statusPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.gen-overlay-ad-inner{
+  flex:1;min-height:220px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;background:#111;padding:16px;
+}
+.gen-overlay-ad-inner .magsrv-ad-zone{width:100%;text-align:center}
+.gen-overlay-footer{
+  padding:14px 18px 20px;
+  background:var(--surface);border-top:1px solid var(--border);
+}
+.gen-progress-track{height:3px;background:var(--border);border-radius:2px;margin-bottom:12px;overflow:hidden}
+.gen-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:2px;transition:width linear}
+.gen-bottom-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.gen-countdown-text{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);flex:1}
+.gen-countdown-text strong{color:var(--gold)}
+.gen-continue-btn{padding:10px 20px;background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--text-dim);font-family:var(--font-mono);font-size:11px;cursor:not-allowed;transition:all .3s;white-space:nowrap}
+.gen-continue-btn:not(:disabled){background:var(--gold);border-color:var(--gold);color:#0d0806;cursor:pointer;font-weight:700;box-shadow:var(--glow)}
+.gen-continue-btn:not(:disabled):hover{background:var(--amber)}
+.gen-disclaimer{margin-top:8px;font-family:var(--font-mono);font-size:9px;color:var(--text-dim);opacity:.5;text-align:center}
+
+/* ======= SHARE PAGE ======= */
+#share-page{background:radial-gradient(ellipse at 80% 100%,#1a0a05,var(--bg) 60%);padding:32px 20px 48px;align-items:center}
+.share-header{text-align:center;margin-bottom:28px}
+.share-header h2{font-size:22px;font-style:italic;color:var(--cream);margin-bottom:6px}
+.share-header p{font-size:12px;font-family:var(--font-mono);color:var(--text-dim)}
+.share-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;max-width:440px;width:100%;position:relative;overflow:hidden}
+.share-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.link-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);word-break:break-all;margin-bottom:12px;cursor:pointer;transition:border-color .2s}
+.link-box:hover{border-color:var(--gold)}
+.copy-btn{width:100%;padding:12px;background:transparent;border:1px solid var(--gold);border-radius:8px;color:var(--gold);font-family:var(--font-mono);font-size:11px;letter-spacing:2px;cursor:pointer;transition:all .2s;margin-bottom:20px}
+.copy-btn:hover{background:rgba(232,160,32,.1)}
+#poster-canvas-wrap{margin:0 auto 20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+#poster-canvas{border-radius:12px;max-width:100%;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+.download-btn{width:100%;padding:13px;background:var(--gold);color:#0d0806;border:none;border-radius:8px;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s}
+.download-btn:hover{background:var(--amber)}
+.share-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.share-social-btn{padding:12px 8px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font-mono);font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;text-decoration:none}
+.share-social-btn:hover{border-color:var(--gold);color:var(--gold)}
+.back-btn{margin-top:20px;background:transparent;border:none;color:var(--text-dim);font-family:var(--font-mono);font-size:10px;letter-spacing:2px;cursor:pointer;text-decoration:underline;padding:8px}
+
+/* ======= REVEAL PAGE ======= */
+#reveal-page{background:var(--bg);flex-direction:column;min-height:100vh}
+#boot-screen{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-height:100vh;padding:40px 28px;background:#000;font-family:var(--font-mono)}
+.boot-line{font-size:13px;color:#00e640;margin-bottom:6px;opacity:0;white-space:nowrap;overflow:hidden;max-width:100%}
+.boot-line.shown{opacity:1}
+.boot-cursor{display:inline-block;width:8px;height:14px;background:#00e640;margin-left:4px;animation:blink .8s infinite;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.boot-thinking{font-family:var(--font-mono);font-size:12px;color:var(--gold);margin-top:20px;display:none}
+.boot-thinking.show{display:block}
+
+/* name verify */
+#name-verify-screen{display:none;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;padding:40px 24px;text-align:center;background:linear-gradient(180deg,#000,var(--bg))}
+.verify-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 24px;max-width:360px;width:100%;position:relative}
+.verify-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.verify-ai-icon{width:64px;height:64px;background:radial-gradient(circle,#2a2a00,#0d0806);border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;box-shadow:var(--glow)}
+.verify-text{font-style:italic;font-size:15px;color:var(--text);margin-bottom:24px;line-height:1.7}
+.verify-input{margin-bottom:14px}
+.verify-btn{width:100%;padding:14px;background:var(--gold);color:#0d0806;border:none;border-radius:8px;font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s}
+.verify-btn:hover{background:var(--amber)}
+.verify-result{margin-top:16px;font-family:var(--font-mono);font-size:12px;padding:12px;border-radius:8px;display:none}
+.verify-result.match{background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.4);color:#4caf50;display:block}
+.verify-result.no-match{background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.3);color:var(--gold);display:block}
+
+/* REVEAL AD overlay (before delivering message) */
+#reveal-ad-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.93);
+  display:none;align-items:flex-end;justify-content:center;
+  z-index:99997;
+}
+#reveal-ad-overlay.show{display:flex}
+.rev-ad-box{
+  width:100%;max-width:520px;
+  background:#0d0d0d;border-top:2px solid var(--gold);
+  border-left:1px solid var(--border);border-right:1px solid var(--border);
+  border-radius:20px 20px 0 0;overflow:hidden;
+  animation:slideUp .4s cubic-bezier(.22,1,.36,1);
+}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.rev-ad-header{padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.rev-ad-logo{font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:3px}
+.rev-ad-title{font-family:var(--font-mono);font-size:11px;color:var(--text);letter-spacing:1px}
+.rev-ad-inner{min-height:200px;background:#111;display:flex;align-items:center;justify-content:center;padding:16px}
+.rev-ad-footer{padding:12px 18px 18px;background:var(--surface)}
+.rev-progress-track{height:3px;background:var(--border);border-radius:2px;margin-bottom:12px;overflow:hidden}
+.rev-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:2px;transition:width linear}
+.rev-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.rev-countdown{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);flex:1}
+.rev-countdown strong{color:var(--gold)}
+.rev-skip-btn{padding:10px 20px;background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--text-dim);font-family:var(--font-mono);font-size:11px;cursor:not-allowed;transition:all .3s;white-space:nowrap}
+.rev-skip-btn:not(:disabled){background:var(--gold);border-color:var(--gold);color:#0d0806;cursor:pointer;font-weight:700;box-shadow:var(--glow)}
+.rev-skip-btn:not(:disabled):hover{background:var(--amber)}
+.rev-disclaimer{margin-top:8px;font-family:var(--font-mono);font-size:9px;color:var(--text-dim);opacity:.5;text-align:center}
+
+/* ======= CHAT ======= */
+#chat-screen{display:none;flex-direction:column;min-height:100vh;background:var(--chat-bg)}
+.chat-header{background:#1a2d1a;padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(76,175,80,.2);position:sticky;top:0;z-index:10}
+.chat-avatar{width:42px;height:42px;background:radial-gradient(circle,#2a3a2a,#1a2d1a);border:2px solid var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.chat-avatar-info h3{font-family:var(--font-mono);font-size:13px;color:#e8f5e8;font-weight:700}
+.chat-avatar-info p{font-family:var(--font-mono);font-size:10px;color:var(--green)}
+.chat-messages{flex:1;padding:20px 16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+.bubble{max-width:80%;padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.6;font-style:italic;position:relative}
+.bubble.ai{background:var(--bubble-ai);color:#c8e6c8;border-bottom-left-radius:4px;align-self:flex-start;border:1px solid rgba(76,175,80,.15)}
+.bubble.ai::before{content:'';position:absolute;left:-8px;bottom:0;border:8px solid transparent;border-right-color:var(--bubble-ai);border-bottom-color:var(--bubble-ai)}
+.bubble-time{font-size:9px;font-family:var(--font-mono);color:rgba(255,255,255,.3);margin-top:4px;display:block}
+.typing-indicator{display:flex;align-items:center;gap:5px;padding:12px 16px;background:var(--bubble-ai);border-radius:18px;border-bottom-left-radius:4px;align-self:flex-start;display:none}
+.typing-indicator.show{display:flex}
+.typing-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:typingBounce 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{0%,80%,100%{transform:scale(.8);opacity:.5}40%{transform:scale(1.2);opacity:1}}
+.tts-btn{background:transparent;border:1px solid rgba(76,175,80,.3);border-radius:20px;padding:4px 10px;color:var(--green);font-size:10px;font-family:var(--font-mono);cursor:pointer;transition:all .2s;margin-top:6px}
+.tts-btn:hover{background:rgba(76,175,80,.1)}
+.chat-footer{padding:20px 16px;text-align:center;border-top:1px solid rgba(76,175,80,.1);background:var(--chat-bg)}
+.create-own-btn{display:inline-block;padding:14px 32px;background:var(--gold);color:#0d0806;border:none;border-radius:10px;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;text-decoration:none;transition:all .2s}
+.create-own-btn:hover{background:var(--amber);box-shadow:var(--glow)}
+.chat-share-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+
+/* ======= INLINE VIDEO SEG BUBBLE ======= */
+.video-seg-bubble{align-self:flex-start;width:100%;margin:8px 0;border-radius:16px;overflow:hidden;border:1px solid rgba(232,160,32,.35);background:#000;box-shadow:0 4px 28px rgba(0,0,0,.7);opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s}
+.video-seg-bubble.in{opacity:1;transform:translateY(0)}
+.video-seg-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(232,160,32,.1);border-bottom:1px solid rgba(232,160,32,.2)}
+.video-seg-icon{font-size:16px;flex-shrink:0}
+.video-seg-title{font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:1px;flex:1}
+.video-seg-badge{font-family:var(--font-mono);font-size:9px;background:rgba(232,160,32,.15);color:var(--gold);border:1px solid rgba(232,160,32,.35);border-radius:20px;padding:2px 8px}
+.seg-play-bar-track{height:2px;background:rgba(255,255,255,.08);overflow:hidden}
+.seg-play-bar-fill{height:100%;width:0%;background:var(--gold);transition:width linear}
+.video-seg-frame-wrap{position:relative;width:100%;padding-bottom:56.25%;background:#000}
+.video-seg-frame-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.video-seg-veil{position:absolute;inset:0;background:rgba(0,0,0,.7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0;transition:opacity .4s;pointer-events:none}
+.video-seg-veil.show{opacity:1}
+.veil-icon{font-size:28px}.veil-text{font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.6);letter-spacing:1px}
+.video-seg-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(0,0,0,.5);border-top:1px solid rgba(232,160,32,.12)}
+.seg-progress{display:flex;gap:6px;align-items:center}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .3s}
+.sdot.done{background:var(--gold)}.sdot.active{background:var(--amber);box-shadow:0 0 5px var(--amber);animation:dotPulse 1s infinite}
+@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.5}}
+.video-full-btn{background:transparent;border:1px solid rgba(232,160,32,.35);border-radius:20px;padding:4px 12px;color:var(--gold);font-family:var(--font-mono);font-size:9px;cursor:pointer;transition:opacity .3s,background .2s;opacity:0;pointer-events:none}
+.video-full-btn.show{opacity:1;pointer-events:all}
+.video-full-btn:hover{background:rgba(232,160,32,.1)}
+
+/* transcript display */
+.lyric-badge{display:inline-block;background:rgba(232,160,32,.12);border:1px solid rgba(232,160,32,.25);border-radius:6px;padding:4px 10px;font-family:var(--font-mono);font-size:9px;color:var(--gold);letter-spacing:1px;margin-bottom:6px}
+
+/* ======= SCROLL ANIMATION ======= */
+.bubble{opacity:0;transform:translateY(10px);transition:opacity .4s,transform .4s}
+.bubble.in{opacity:1;transform:translateY(0)}
+
+/* ======= UTILS ======= */
+.hidden{display:none!important}
+#qr-hidden-gen{position:absolute;left:-9999px;top:-9999px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+@media(max-width:400px){
+  .emotion-grid{grid-template-columns:repeat(3,1fr)}
+  .form-card{padding:20px 16px}
+  .emotion-btn .emo-icon{font-size:18px}
 }
 </style>
 </head>
 <body>
 
-<!-- ===================== HOME PAGE ===================== -->
+<!-- ========== HOME PAGE ========== -->
 <div id="home-page" class="page active">
   <div class="home-header">
     <div class="site-logo">⬡ SecretMsg AI</div>
     <h1 class="home-title">Send a <span>secret message</span><br>they'll never forget.</h1>
     <p class="home-subtitle">// anonymous · emotional · viral</p>
   </div>
-
   <div class="form-container">
-    <div class="ad-slot">
-        
-        
-     <!--   [ AD SPACE — 320×50 banner -->
-    
- 
-<script>
-  atOptions = {
-    'key' : '0f4aad5c19867e9a94e00cc9798f63b4',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/0f4aad5c19867e9a94e00cc9798f63b4/invoke.js"></script>
 
-    
-    
-    ]</div>
+    <!-- Ad click counter badge -->
+    <div style="text-align:center;margin-bottom:8px">
+      <span class="ad-counter-badge">📊 Ad views: <span id="global-ad-count">0</span></span>
+    </div>
+
     <div class="form-card">
       <div class="form-section-label">// Compose Message</div>
+
       <div class="form-group">
         <label>Recipient Name <span style="color:var(--text-dim)">(optional)</span></label>
         <input type="text" id="recipient-name" placeholder="e.g. Sarah..." autocomplete="off">
       </div>
+
       <div class="form-group">
         <label>Recipient's Gender</label>
         <div class="gender-row" id="receiver-gender-row">
@@ -1094,10 +297,12 @@ select option { background: #1a1008; }
         </div>
         <input type="hidden" id="receiver-gender" value="female">
       </div>
+
       <div class="form-group">
         <label>Your Name</label>
         <input type="text" id="sender-name" placeholder="e.g. James..." autocomplete="off">
       </div>
+
       <div class="form-group">
         <label>Your Gender</label>
         <div class="gender-row" id="sender-gender-row">
@@ -1106,15 +311,19 @@ select option { background: #1a1008; }
         </div>
         <input type="hidden" id="sender-gender" value="male">
       </div>
+
       <div class="form-group">
         <label>Your Message</label>
         <textarea id="message-text" placeholder="Write one sentence — the AI will turn it into something unforgettable..."></textarea>
       </div>
+
       <div class="form-group">
-        <label>YouTube Video URL <span style="color:var(--text-dim)">(optional — paste any YouTube link)</span></label>
+        <label>YouTube Video URL <span style="color:var(--text-dim)">(optional)</span></label>
         <input type="url" id="music-url" placeholder="https://youtube.com/watch?v=...">
       </div>
+
       <div class="form-section-label" style="margin-top:4px;">// Choose Emotion</div>
+
       <div class="emotion-grid" id="emotion-grid">
         <button class="emotion-btn selected" data-emotion="love"><span class="emo-icon">❤️</span>Love</button>
         <button class="emotion-btn" data-emotion="romantic"><span class="emo-icon">🌹</span>Romantic</button>
@@ -1128,46 +337,32 @@ select option { background: #1a1008; }
         <button class="emotion-btn" data-emotion="eid"><span class="emo-icon">🌙</span>Eid</button>
         <button class="emotion-btn" data-emotion="condolence"><span class="emo-icon">🕊️</span>Condolence</button>
         <button class="emotion-btn" data-emotion="flirt"><span class="emo-icon">😏</span>Flirt</button>
+        <button class="emotion-btn" data-emotion="erotic"><span class="emo-icon">🔥</span>Erotic</button>
       </div>
-      <div class="ad-slot">
-          
-          
-       <!--   [ AD SPACE — 300×250 -->
-      
-      
-<script>
-  atOptions = {
-    'key' : 'fc44c7eab601156e3645011f28713273',
-    'format' : 'iframe',
-    'height' : 50,
-    'width' : 320,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/fc44c7eab601156e3645011f28713273/invoke.js"></script>
 
-
-
-
-      
-      
+      <!-- Adult content notice (shown when erotic selected) -->
+      <div class="adult-notice" id="adult-notice">
+        🔞 Adult / Erotic content selected. Only share with consenting adults. You are responsible for the content you send.
       </div>
-      <button class="generate-btn" onclick="showAdThenDo('create')">✦ Generate Secret Message</button>
+
+      <button class="generate-btn" id="generate-btn" onclick="handleGenerateClick()">✦ Generate Secret Message</button>
     </div>
   </div>
 </div>
 
-<!-- ===================== SHARE PAGE ===================== -->
+<!-- ========== SHARE PAGE ========== -->
 <div id="share-page" class="page">
-  <div class="share-header"><h2>Your secret is ready ✦</h2><p>// share the link or poster below</p></div>
+  <div class="share-header">
+    <h2>Your secret is ready ✦</h2>
+    <p>// share the link or poster below</p>
+  </div>
   <div class="share-card">
-    <div class="ad-slot" style="margin-bottom:20px;">[ AD SPACE — 300×250 ]</div>
     <div class="form-section-label">// Shareable Link</div>
     <div class="link-box" id="share-link-display" onclick="copyLink()">Tap to copy link...</div>
     <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
     <div class="form-section-label">// QR Poster</div>
     <div id="poster-canvas-wrap">
-      <canvas id="poster-canvas" width="400" height="480"></canvas>
+      <canvas id="poster-canvas" width="400" height="520"></canvas>
       <div id="qr-hidden-gen"></div>
       <button class="download-btn" onclick="downloadPoster()">⬇ Download Poster</button>
     </div>
@@ -1177,285 +372,999 @@ select option { background: #1a1008; }
   </div>
 </div>
 
-<!-- ===================== REVEAL PAGE ===================== -->
+<!-- ========== REVEAL PAGE ========== -->
 <div id="reveal-page" class="page">
-  <div id="boot-screen"><div id="boot-lines"></div><div class="boot-thinking" id="boot-thinking"><span class="boot-cursor"></span> AI is thinking...</div></div>
+  <div id="boot-screen">
+    <div id="boot-lines"></div>
+    <div class="boot-thinking" id="boot-thinking">
+      <span class="boot-cursor"></span> AI is thinking...
+    </div>
+  </div>
   <div id="name-verify-screen">
     <div class="verify-card">
       <div class="verify-ai-icon">🤖</div>
-      <p class="verify-text" id="verify-intro-text">I see a possible match in the sender's list.<br><br><em>Type your name to confirm.</em></p>
-      <div class="verify-input"><input type="text" id="verify-name-input" placeholder="Your name..." autocomplete="off"></div>
+      <p class="verify-text">I detected a possible match<br>in the sender's contact list.<br><br><em>Type your name to confirm.</em></p>
+      <div class="verify-input">
+        <input type="text" id="verify-name-input" placeholder="Your name..." autocomplete="off">
+      </div>
       <button class="verify-btn" onclick="verifyName()">Confirm Identity →</button>
       <div class="verify-result" id="verify-result"></div>
     </div>
   </div>
   <div id="chat-screen">
-    <div class="chat-header"><div class="chat-avatar" id="chat-avatar">🤖</div><div class="chat-avatar-info"><h3>SecretMsg AI</h3><p id="chat-status">● online</p></div></div>
-    <div class="chat-messages" id="chat-messages"><div class="typing-indicator" id="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>
-    <div class="chat-footer"><div class="ad-slot chat-footer-ad">[ AD SPACE — 320×50 ]</div><a href="#" class="create-own-btn" onclick="showPage('home-page');return false;">✦ Create Your Own Secret Message</a><div class="chat-share-btns" id="chat-share-btns"></div></div>
+    <div class="chat-header">
+      <div class="chat-avatar" id="chat-avatar">🤖</div>
+      <div class="chat-avatar-info">
+        <h3>SecretMsg AI</h3>
+        <p id="chat-status">● online</p>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="typing-indicator" id="typing-indicator">
+        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+      </div>
+    </div>
+    <div class="chat-footer">
+      <a href="#" class="create-own-btn" onclick="showPage('home-page');return false;">✦ Create Your Own Secret Message</a>
+      <div class="chat-share-btns" id="chat-share-btns"></div>
+    </div>
   </div>
 </div>
+
+<!-- ========== GENERATING OVERLAY (ad plays while message generates) ========== -->
+<div id="generating-overlay">
+  <div class="gen-overlay-ad-wrap">
+    <div class="gen-overlay-ad-header">
+      <div class="gen-overlay-ad-title">⬡ SECRETMSG AI</div>
+      <div class="gen-overlay-status">● Generating your message...</div>
+    </div>
+    <div class="gen-overlay-ad-inner">
+      <div class="magsrv-ad-zone" id="gen-ad-zone">
+        <ins class="eas6a97888e31" data-zoneid="5899874"></ins>
+      </div>
+    </div>
+    <div class="gen-overlay-footer">
+      <div class="gen-progress-track">
+        <div class="gen-progress-fill" id="gen-progress-fill"></div>
+      </div>
+      <div class="gen-bottom-row">
+        <div class="gen-countdown-text">
+          Your message generates while this ad plays — <strong id="gen-secs">10</strong>s remaining
+        </div>
+        <button class="gen-continue-btn" id="gen-continue-btn" disabled onclick="finishGenerate()">Show Result →</button>
+      </div>
+      <div class="gen-disclaimer">⬡ SecretMsg · Powered by VODDIC · Ad keeps this free</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== REVEAL AD OVERLAY (plays before delivering message) ========== -->
+<div id="reveal-ad-overlay">
+  <div class="rev-ad-box">
+    <div class="rev-ad-header">
+      <div class="rev-ad-logo">⬡ SecretMsg AI</div>
+      <div class="rev-ad-title" id="rev-ad-title">Unlocking your message...</div>
+    </div>
+    <div class="rev-ad-inner">
+      <div id="rev-ad-zone">
+        <ins class="eas6a97888e31" data-zoneid="5899874"></ins>
+      </div>
+    </div>
+    <div class="rev-ad-footer">
+      <div class="rev-progress-track">
+        <div class="rev-progress-fill" id="rev-progress-fill"></div>
+      </div>
+      <div class="rev-bottom">
+        <div class="rev-countdown">
+          <span id="rev-cd-icon">⏳</span>
+          <span id="rev-cd-text">Please wait — <strong id="rev-secs">10</strong>s</span>
+        </div>
+        <button class="rev-skip-btn" id="rev-skip-btn" disabled onclick="skipRevealAd()">Reveal Message →</button>
+      </div>
+      <div class="rev-disclaimer">⬡ SecretMsg · Powered by VODDIC · Ad keeps this free</div>
+    </div>
+  </div>
+</div>
+
 <div id="qr-hidden-gen" style="position:absolute;left:-9999px;top:-9999px;"></div>
 
-<!-- ===================== MANDATORY AD MODAL (Adsterra + PropellerAds) ===================== -->
-<div id="ad-modal" style="display:none">
-  <div class="ad-modal-backdrop"></div>
-  <div class="ad-modal-box">
-    <div class="ad-modal-header"><div class="ad-modal-logo">⬡ SecretMsg AI</div><div class="ad-modal-title" id="ad-modal-title">One moment — loading your experience</div></div>
-    <div class="ad-modal-ad-wrap" id="ad-provider-wrap"></div>
-    <div class="ad-modal-footer">
-      <div class="ad-progress-bar-track"><div class="ad-progress-bar-fill" id="ad-progress-fill"></div></div>
-      <div class="ad-modal-bottom">
-        <div class="ad-countdown" id="ad-countdown"><span id="ad-countdown-icon">⏳</span><span id="ad-countdown-text">Please wait — <strong id="ad-secs">8</strong>s</span></div>
-        <button class="ad-skip-btn" id="ad-skip-btn" onclick="skipAd()" disabled>Continue →</button>
-      </div>
-      <div class="ad-disclaimer">⬡ SecretMsg · Supported by ads · Thank you</div>
-    </div>
-  </div>
-</div>
-
 <script>
+// ===================== AD CLICK COUNTER =====================
+let totalAdViews = 0;
+function incrementAdCount() {
+  totalAdViews++;
+  const el = document.getElementById('global-ad-count');
+  if (el) el.textContent = totalAdViews;
+}
+
+// Trigger MagSrv ad serving
+function serveMagsrvAd() {
+  if (window.AdProvider) {
+    try { window.AdProvider.push({"serve": {}}); } catch(e) {}
+  }
+}
+
 // ===================== PRONOUN HELPERS =====================
 function resolvePronouns(text, payload) {
-  const sg = payload.sg || 'male';
-  const rg = payload.rg || 'female';
-  const sName = payload.s || 'the sender';
-  const rName = payload.r || 'you';
-  const S_HE  = sg==='male'?'He':'She', S_he=sg==='male'?'he':'she';
-  const S_HIS = sg==='male'?'His':'Her', S_his=sg==='male'?'his':'her';
-  const S_HIM = sg==='male'?'Him':'Her', S_him=sg==='male'?'him':'her';
-  const R_HE  = rg==='male'?'He':'She', R_he=rg==='male'?'he':'she';
-  const R_HIS = rg==='male'?'His':'Her', R_his=rg==='male'?'his':'her';
-  const R_HIM = rg==='male'?'Him':'Her', R_him=rg==='male'?'him':'her';
-  return text.replace(/\{S_HE\}/g,S_HE).replace(/\{S_he\}/g,S_he).replace(/\{S_HIS\}/g,S_HIS).replace(/\{S_his\}/g,S_his).replace(/\{S_HIM\}/g,S_HIM).replace(/\{S_him\}/g,S_him).replace(/\{R_HE\}/g,R_HE).replace(/\{R_he\}/g,R_he).replace(/\{R_HIS\}/g,R_HIS).replace(/\{R_his\}/g,R_his).replace(/\{R_HIM\}/g,R_HIM).replace(/\{R_him\}/g,R_him).replace(/\{S_NAME\}/g,sName).replace(/\{R_NAME\}/g,rName).replace(/\{MSG\}/g,payload.m||'');
+  const sg=payload.sg||'male', rg=payload.rg||'female';
+  const sName=payload.s||'the sender', rName=payload.r||'you';
+  const S_HE=sg==='male'?'He':'She', S_he=sg==='male'?'he':'she';
+  const S_HIS=sg==='male'?'His':'Her', S_his=sg==='male'?'his':'her';
+  const S_HIM=sg==='male'?'Him':'Her', S_him=sg==='male'?'him':'her';
+  const R_HE=rg==='male'?'He':'She', R_he=rg==='male'?'he':'she';
+  const R_HIS=rg==='male'?'His':'Her', R_his=rg==='male'?'his':'her';
+  const R_HIM=rg==='male'?'Him':'Her', R_him=rg==='male'?'him':'her';
+  return text
+    .replace(/\{S_HE\}/g,S_HE).replace(/\{S_he\}/g,S_he)
+    .replace(/\{S_HIS\}/g,S_HIS).replace(/\{S_his\}/g,S_his)
+    .replace(/\{S_HIM\}/g,S_HIM).replace(/\{S_him\}/g,S_him)
+    .replace(/\{R_HE\}/g,R_HE).replace(/\{R_he\}/g,R_he)
+    .replace(/\{R_HIS\}/g,R_HIS).replace(/\{R_his\}/g,R_his)
+    .replace(/\{R_HIM\}/g,R_HIM).replace(/\{R_him\}/g,R_him)
+    .replace(/\{S_NAME\}/g,sName).replace(/\{R_NAME\}/g,rName)
+    .replace(/\{MSG\}/g,payload.m||'');
 }
 
-// ===================== EMOTION TEMPLATES (natural voice) =====================
+// ===================== EMOTION TEMPLATES =====================
 const TEMPLATES = {
-  love:[["{S_NAME} has something they've been wanting to tell you for a while.","It's not easy to say out loud, so they asked me to deliver it.","Here's what they wanted you to know:",'"{MSG}"',"They hope this reaches your heart exactly the way they mean it."]],
-  romantic:[["{S_NAME} is thinking of you right now.","They wanted to send this your way:",'"{MSG}"',"Every time they see you, the world feels a little warmer."]],
-  birthday:[["It's your special day, and {S_NAME} didn't want to let it pass without saying this:",'"{MSG}"',"Happy birthday. They hope it's as wonderful as you are."]],
-  apology:[["{S_NAME} asked me to pass this along. They've been meaning to say it for a while.",'"{MSG}"',"They mean every word, and they hope you can hear it."]],
-  wedding:[["On this beautiful day, {S_NAME} wanted to send you something from the heart:",'"{MSG}"',"Wishing you a lifetime of happiness together. 💍"]],
-  anniversary:[["Another year of love, and {S_NAME} wanted to celebrate it with you:",'"{MSG}"',"Here's to many more years, side by side. 🥂"]],
-  funny:[["Okay, okay — {S_NAME} made me promise to send this exactly as-is:",'"{MSG}"',"They're probably laughing right now, just so you know. 😂"]],
-  encouragement:[["Hey — {S_NAME} believes in you more than you might realize.",'"{MSG}"',"Now go do your thing. You've got this. 💪"]],
-  christmas:[["Warm wishes from {S_NAME} this Christmas:",'"{MSG}"',"May your holiday be filled with joy and peace. 🎄"]],
-  eid:[["Eid Mubarak! {S_NAME} sends this message with a full heart:",'"{MSG}"',"May your day be blessed and bright. 🌙"]],
-  condolence:[["There are no perfect words at times like this. But {S_NAME} wanted you to know they're thinking of you.",'"{MSG}"',"You're not alone. 🕊️"]],
-  flirt:[["Alright, I'll just say it: {S_NAME} can't stop thinking about you.",'"{MSG}"',"Your move. 😏"]],
+  love:[
+    ["{S_HE} had a message. Couldn't say it out loud.","{S_HE} held it inside for days.","But {S_he} finally asked me to find you.","And to tell you this:",'"{MSG}"',"{S_HE} said {S_he} hopes you still think about {S_him} too."],
+    ["I was given a secret mission — to find you.","{S_HE} has been holding this inside too long.",'"{MSG}"',"That's all. That's everything."],
+    ["{S_HE} couldn't sleep. {S_HE} wrote this instead:",'"{MSG}"',"I hope it reaches your heart the way {S_he} intended."],
+  ],
+  romantic:[
+    ["Close your eyes. Now open them.","{S_HE} wants you to know:",'"{MSG}"',"{S_HE} said every time {S_he} sees you, the room gets warmer."],
+    ["This message was composed at night — when hearts speak louder.",'"{MSG}"',"{S_HE} hopes you smile when you read this."],
+  ],
+  birthday:[
+    ["Today is your day. ✨","{S_HE} made sure I delivered this:",'"{MSG}"',"Happy Birthday — from {S_NAME}. 🎂"],
+    ["Birthday alert! 🎂","{S_HE} programmed me with one specific message for you today:",'"{MSG}"',"Enjoy every second. You deserve it."],
+  ],
+  apology:[
+    ["{S_HE} rewrote this message seven times.","But {S_he} finally wanted to say:",'"{MSG}"',"{S_HE} means every word."],
+    ["An apology arrived for you. Quietly. Sincerely.",'"{MSG}"',"Whether you accept it is up to you."],
+  ],
+  wedding:[
+    ["On this beautiful occasion...","{S_HE} wanted to send you something from the heart:",'"{MSG}"',"May your love story be long and full of joy. 💍"],
+  ],
+  anniversary:[
+    ["Another year of love. 🥂","{S_HE} celebrates it with these words:",'"{MSG}"',"Here's to many more years. — {S_NAME}"],
+  ],
+  funny:[
+    ["Okay okay okay.","{S_HE} sent me here with a very URGENT message:",'"{MSG}"',"{S_HE} is definitely laughing right now. 😂"],
+    ["Breaking news 📰","A very reliable source — {S_NAME} — has issued this statement:",'"{MSG}"',"No further comment. 😂"],
+  ],
+  encouragement:[
+    ["Hey. Listen.","{S_HE} believes in you more than you know.",'"{MSG}"',"Now go. Do the thing. 💪"],
+    ["{S_HE} sent this to remind you:",'"{MSG}"',"{S_HE} believes in you. So do I. 💪"],
+  ],
+  christmas:[
+    ["{S_HE} asked me to deliver a special message:",'"{MSG}"',"Merry Christmas — with love from {S_NAME}. 🎄"],
+  ],
+  eid:[
+    ["{S_HE} sent this beautiful Eid message for you:",'"{MSG}"',"Eid Mubarak! — from {S_NAME} 🌙"],
+  ],
+  condolence:[
+    ["{S_HE} wanted you to know {S_he} is thinking of you.",'"{MSG}"',"You are not alone. 🕊️"],
+  ],
+  flirt:[
+    ["{S_HE} couldn't stop thinking about you.","{S_HE} finally worked up the nerve:",'"{MSG}"',"Your move. 😏"],
+    ["New message. From a very flustered {S_NAME}.",'"{MSG}"',"{S_HE} said it took {S_him} three days to send this. 😏"],
+  ],
+  erotic:[
+    ["{S_HE} has something private to share with you.", "This is for your eyes only.", "{S_HE} said {S_he} has been thinking about you... in ways {S_he} can't say out loud.", '"{MSG}"', "{S_HE} hopes this message finds you somewhere private. 🔥"],
+    ["What you're about to hear was meant only for you.", "{S_HE} recorded this feeling, this desire — just for you.", '"{MSG}"', "{S_HE} said {S_he} means every word. 🔥"],
+  ],
 };
 
-// ===================== VIDEO COMMENTARY (natural) =====================
-const VIDEO_COMMENTARY = {
-  love:[["{S_NAME} chose this song for you. Listen to how it opens — that gentle feeling in the first few notes.","That's exactly how they feel when they think of you."],["Did you catch that line just now?","{S_NAME} said those are the words they've never quite known how to say to you in person."],["This part of the song — right here — they've played it over and over.","Every time, your face is what comes to mind."],["That bridge, where the melody shifts.","{S_NAME} said that's the moment they knew they had to send you this message."],["And now the final stretch.","{S_NAME} hopes you finally understand just how much they mean it."]],
-  romantic:[["This opening — they picked it because it sounds like how they feel when you're near.","Let it wash over you."],["That verse carries a confession they couldn't make in person.","So they let the music say it instead."],["Right here — this is where the melody breathes.","{S_NAME} says this is the part that sounds like their heart when they're with you."],["That chorus again. They've hummed this line under their breath, thinking of you.","Without even realizing it."],["{S_NAME} says the last verse says everything they couldn't find words for.","Now you've heard it all."]],
-  birthday:[["{S_NAME} chose this to make your birthday feel special from the very first note.","This song is for you. 🎂"],["This part reminded them of your smile.","They hope you're smiling right now."],["Hear that melody? That's the joy they wish for you — every single day of this new year."],["{S_NAME} says this section feels like all the good memories you've shared.","The precious ones."],["And to close it out — they hope every day this year feels exactly this special.","You deserve it, {R_NAME}."]],
-  apology:[["{S_NAME} chose this because it says 'sorry' better than they ever could.","Please listen closely."],["This part — this is where the weight of regret lives in the song.","They've listened to this section many times, thinking of you."],["That quiet moment? That silence is exactly how they feel, waiting to hear back from you."],["{S_NAME} says this line in the song says what they wish they'd said sooner.","They want you to know they realize that now."],["And this ending — it's an open hand. A question.","They hope you can find it in your heart to listen. That's all they're asking."]],
-  funny:[["{S_NAME} picked THIS song. 😂 Of all the songs in the world.","You have to admit — it's kind of perfect."],["Still going 😂","They were laughing while setting this up. They knew exactly how you'd react."],["That lyric right there — they say that line is basically their life motto.","Make of that what you will. 😂"],["{S_NAME} says this part is dedicated specifically to you.","No further explanation given. 😂"],["THE FINALE 😂 — They say if you're not laughing by now, they've failed.","But they probably haven't."]],
-  encouragement:[["This song was chosen to push you forward. 💪","{S_NAME} believes in what you're capable of. Let the music remind you."],["This part is the climb.","They say: when it gets hard, remember this exact feeling. Keep going."],["That lyric — they replay it on their own hardest days.","Now they send it to you."],["{S_NAME} says this section sounds like everything you've already survived.","Look how far you've come."],["The peak of the song. 💪 They want you to carry this energy.","You are more powerful than you know, {R_NAME}."]],
-  default:[["{S_NAME} wanted you to hear this.","Let the music speak."],["This part means something special to them.","They hope it means something to you too."],["Listen closely here.","This is the heart of the message."],["Almost there.","Just a little more."],["That's the end of the video.","{S_NAME} hopes it reached you."]]
+// ===================== VIDEO COMMENTARY — lyrics-based, 5 segments =====================
+// These are GENERIC commentary structures. When a real transcript is fetched,
+// we inject the actual lyric excerpt as a {LYRIC} token inside the commentary.
+const VIDEO_COMMENTARY_TEMPLATE = {
+  love:[
+    ["{S_HE} chose this song for you. Right at the start you can hear it — that ache.","The line «{LYRIC}» — {S_he} said that's exactly how {S_he} feels when {S_he} thinks of you."],
+    ["Did you catch those words just now? «{LYRIC}»","That's {S_him}. That's {S_his} heart speaking directly to yours."],
+    ["«{LYRIC}» — {S_he} has replayed this part a hundred times.","Every single time, your face is what {S_he} sees."],
+    ["Hear that shift in the melody? Right where they sing «{LYRIC}»","That was the moment {S_he} knew {S_he} had to send you this message."],
+    ["And now this final part — «{LYRIC}»","{S_HE} said: if this reaches you, then you finally understand just how much {S_he} means it."],
+  ],
+  romantic:[
+    ["This opening — where they say «{LYRIC}» — {S_he} picked it because it sounds like how {S_he} feels near you."],
+    ["«{LYRIC}» — that verse carries a confession {S_he} couldn't make in person.","{S_HE} let the music say it instead."],
+    ["Right here — «{LYRIC}» — this is where the melody exhales.","{S_HE} said this is the part that sounds like {S_his} heart when {S_he} is with you."],
+    ["«{LYRIC}» — {S_HE} said {S_he} sang this under {S_his} breath thinking of you.","And {S_he} didn't even realise it until later."],
+    ["«{LYRIC}» — {S_HE} said the last verse says everything {S_he} couldn't find words for.","Now you've heard it all."],
+  ],
+  birthday:[
+    ["{S_HE} chose this to make today feel like a celebration — listen to «{LYRIC}».","Happy Birthday. 🎂"],
+    ["«{LYRIC}» — this part reminded {S_him} of your smile.","{S_HE} hopes you're smiling right now."],
+    ["Hear that — «{LYRIC}»? That's the joy {S_he} wishes for you every day this year."],
+    ["{S_HE} said «{LYRIC}» feels like all the memories you've built together."],
+    ["And finally «{LYRIC}» — {S_HE} said: may every day this year feel exactly this special. You deserve it, {R_NAME}."],
+  ],
+  apology:[
+    ["{S_HE} chose this because «{LYRIC}» says sorry better than {S_he} ever could.","Please listen carefully."],
+    ["«{LYRIC}» — this is where the weight of regret lives.","{S_HE} has listened to this section many times thinking of you."],
+    ["That quiet moment — «{LYRIC}» — is exactly how {S_he} feels waiting to hear back."],
+    ["«{LYRIC}» — {S_he} said that's what {S_he} wishes {S_he} had said sooner.","It's too late to go back. But {S_he} knows that."],
+    ["And this ending — «{LYRIC}» — it's an open hand. A question.","{S_HE} hopes you can find it in your heart to listen."],
+  ],
+  wedding:[
+    ["{S_HE} chose this to honour your moment. Listen to «{LYRIC}».","Let it fill the room. 💍"],
+    ["«{LYRIC}» speaks of devotion.","{S_HE} said: may your love always carry this weight."],
+    ["That swell — «{LYRIC}» — that's what {S_he} feels watching you two together."],
+    ["{S_HE} said «{LYRIC}» sounds like a promise. The kind that lasts a lifetime."],
+    ["The final notes — «{LYRIC}» — a blessing.","{S_HE} sends every good wish through this song."],
+  ],
+  anniversary:[
+    ["«{LYRIC}» — this song carries years of feeling. {S_HE} chose it because anniversaries deserve more than words."],
+    ["«{LYRIC}» — this part is about growth.","{S_HE} said: you've come so far. {S_HE} is grateful for every step."],
+    ["«{LYRIC}» — {S_he} said that's how {S_he} feels every morning waking up beside you."],
+    ["{S_HE} said «{LYRIC}» is the part of your story you're still writing together."],
+    ["And this final stretch — «{LYRIC}» — about choosing each other again and again. Happy Anniversary. 🥂"],
+  ],
+  funny:[
+    ["{S_HE} picked THIS song. 😂 «{LYRIC}» — of all lines in the world!","You have to admit it's perfect."],
+    ["«{LYRIC}» — still going 😂","{S_HE} was laughing while setting this up."],
+    ["«{LYRIC}» — {S_he} said that line is basically {S_his} life motto.","Make of that what you will. 😂"],
+    ["{S_HE} said «{LYRIC}» is dedicated specifically to you.","No further explanation. 😂"],
+    ["THE FINALE — «{LYRIC}» 😂🎉","{S_HE} said: if you're not laughing by now, {S_he}'s failed. But probably hasn't."],
+  ],
+  encouragement:[
+    ["«{LYRIC}» — this song was chosen to push you forward. 💪","{S_HE} believes in what you're capable of."],
+    ["«{LYRIC}» — this part is the climb.","{S_HE} said: when it gets hard, remember this feeling."],
+    ["«{LYRIC}» — {S_he} replays this on {S_his} own hardest days.","Now {S_he} sends it to you."],
+    ["{S_HE} said «{LYRIC}» sounds like everything you've already survived.","Look how far you've come."],
+    ["The peak — «{LYRIC}» 💪","{S_HE} wants you to carry this energy. You are more powerful than you know, {R_NAME}."],
+  ],
+  christmas:[
+    ["{S_HE} chose this to fill your Christmas with warmth — «{LYRIC}». 🎄"],
+    ["«{LYRIC}» — this part feels like firelight and family.","{S_HE} hopes you're somewhere warm."],
+    ["«{LYRIC}» — {S_he} said it reminds {S_him} of the best Christmas memories with you."],
+    ["{S_HE} said «{LYRIC}» sounds like the feeling of coming home."],
+    ["The final chime — «{LYRIC}». 🎄 Merry Christmas, {R_NAME} — with all {S_his} heart."],
+  ],
+  eid:[
+    ["A blessed melody — «{LYRIC}». 🌙","{S_HE} chose this to celebrate Eid with you across the distance."],
+    ["«{LYRIC}» — this carries the spirit of gratitude.","{S_HE} is grateful for your presence in {S_his} life."],
+    ["«{LYRIC}» — {S_he} said it captures what {S_he} prays for you this Eid. Peace. Health. Joy."],
+    ["{S_HE} said «{LYRIC}» feels like the warmth of the celebration."],
+    ["And the final notes — «{LYRIC}» — a prayer for your peace. 🌙 Eid Mubarak, {R_NAME}!"],
+  ],
+  condolence:[
+    ["{S_HE} chose this gently — «{LYRIC}». 🕊️","There are no perfect words. But there is this."],
+    ["«{LYRIC}» — this section is calm.","{S_HE} hopes it brings even a small moment of peace."],
+    ["«{LYRIC}» — like sitting beside someone in silence. Sometimes that's enough."],
+    ["{S_HE} said «{LYRIC}» sounds like remembrance. Soft. Tender. Real. 🕊️"],
+    ["And in the quiet — «{LYRIC}» — {S_NAME} is thinking of you.","You are not alone, {R_NAME}."],
+  ],
+  flirt:[
+    ["{S_HE} sent you THIS song. 😏 «{LYRIC}» — that already says a lot.","The sender is definitely nervous right now."],
+    ["«{LYRIC}» — {S_he} said that line is basically {S_his} situation right now.","Interpret that however you like. 😏"],
+    ["«{LYRIC}» — this part is giving main character energy.","{S_HE} said this makes {S_him} think of you specifically."],
+    ["{S_HE} replayed «{LYRIC}» three times before hitting send.","Three times, {R_NAME}. Think about that. 😏"],
+    ["The final bit — «{LYRIC}». 😏 Your move.","{S_NAME} is waiting. 👀"],
+  ],
+  erotic:[
+    ["{S_HE} chose this for a reason. Listen to «{LYRIC}» — every word is intentional.","This song carries something {S_he} wants you to feel. 🔥"],
+    ["«{LYRIC}» — {S_he} said those words play in {S_his} head when {S_he} thinks of you.","Only you. 🔥"],
+    ["Right here — «{LYRIC}» — {S_he} said {S_he} listened to this part with you in mind.","Let that sink in. 🔥"],
+    ["«{LYRIC}» — {S_HE} said this is the part that made {S_him} decide to send this message.","No more hiding how {S_he} feels. 🔥"],
+    ["And finally — «{LYRIC}».","{S_HE} said: now you know. And {S_he} hopes you feel the same way. 🔥"],
+  ],
 };
 
-function extractYouTubeId(url) { if(!url) return null; const patterns=[/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,/youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/]; for(const p of patterns){const m=url.match(p); if(m) return m[1];} return null; }
+// ===================== YOUTUBE TRANSCRIPT FETCHER =====================
+// Uses a CORS proxy to fetch YouTube's timedtext captions.
+// Falls back to generic lyric placeholder if unavailable.
+async function fetchYouTubeTranscript(videoId) {
+  try {
+    // Try fetching auto-generated captions via the timedtext API
+    const proxyBase = 'https://api.allorigins.win/raw?url=';
+    const captionUrl = `https://www.youtube.com/api/timedtext?lang=en&v=${videoId}&fmt=json3&xorb=2&xoaf=5&xosf=1`;
+    const res = await fetch(proxyBase + encodeURIComponent(captionUrl), {signal: AbortSignal.timeout(6000)});
+    if (!res.ok) throw new Error('No transcript');
+    const data = await res.json();
+    // Extract all text events
+    const events = (data.events || []).filter(e => e.segs);
+    const lines = events.map(e => e.segs.map(s => (s.utf8||'').replace(/\n/g,' ')).join('').trim()).filter(l => l.length > 3);
+    if (lines.length === 0) throw new Error('Empty transcript');
+    return lines;
+  } catch(e) {
+    return null; // will use fallback
+  }
+}
 
+// Pick a lyric excerpt for a given segment index from transcript lines
+function pickLyricForSegment(transcriptLines, segIndex, totalSegs) {
+  if (!transcriptLines || transcriptLines.length === 0) return '...';
+  const chunk = Math.floor(transcriptLines.length / totalSegs);
+  const start  = segIndex * chunk;
+  const slice  = transcriptLines.slice(start, start + Math.max(chunk, 3));
+  // Join 2-3 consecutive lines into one quote
+  const combined = slice.slice(0, 3).join(' ').replace(/\s+/g,' ').trim();
+  // Truncate to ~80 chars
+  return combined.length > 80 ? combined.slice(0, 77) + '...' : combined;
+}
 
+// ===================== YOUTUBE UTILS =====================
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/,
+  ];
+  for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
+  return null;
+}
 
+function buildYTSrc(videoId, startSec, autoplay) {
+  return `https://www.youtube-nocookie.com/embed/${videoId}?start=${startSec}&autoplay=${autoplay}&rel=0&modestbranding=1&playsinline=1`;
+}
 
-function buildYTSrc(videoId, startSec, autoplay) { return `https://www.youtube-nocookie.com/embed/${videoId}?start=${startSec}&autoplay=${autoplay}&rel=0&modestbranding=1&playsinline=1`; }
-const SEGMENTS = [{start:0,dur:30000},{start:40,dur:30000},{start:80,dur:30000},{start:120,dur:30000},{start:160,dur:30000}];
+// 5 segments x 30s each
+const SEGMENTS = [
+  {start:0,   dur:30000},
+  {start:40,  dur:30000},
+  {start:80,  dur:30000},
+  {start:120, dur:30000},
+  {start:160, dur:30000},
+];
 
-// ===================== MANDATORY AD SYSTEM (Adsterra + PropellerAds) =====================
-const AD_DURATION = 8;
-let adCallback = null, adTimerInterval = null, adSecsLeft = AD_DURATION;
+// ===================== GENERATING FLOW =====================
+// Step 1: user clicks Generate → validate form → prepare payload → show generating overlay (ad plays)
+// Step 2: when ad timer expires → show share/QR page
 
+let _pendingPayload = null;
+let _pendingShareUrl = null;
+let genTimerInterval = null;
+let genSecsLeft = 10;
 
+function handleGenerateClick() {
+  const recipient      = document.getElementById('recipient-name').value.trim();
+  const sender         = document.getElementById('sender-name').value.trim();
+  const msgText        = document.getElementById('message-text').value.trim();
+  const musicUrl       = document.getElementById('music-url').value.trim();
+  const senderGender   = document.getElementById('sender-gender').value;
+  const receiverGender = document.getElementById('receiver-gender').value;
 
+  if (!msgText) { alert('Please write a message first!'); return; }
+  if (!sender)  { alert('Please enter a sender name!'); return; }
 
+  const payload = {r:recipient,s:sender,m:msgText,e:currentEmotion,mu:musicUrl,sg:senderGender,rg:receiverGender};
+  const encoded  = btoa(encodeURIComponent(JSON.stringify(payload)));
+  const shareUrl = `${location.origin}${location.pathname}#msg=${encoded}`;
 
+  _pendingPayload  = payload;
+  _pendingShareUrl = shareUrl;
 
+  showGeneratingOverlay(payload, shareUrl);
+}
 
+function showGeneratingOverlay(payload, shareUrl) {
+  const overlay   = document.getElementById('generating-overlay');
+  const fill      = document.getElementById('gen-progress-fill');
+  const continueBtn = document.getElementById('gen-continue-btn');
+  const secsEl    = document.getElementById('gen-secs');
 
-function showAdThenDo(context) {
-  const modal = document.getElementById('ad-modal');
-  const skipBtn = document.getElementById('ad-skip-btn');
-  const fill = document.getElementById('ad-progress-fill');
-  const wrap = document.getElementById('ad-provider-wrap');
-  const cdText = document.getElementById('ad-countdown-text');
-  const cdIcon = document.getElementById('ad-countdown-icon');
-  const title = document.getElementById('ad-modal-title');
-  
-  title.textContent = context === 'create' ? 'One moment — loading your message experience' : 'One moment — unlocking your secret message';
-  adSecsLeft = AD_DURATION;
-  skipBtn.disabled = true;
-  skipBtn.textContent = 'Continue →';
+  genSecsLeft = 10;
+  continueBtn.disabled = true;
   fill.style.transition = 'none';
   fill.style.width = '0%';
-  cdIcon.textContent = '⏳';
-  cdText.innerHTML = `Please wait — <strong id="ad-secs">${AD_DURATION}</strong>s`;
-  
-  // Clear wrap and add visual timer overlay + your ad scripts
-  wrap.innerHTML = '';
-  
-  // Create a container that holds both your ads AND a visual timer overlay
-  const adContainer = document.createElement('div');
-  adContainer.style.position = 'relative';
-  adContainer.style.width = '100%';
-  adContainer.style.minHeight = '260px';
-  
-  // Add your existing ad scripts to the container
-  // Adsterra interstitial
-  const adScript = document.createElement('script');
-  adScript.type = 'text/javascript';
-  adScript.src = '//pl29144183.profitablecpmratenetwork.com/e7/79/5c/e7795cedb3f40ac0b06e48d754a7102e.js';
-  adContainer.appendChild(adScript);
-  
-  // PropellerAds zone
-  const fallbackScript = document.createElement('script');
-  fallbackScript.src = 'https://quge5.com/88/tag.min.js';
-  fallbackScript.setAttribute('data-zone', '229355');
-  fallbackScript.async = true;
-  fallbackScript.setAttribute('data-cfasync', 'false');
-  adContainer.appendChild(fallbackScript);
-  
-  // Add visual timer overlay (so users see progress while ads load)
-  const timerOverlay = document.createElement('div');
-  timerOverlay.style.position = 'absolute';
-  timerOverlay.style.bottom = '10px';
-  timerOverlay.style.left = '10px';
-  timerOverlay.style.right = '10px';
-  timerOverlay.style.background = 'rgba(0,0,0,0.7)';
-  timerOverlay.style.backdropFilter = 'blur(8px)';
-  timerOverlay.style.borderRadius = '12px';
-  timerOverlay.style.padding = '12px';
-  timerOverlay.style.textAlign = 'center';
-  timerOverlay.style.border = '1px solid rgba(232,160,32,0.3)';
-  timerOverlay.style.zIndex = '10';
-  timerOverlay.innerHTML = `
-    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-      <div style="font-size:11px;font-family:var(--font-mono);color:var(--gold);letter-spacing:2px;">⏱️ AD PLAYING</div>
-      <div style="width:100%;max-width:200px;height:3px;background:rgba(232,160,32,0.2);border-radius:3px;overflow:hidden;">
-        <div style="width:0%;height:100%;background:var(--gold);transition:width ${AD_DURATION}s linear;" id="timer-fill-overlay"></div>
-      </div>
-      <div style="font-size:10px;font-family:var(--font-mono);color:var(--text-dim);">Continue available in <span id="overlay-seconds">${AD_DURATION}</span>s</div>
-    </div>
-  `;
-  
-  adContainer.appendChild(timerOverlay);
-  wrap.appendChild(adContainer);
-  
-  // Animate the overlay timer fill
+  secsEl.textContent = genSecsLeft;
+
+  overlay.classList.add('show');
+  serveMagsrvAd();
+  incrementAdCount();
+
   setTimeout(() => {
-    const timerFill = document.getElementById('timer-fill-overlay');
-    if (timerFill) timerFill.style.width = '100%';
-  }, 50);
-  
-  // Update overlay seconds counter
-  let secondsRemaining = AD_DURATION;
-  const overlaySecondsSpan = document.getElementById('overlay-seconds');
-  const overlayInterval = setInterval(() => {
-    secondsRemaining--;
-    if (overlaySecondsSpan) overlaySecondsSpan.textContent = secondsRemaining;
-    if (secondsRemaining <= 0) clearInterval(overlayInterval);
-  }, 1000);
-  
-  modal.style.display = 'flex';
-  
-  setTimeout(() => { 
-    fill.style.transition = `width ${AD_DURATION}s linear`; 
-    fill.style.width = '100%'; 
+    fill.style.transition = `width 10s linear`;
+    fill.style.width = '100%';
   }, 120);
-  
-  clearInterval(adTimerInterval);
-  adTimerInterval = setInterval(() => {
-    adSecsLeft--;
-    const s = document.getElementById('ad-secs');
-    if (s) s.textContent = adSecsLeft;
-    if (adSecsLeft <= 0) {
-      clearInterval(adTimerInterval);
-      skipBtn.disabled = false;
-      cdIcon.textContent = '✓';
-      cdText.innerHTML = '<strong>You may now continue</strong>';
+
+  clearInterval(genTimerInterval);
+  genTimerInterval = setInterval(() => {
+    genSecsLeft--;
+    const s = document.getElementById('gen-secs');
+    if (s) s.textContent = genSecsLeft;
+    if (genSecsLeft <= 0) {
+      clearInterval(genTimerInterval);
+      continueBtn.disabled = false;
+      continueBtn.textContent = 'Show Result →';
     }
   }, 1000);
-  
-  adCallback = context === 'create' ? () => generateMessage() : () => runBootSequence(window._pendingRevealPayload);
 }
 
+function finishGenerate() {
+  clearInterval(genTimerInterval);
+  document.getElementById('generating-overlay').classList.remove('show');
+  currentMsgData = {..._pendingPayload, url:_pendingShareUrl};
+  renderSharePage(_pendingShareUrl, _pendingPayload);
+  showPage('share-page');
+}
 
+// ===================== REVEAL AD FLOW =====================
+let revTimerInterval = null;
+let revSecsLeft = 10;
+let revCallback = null;
 
+function showRevealAd(callback) {
+  const overlay  = document.getElementById('reveal-ad-overlay');
+  const fill     = document.getElementById('rev-progress-fill');
+  const skipBtn  = document.getElementById('rev-skip-btn');
+  const secsEl   = document.getElementById('rev-secs');
+  const cdIcon   = document.getElementById('rev-cd-icon');
+  const cdText   = document.getElementById('rev-cd-text');
 
+  revSecsLeft = 10;
+  revCallback = callback;
+  skipBtn.disabled = true;
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  secsEl.textContent = revSecsLeft;
+  cdIcon.textContent = '⏳';
+  cdText.innerHTML = `Please wait — <strong id="rev-secs">10</strong>s`;
 
+  overlay.classList.add('show');
+  serveMagsrvAd();
+  incrementAdCount();
 
+  setTimeout(() => {
+    fill.style.transition = `width 10s linear`;
+    fill.style.width = '100%';
+  }, 120);
 
+  clearInterval(revTimerInterval);
+  revTimerInterval = setInterval(() => {
+    revSecsLeft--;
+    const s = document.getElementById('rev-secs');
+    if (s) s.textContent = revSecsLeft;
+    if (revSecsLeft <= 0) {
+      clearInterval(revTimerInterval);
+      skipBtn.disabled = false;
+      cdIcon.textContent = '✓';
+      cdText.innerHTML = '<strong>Your message is ready</strong>';
+    }
+  }, 1000);
+}
 
+function skipRevealAd() {
+  clearInterval(revTimerInterval);
+  document.getElementById('reveal-ad-overlay').classList.remove('show');
+  if (revCallback) { revCallback(); revCallback = null; }
+}
 
-function skipAd() { clearInterval(adTimerInterval); document.getElementById('ad-modal').style.display = 'none'; document.getElementById('ad-provider-wrap').innerHTML = ''; if(adCallback){ adCallback(); adCallback = null; } }
+// ===================== STATE =====================
+let currentEmotion = 'love';
+let currentMsgData = null;
 
-// ===================== TTS — Clear, natural female voice =====================
-function speakNatural(text) {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const clean = text.replace(/<[^>]+>/g,'').replace(/[""«»\u201c\u201d]/g,'');
-  const utterance = new SpeechSynthesisUtterance(clean);
-  utterance.rate = 0.92;
-  utterance.pitch = 1.1;
-  utterance.volume = 1;
+// ===================== GENDER SELECTORS =====================
+document.querySelectorAll('.gender-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.target;
+    btn.closest('.gender-row').querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById(target==='sg'?'sender-gender':'receiver-gender').value = btn.dataset.gender;
+  });
+});
+
+// ===================== EMOTION SELECTOR =====================
+document.querySelectorAll('.emotion-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.emotion-btn').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+    currentEmotion = btn.dataset.emotion;
+    // Show adult notice for erotic
+    const notice = document.getElementById('adult-notice');
+    if (notice) notice.classList.toggle('show', currentEmotion === 'erotic');
+  });
+});
+
+// ===================== PAGE NAVIGATION =====================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ===================== SHARE PAGE =====================
+function renderSharePage(url, payload) {
+  document.getElementById('share-link-display').textContent = url;
+  renderPoster(url, payload);
+  renderShareButtons(url, document.getElementById('share-btns'));
+}
+
+function copyLink() {
+  const url = currentMsgData?.url||'';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(()=>{
+      const el = document.getElementById('share-link-display');
+      el.textContent = '✓ Copied!';
+      setTimeout(()=>el.textContent=url, 2000);
+    });
+  } else {
+    const ta=document.createElement('textarea'); ta.value=url;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+}
+
+function renderShareButtons(url, container) {
+  const shareText  = encodeURIComponent("I saw a name in my contacts inside this message 👀 Check if it's you:");
+  const enc = encodeURIComponent(url);
+  const btns = [
+    {label:'💬 WhatsApp', href:`https://wa.me/?text=${shareText}%20${enc}`},
+    {label:'📘 Facebook', href:`https://www.facebook.com/sharer/sharer.php?u=${enc}`},
+    {label:'✈️ Telegram', href:`https://t.me/share/url?url=${enc}&text=${shareText}`},
+    {label:'🐦 Twitter',  href:`https://twitter.com/intent/tweet?url=${enc}&text=${shareText}`},
+  ];
+  container.innerHTML = btns.map(b=>`<a class="share-social-btn" href="${b.href}" target="_blank" rel="noopener">${b.label}</a>`).join('');
+}
+
+// ===================== POSTER CANVAS — bold recipient name =====================
+function renderPoster(url, payload) {
+  const canvas=document.getElementById('poster-canvas'), ctx=canvas.getContext('2d');
+  const W=400, H=520;
+  canvas.width=W; canvas.height=H;
+  const theme=POSTER_THEMES[payload.e]||POSTER_THEMES.love;
+  const grad=ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,theme.bg[0]); grad.addColorStop(1,theme.bg[1]);
+  ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+
+  // border glow
+  ctx.strokeStyle=theme.accent; ctx.lineWidth=2; ctx.globalAlpha=0.6;
+  ctx.strokeRect(12,12,W-24,H-24); ctx.globalAlpha=1;
+
+  // emoji
+  ctx.font='60px serif'; ctx.textAlign='center';
+  ctx.fillText(theme.emoji, W/2, 90);
+
+  // headline
+  ctx.fillStyle='#ffffff'; ctx.font='bold 22px serif';
+  ctx.fillText('Someone left you a', W/2, 140);
+  ctx.fillStyle=theme.accent; ctx.font='bold italic 26px serif';
+  ctx.fillText('secret message 👀', W/2, 172);
+  ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font='14px monospace';
+  ctx.fillText('Scan the QR code to reveal it', W/2, 200);
+
+  // QR code
+  const qrDiv=document.createElement('div');
+  qrDiv.style.position='absolute'; qrDiv.style.left='-9999px';
+  document.body.appendChild(qrDiv);
+  try {
+    new QRCode(qrDiv,{text:url,width:160,height:160,colorDark:'#ffffff',colorLight:'transparent'});
+    setTimeout(()=>{
+      const qrImg=qrDiv.querySelector('img')||qrDiv.querySelector('canvas');
+      if(qrImg){
+        ctx.fillStyle='rgba(255,255,255,0.08)';
+        roundRect(ctx,W/2-90,218,180,180,12); ctx.fill();
+        const draw = () => {
+          ctx.drawImage(qrImg,W/2-80,228,160,160);
+          drawPosterFooter(ctx,W,H,payload,theme);
+        };
+        if(qrImg.tagName==='IMG'){ qrImg.complete?draw():(qrImg.onload=draw); }
+        else { draw(); }
+      }
+      try{document.body.removeChild(qrDiv);}catch(e){}
+    },250);
+  } catch(e){ try{document.body.removeChild(qrDiv);}catch(ex){} drawPosterFooter(ctx,W,H,payload,theme); }
+}
+
+function drawPosterFooter(ctx,W,H,payload,theme){
+  // Recipient name — BOLD, prominent
+  if(payload.r){
+    // background pill
+    const nameText = `For: ${payload.r}`;
+    ctx.font='bold 18px serif';
+    const tw = ctx.measureText(nameText).width;
+    ctx.fillStyle='rgba(0,0,0,0.45)';
+    roundRect(ctx, W/2-tw/2-16, H-88, tw+32, 34, 8); ctx.fill();
+    ctx.fillStyle=theme.accent;
+    ctx.font='bold 18px serif';
+    ctx.textAlign='center';
+    ctx.fillText(nameText, W/2, H-65);
+  }
+  // Footer line
+  ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='bold 10px monospace'; ctx.textAlign='center';
+  ctx.fillText('Delivered by VODDIC  ·  secretmsg.ai', W/2, H-24);
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+function downloadPoster(){
+  const link=document.createElement('a');
+  link.download='secret-message-poster.png';
+  link.href=document.getElementById('poster-canvas').toDataURL('image/png');
+  link.click();
+}
+
+const POSTER_THEMES = {
+  love:          {bg:['#1a0010','#3a0020'],accent:'#ff4488',emoji:'❤️'},
+  romantic:      {bg:['#1a0010','#2a0818'],accent:'#ff6699',emoji:'🌹'},
+  birthday:      {bg:['#0a0a1a','#1a1040'],accent:'#ffd700',emoji:'🎂'},
+  apology:       {bg:['#0a0a0a','#1a1a1a'],accent:'#aaaaff',emoji:'🙏'},
+  wedding:       {bg:['#0a0810','#1a1525'],accent:'#e0c0ff',emoji:'💍'},
+  anniversary:   {bg:['#0a0808','#1a1010'],accent:'#ffa040',emoji:'🥂'},
+  funny:         {bg:['#0a1800','#0f2800'],accent:'#aaff00',emoji:'😂'},
+  encouragement: {bg:['#0a0500','#1a0d00'],accent:'#ff8800',emoji:'💪'},
+  christmas:     {bg:['#060a02','#0d1504'],accent:'#44ff44',emoji:'🎄'},
+  eid:           {bg:['#02060a','#041020'],accent:'#44aaff',emoji:'🌙'},
+  condolence:    {bg:['#060606','#0f0f0f'],accent:'#aaaaaa',emoji:'🕊️'},
+  flirt:         {bg:['#0a0008','#1a0018'],accent:'#ff44cc',emoji:'😏'},
+  erotic:        {bg:['#1a0005','#2a0010'],accent:'#ff2255',emoji:'🔥'},
+};
+
+const BOOT_SEQUENCE = [
+  "Initializing SecretMsg engine v2.4...",
+  "Decrypting sender instructions...",
+  "Analyzing emotional context...",
+  "Scanning contact list...",
+  "Matching recipient profile...",
+  "Message package located.",
+  "Preparing delivery sequence...",
+];
+
+// ===================== REVEAL FLOW =====================
+function startReveal(payload){
+  window._pendingRevealPayload = payload;
+  showPage('reveal-page');
+  document.getElementById('boot-screen').style.display='none';
+  document.getElementById('name-verify-screen').style.display='none';
+  document.getElementById('chat-screen').style.display='none';
+  // Show reveal ad first, then boot sequence
+  showRevealAd(() => runBootSequence(payload));
+}
+
+function runBootSequence(payload){
+  document.getElementById('boot-screen').style.display='flex';
+  const container=document.getElementById('boot-lines');
+  const thinking=document.getElementById('boot-thinking');
+  container.innerHTML='';
+  let i=0;
+  function showNext(){
+    if(i<BOOT_SEQUENCE.length){
+      const div=document.createElement('div'); div.className='boot-line';
+      div.textContent=`> ${BOOT_SEQUENCE[i]}`;
+      container.appendChild(div);
+      requestAnimationFrame(()=>setTimeout(()=>div.classList.add('shown'),50));
+      i++; setTimeout(showNext,500+Math.random()*300);
+    } else {
+      thinking.classList.add('show');
+      setTimeout(()=>{
+        document.getElementById('boot-screen').style.display='none';
+        payload.r ? showVerify(payload) : showChat(payload);
+      },1800);
+    }
+  }
+  showNext();
+}
+
+// ===================== NAME VERIFY =====================
+function showVerify(payload){
+  document.getElementById('name-verify-screen').style.display='flex';
+  document.getElementById('verify-result').className='verify-result';
+  document.getElementById('verify-name-input').value='';
+  window._verifyPayload=payload;
+}
+
+function verifyName(){
+  const entered=(document.getElementById('verify-name-input').value||'').trim().toLowerCase();
+  const expected=(window._verifyPayload?.r||'').toLowerCase();
+  const result=document.getElementById('verify-result');
+  if(expected&&entered&&entered===expected){
+    result.textContent=`✓ Yes... this message was prepared for you, ${window._verifyPayload.r}.`;
+    result.className='verify-result match';
+  } else {
+    result.textContent=`This message might not be for you.\n\nBut ${window._verifyPayload?.s||'the sender'} still thinks you are a wonderful person.`;
+    result.className='verify-result no-match'; result.style.whiteSpace='pre-line';
+  }
+  setTimeout(()=>{
+    document.getElementById('name-verify-screen').style.display='none';
+    showChat(window._verifyPayload);
+  },2500);
+}
+
+// ===================== CHAT =====================
+function showChat(payload){
+  document.getElementById('chat-screen').style.display='flex';
+  const msgs=document.getElementById('chat-messages');
+  const typing=document.getElementById('typing-indicator');
+  msgs.innerHTML=''; msgs.appendChild(typing);
+
+  document.getElementById('chat-avatar').textContent=POSTER_THEMES[payload.e]?.emoji||'🤖';
+
+  const templates=TEMPLATES[payload.e]||TEMPLATES.love;
+  const template=templates[Math.floor(Math.random()*templates.length)];
+  const lines=template.map(l=>resolvePronouns(l,payload));
+
+  renderShareButtons(location.href, document.getElementById('chat-share-btns'));
+
+  let queue=[...lines], videoInserted=false;
+  const hasVideo=!!(payload.mu&&extractYouTubeId(payload.mu));
+
+  function nextMessage(){
+    typing.classList.add('show'); msgs.scrollTop=msgs.scrollHeight;
+    const delay=1000+Math.floor(Math.random()*800);
+    setTimeout(()=>{
+      typing.classList.remove('show');
+      if(queue.length===0){
+        if(hasVideo&&!videoInserted){ videoInserted=true; startVideoExperience(payload,msgs,typing,()=>showFinalLoop(payload)); return; }
+        showFinalLoop(payload); return;
+      }
+      const text=queue.shift();
+      addBubble('ai',text,msgs);
+      speak(text.replace(/"/g,'').replace(/<[^>]+>/g,''));
+      queue.length>0 ? nextMessage() : (
+        hasVideo&&!videoInserted
+          ? (videoInserted=true, setTimeout(()=>startVideoExperience(payload,msgs,typing,()=>showFinalLoop(payload)),900))
+          : setTimeout(()=>showFinalLoop(payload),800)
+      );
+    },delay);
+  }
+  nextMessage();
+}
+
+// ===================== VIDEO EXPERIENCE =====================
+let ytVideoId=null, ytSegTimer=null, ytOnDone=null, segBubbles=[], ytPayload=null;
+let _transcript=null; // cached transcript lines
+
+async function startVideoExperience(payload,msgs,typing,onDone){
+  ytVideoId=extractYouTubeId(payload.mu);
+  if(!ytVideoId){ onDone(); return; }
+  ytOnDone=onDone; ytPayload=payload; segBubbles=[];
+
+  // Fetch transcript in background
+  _transcript = await fetchYouTubeTranscript(ytVideoId);
+
+  typing.classList.add('show'); msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{
+    typing.classList.remove('show');
+    const intro=resolvePronouns('{S_NAME} attached a video for you. 🎬<br><em>Playing it in five parts — with emotional notes after each one.</em>',payload);
+    addBubble('ai',intro,msgs);
+    speakBold(intro.replace(/<[^>]+>/g,''));
+    setTimeout(()=>playSegment(0,msgs,typing),1200);
+  },1400);
+}
+
+function playSegment(index,msgs,typing){
+  const N=SEGMENTS.length;
+  if(index>=N){
+    if(segBubbles[N-1]) segBubbles[N-1].querySelector('.video-full-btn').classList.add('show');
+    if(ytOnDone) ytOnDone();
+    return;
+  }
+
+  const seg=SEGMENTS[index];
+  const emotion=ytPayload.e||'love';
+  const commentaryTemplate=(VIDEO_COMMENTARY_TEMPLATE[emotion]||VIDEO_COMMENTARY_TEMPLATE.love)[index]||[];
+  const lyric=pickLyricForSegment(_transcript, index, SEGMENTS.length);
+
+  const commentaryLines=commentaryTemplate.map(l=>
+    resolvePronouns(l.replace(/\{LYRIC\}/g, lyric), ytPayload)
+  );
+
+  const bubble=createSegBubble(index,N);
+  msgs.insertBefore(bubble,document.getElementById('typing-indicator'));
+  segBubbles[index]=bubble;
+  msgs.scrollTop=msgs.scrollHeight;
+  requestAnimationFrame(()=>setTimeout(()=>bubble.classList.add('in'),60));
+
+  bubble.querySelector('iframe').src=buildYTSrc(ytVideoId,seg.start,1);
+
+  // Show lyric badge inside bubble header
+  if(_transcript){
+    const badge=document.createElement('div');
+    badge.className='lyric-badge';
+    badge.textContent=`🎵 "${lyric.slice(0,50)}${lyric.length>50?'...':''}"`;
+    bubble.querySelector('.video-seg-header').appendChild(badge);
+  }
+
+  const barFill=bubble.querySelector('.seg-play-bar-fill');
+  setTimeout(()=>{ barFill.style.transition=`width ${seg.dur}ms linear`; barFill.style.width='100%'; },100);
+
+  updateAllDots(index,N);
+  msgs.scrollTop=msgs.scrollHeight;
+
+  clearTimeout(ytSegTimer);
+  ytSegTimer=setTimeout(()=>{
+    bubble.querySelector('iframe').src=buildYTSrc(ytVideoId,seg.start+Math.floor(seg.dur/1000),0);
+    bubble.querySelector('.video-seg-veil').classList.add('show');
+    updateAllDots(index+1,N);
+
+    let ci=0;
+    function nextComment(){
+      if(ci>=commentaryLines.length){
+        bubble.querySelector('.video-seg-veil').classList.remove('show');
+        setTimeout(()=>playSegment(index+1,msgs,typing),800);
+        return;
+      }
+      typing.classList.add('show'); msgs.scrollTop=msgs.scrollHeight;
+      setTimeout(()=>{
+        typing.classList.remove('show');
+        addBubble('ai',commentaryLines[ci],msgs);
+        speakBold(commentaryLines[ci].replace(/<[^>]+>/g,''));
+        ci++; setTimeout(nextComment,1600);
+      },1200);
+    }
+    setTimeout(nextComment,500);
+  },seg.dur);
+}
+
+function createSegBubble(index,total){
+  const isLast=index===total-1;
+  const label=isLast?`Part ${index+1} of ${total} — Final segment`:`Part ${index+1} of ${total} — Playing now`;
+  const dots=Array.from({length:total},(_,i)=>`<div class="sdot ${i===index?'active':''}" id="sdot-${index}-${i}"></div>`).join('');
+  const div=document.createElement('div');
+  div.className='video-seg-bubble';
+  div.innerHTML=`
+    <div class="video-seg-header">
+      <div class="video-seg-icon">🎬</div>
+      <div class="video-seg-title">${label}</div>
+      <div class="video-seg-badge">${index+1}/${total}</div>
+    </div>
+    <div class="seg-play-bar-track"><div class="seg-play-bar-fill"></div></div>
+    <div class="video-seg-frame-wrap">
+      <iframe src="" allow="autoplay;encrypted-media" allowfullscreen playsinline title="Video part ${index+1}"></iframe>
+      <div class="video-seg-veil"><div class="veil-icon">⏸</div><div class="veil-text">Reading this moment...</div></div>
+    </div>
+    <div class="video-seg-footer">
+      <div class="seg-progress">${dots}</div>
+      <button class="video-full-btn" onclick="watchFullVideoInBubble(this,'${ytVideoId}')">▶ Watch full</button>
+    </div>`;
+  return div;
+}
+
+function updateAllDots(currentIdx,total){
+  segBubbles.forEach((b,bi)=>{
+    if(!b) return;
+    for(let di=0;di<total;di++){
+      const dot=b.querySelector(`#sdot-${bi}-${di}`);
+      if(dot) dot.className='sdot'+(di<currentIdx?' done':di===currentIdx?' active':'');
+    }
+  });
+}
+
+function watchFullVideoInBubble(btn,videoId){
+  const bubble=btn.closest('.video-seg-bubble');
+  bubble.querySelector('iframe').src=buildYTSrc(videoId,0,1);
+  bubble.querySelector('.video-seg-veil').classList.remove('show');
+  btn.classList.remove('show');
+}
+
+// ===================== FINAL LOOP =====================
+function showFinalLoop(payload){
+  const msgs=document.getElementById('chat-messages');
+  const typing=document.getElementById('typing-indicator');
+  typing.classList.add('show'); msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{
+    typing.classList.remove('show');
+    addBubble('ai',`That's the message. 💌<br><br>Now... ${payload.s||'someone'} out there is waiting to know you received this.`,msgs);
+    msgs.scrollTop=msgs.scrollHeight;
+    setTimeout(()=>{
+      typing.classList.add('show'); msgs.scrollTop=msgs.scrollHeight;
+      setTimeout(()=>{
+        typing.classList.remove('show');
+        const closing=`This message is from <strong>${payload.s||'your sender'}</strong>, delivered by <strong>VODDIC</strong>. 💌`;
+        addBubble('ai',closing,msgs);
+        speakBold(`This message is from ${payload.s||'your sender'}, delivered by VODDIC.`);
+        msgs.scrollTop=msgs.scrollHeight;
+      },1200);
+    },1600);
+  },1200);
+}
+
+// ===================== BUBBLE =====================
+function addBubble(type,text,container){
+  const typing=document.getElementById('typing-indicator');
+  const bubble=document.createElement('div');
+  bubble.className=`bubble ${type}`;
+  bubble.innerHTML=text+`<span class="bubble-time">${getTime()}</span>`;
+  if(type==='ai'){
+    const btn=document.createElement('button');
+    btn.className='tts-btn'; btn.textContent='🔊 Read aloud';
+    btn.onclick=()=>speakBold(text.replace(/<[^>]+>/g,'').replace(/"/g,''));
+    bubble.appendChild(btn);
+  }
+  container.insertBefore(bubble,typing);
+  requestAnimationFrame(()=>setTimeout(()=>bubble.classList.add('in'),50));
+  container.scrollTop=container.scrollHeight;
+  return bubble;
+}
+
+// ===================== TTS — accurate, clear male voice =====================
+let _voicesLoaded = false;
+let _maleVoice = null;
+
+function loadVoices(){
+  if(_voicesLoaded) return;
   const voices = window.speechSynthesis.getVoices();
-  const preferred = voices.find(v => (v.name.includes('Samantha') || v.name.includes('Google UK English Female') || v.name.includes('Microsoft Zira') || (v.lang === 'en-US' && v.name.includes('Female'))) && v.lang.startsWith('en'));
-  if (preferred) utterance.voice = preferred;
-  window.speechSynthesis.speak(utterance);
+  if(voices.length===0) return;
+  _voicesLoaded = true;
+
+  // Priority: Google UK English Male > Daniel (UK) > any en-GB > en-US male names > first English
+  const priority = [
+    v => /google uk english male/i.test(v.name),
+    v => /daniel/i.test(v.name) && v.lang.startsWith('en'),
+    v => /thomas/i.test(v.name) && v.lang.startsWith('en'),
+    v => /mark/i.test(v.name) && v.lang.startsWith('en'),
+    v => /david/i.test(v.name) && v.lang.startsWith('en'),
+    v => /alex/i.test(v.name) && v.lang==='en-US',
+    v => /male/i.test(v.name) && v.lang.startsWith('en'),
+    v => v.lang==='en-GB',
+    v => v.lang.startsWith('en'),
+  ];
+  for(const test of priority){
+    const found = voices.find(test);
+    if(found){ _maleVoice=found; break; }
+  }
 }
-const speak = speakNatural;
-const speakBold = speakNatural;
 
-// ===================== VIDEO + CHAT LOGIC =====================
-let ytVideoId = null, ytSegmentTimer = null, ytOnDone = null, segBubbles = [], ytPayload = null;
-function initVideoExperience(payload, msgs, typing, onDone) { ytVideoId = extractYouTubeId(payload.mu); if (!ytVideoId) { onDone(); return; } ytOnDone = onDone; ytPayload = payload; segBubbles = []; typing.classList.add('show'); msgs.scrollTop = msgs.scrollHeight; setTimeout(() => { typing.classList.remove('show'); const introText = resolvePronouns('{S_NAME} included a video for you. 🎬<br><em>We\'ll play it in five short parts, with some thoughts in between.</em>', payload); addBubble('ai', introText, msgs); speakNatural(introText.replace(/<[^>]+>/g,'')); setTimeout(() => playSegment(0, msgs, typing), 1200); }, 1400); }
-function playSegment(index, msgs, typing) { const N = SEGMENTS.length; if (index >= N) { if (segBubbles[N-1]) segBubbles[N-1].querySelector('.video-full-btn').classList.add('show'); if (ytOnDone) ytOnDone(); return; } const seg = SEGMENTS[index]; const rawLines = (VIDEO_COMMENTARY[ytPayload.e] || VIDEO_COMMENTARY.default)[index] || []; const lines = rawLines.map(l => resolvePronouns(l, ytPayload)); const bubble = createSegBubble(index, N); msgs.insertBefore(bubble, document.getElementById('typing-indicator')); segBubbles[index] = bubble; msgs.scrollTop = msgs.scrollHeight; requestAnimationFrame(() => setTimeout(() => bubble.classList.add('in'), 60)); bubble.querySelector('iframe').src = buildYTSrc(ytVideoId, seg.start, 1); const barFill = bubble.querySelector('.seg-play-bar-fill'); setTimeout(() => { barFill.style.transition = `width ${seg.dur}ms linear`; barFill.style.width = '100%'; }, 100); updateAllDots(index, N); msgs.scrollTop = msgs.scrollHeight; clearTimeout(ytSegmentTimer); ytSegmentTimer = setTimeout(() => { const endSec = seg.start + Math.floor(seg.dur/1000); bubble.querySelector('iframe').src = buildYTSrc(ytVideoId, endSec, 0); bubble.querySelector('.video-seg-veil').classList.add('show'); updateAllDots(index+1, N); let ci = 0; function nextComment() { if (ci >= lines.length) { bubble.querySelector('.video-seg-veil').classList.remove('show'); setTimeout(() => playSegment(index+1, msgs, typing), 800); return; } typing.classList.add('show'); msgs.scrollTop = msgs.scrollHeight; setTimeout(() => { typing.classList.remove('show'); addBubble('ai', lines[ci], msgs); speakNatural(lines[ci].replace(/<[^>]+>/g,'')); ci++; setTimeout(nextComment, 1600); }, 1200); } setTimeout(nextComment, 500); }, seg.dur); }
-function createSegBubble(index, total) { const label = index === total-1 ? `Part ${index+1} of ${total} — Final segment` : `Part ${index+1} of ${total} — Playing now`; const dots = Array.from({length:total},(_,i)=>`<div class="sdot ${i===index?'active':''}" id="sdot-${index}-${i}"></div>`).join(''); const div = document.createElement('div'); div.className = 'video-seg-bubble'; div.innerHTML = `<div class="video-seg-header"><div class="video-seg-icon">🎬</div><div class="video-seg-title">${label}</div><div class="video-seg-badge">${index+1} / ${total}</div></div><div class="seg-play-bar-track"><div class="seg-play-bar-fill"></div></div><div class="video-seg-frame-wrap"><iframe src="" allow="autoplay; encrypted-media" allowfullscreen playsinline title="Video part ${index+1}"></iframe><div class="video-seg-veil"><div class="veil-icon">⏸️</div><div class="veil-text">Reflecting on this moment...</div></div></div><div class="video-seg-footer"><div class="seg-progress">${dots}</div><button class="video-full-btn" onclick="watchFullVideoInBubble(this,'${ytVideoId}')">▶ Watch full</button></div>`; return div; }
-function updateAllDots(currentIdx, total) { segBubbles.forEach((b, bi) => { if (!b) return; for (let di=0; di<total; di++) { const dot = b.querySelector(`#sdot-${bi}-${di}`); if (dot) dot.className = 'sdot'+(di<currentIdx?' done':di===currentIdx?' active':''); } }); }
-function watchFullVideoInBubble(btn, videoId) { const bubble = btn.closest('.video-seg-bubble'); bubble.querySelector('iframe').src = buildYTSrc(videoId, 0, 1); bubble.querySelector('.video-seg-veil').classList.remove('show'); btn.classList.remove('show'); }
-function showFinalLoop(payload) { const msgs = document.getElementById('chat-messages'); const typing = document.getElementById('typing-indicator'); typing.classList.add('show'); msgs.scrollTop = msgs.scrollHeight; setTimeout(() => { typing.classList.remove('show'); addBubble('ai', `That's the whole message. 💌<br><br>Now... ${payload.s || 'someone'} is out there hoping you received this.`, msgs); msgs.scrollTop = msgs.scrollHeight; setTimeout(() => { typing.classList.add('show'); msgs.scrollTop = msgs.scrollHeight; setTimeout(() => { typing.classList.remove('show'); addBubble('ai', `This message comes from <strong>${payload.s || 'your sender'}</strong>, delivered through <strong>VODDIC</strong>. 💌`, msgs); speakNatural(`This message is from ${payload.s || 'your sender'}, delivered by VODDIC.`); msgs.scrollTop = msgs.scrollHeight; }, 1200); }, 1600); }, 1200); }
+function speakBold(rawText){
+  if(!window.speechSynthesis) return;
+  loadVoices();
+  window.speechSynthesis.cancel();
+  const clean = rawText.replace(/<[^>]+>/g,'').replace(/[""«»\u201c\u201d]/g,'"').replace(/\n+/g,' ').trim();
+  if(!clean) return;
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.rate   = 0.78;   // slower = more authoritative, clearer
+  utt.pitch  = 0.45;   // lower = deeper male tone
+  utt.volume = 1.0;
+  if(_maleVoice) utt.voice = _maleVoice;
+  // Small silence before speaking for clarity
+  setTimeout(()=>window.speechSynthesis.speak(utt), 80);
+}
 
-const BOOT_SEQUENCE = ["Starting SecretMsg engine v2.4...","Decoding sender instructions...","Understanding emotional tone...","Looking through contact list...","Matching recipient profile...","Message package found.","Preparing to deliver..."];
-const POSTER_THEMES = { love:{bg:['#1a0010','#3a0020'],accent:'#ff4488',emoji:'❤️'}, romantic:{bg:['#1a0010','#2a0818'],accent:'#ff6699',emoji:'🌹'}, birthday:{bg:['#0a0a1a','#1a1040'],accent:'#ffd700',emoji:'🎂'}, apology:{bg:['#0a0a0a','#1a1a1a'],accent:'#aaaaff',emoji:'🙏'}, wedding:{bg:['#0a0810','#1a1525'],accent:'#e0c0ff',emoji:'💍'}, anniversary:{bg:['#0a0808','#1a1010'],accent:'#ffa040',emoji:'🥂'}, funny:{bg:['#0a1800','#0f2800'],accent:'#aaff00',emoji:'😂'}, encouragement:{bg:['#0a0500','#1a0d00'],accent:'#ff8800',emoji:'💪'}, christmas:{bg:['#060a02','#0d1504'],accent:'#44ff44',emoji:'🎄'}, eid:{bg:['#02060a','#041020'],accent:'#44aaff',emoji:'🌙'}, condolence:{bg:['#060606','#0f0f0f'],accent:'#aaaaaa',emoji:'🕊️'}, flirt:{bg:['#0a0008','#1a0018'],accent:'#ff44cc',emoji:'😏'} };
+function speak(rawText){
+  if(!window.speechSynthesis) return;
+  loadVoices();
+  window.speechSynthesis.cancel();
+  const clean = rawText.replace(/<[^>]+>/g,'').replace(/[""«»\u201c\u201d]/g,'"').trim();
+  if(!clean) return;
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.rate  = 0.88;
+  utt.pitch = 0.9;
+  utt.volume = 1.0;
+  if(_maleVoice) utt.voice = _maleVoice;
+  setTimeout(()=>window.speechSynthesis.speak(utt), 80);
+}
 
-let currentEmotion = 'love', currentMsgData = null;
-document.querySelectorAll('.gender-btn').forEach(btn => btn.addEventListener('click', () => { const target = btn.dataset.target; btn.closest('.gender-row').querySelectorAll('.gender-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); document.getElementById(target==='sg'?'sender-gender':'receiver-gender').value = btn.dataset.gender; }));
-document.querySelectorAll('.emotion-btn').forEach(btn => btn.addEventListener('click', () => { document.querySelectorAll('.emotion-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); currentEmotion = btn.dataset.emotion; }));
-function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
-function generateMessage() { const recipient = document.getElementById('recipient-name').value.trim(); const sender = document.getElementById('sender-name').value.trim(); const msgText = document.getElementById('message-text').value.trim(); const musicUrl = document.getElementById('music-url').value.trim(); const senderGender = document.getElementById('sender-gender').value; const receiverGender = document.getElementById('receiver-gender').value; if (!msgText) { alert('Please write a message first!'); return; } if (!sender) { alert('Please enter a sender name!'); return; } const payload = {r:recipient,s:sender,m:msgText,e:currentEmotion,mu:musicUrl,sg:senderGender,rg:receiverGender}; const encoded = btoa(encodeURIComponent(JSON.stringify(payload))); const shareUrl = `${location.origin}${location.pathname}#msg=${encoded}`; currentMsgData = {...payload, url:shareUrl}; renderSharePage(shareUrl, payload); showPage('share-page'); }
-function renderSharePage(url, payload) { document.getElementById('share-link-display').textContent = url; renderPoster(url, payload); renderShareButtons(url, document.getElementById('share-btns')); }
-function copyLink() { const url = currentMsgData?.url||''; if (navigator.clipboard) { navigator.clipboard.writeText(url).then(()=>{ const el = document.getElementById('share-link-display'); el.textContent = '✓ Copied!'; setTimeout(()=>el.textContent=url, 2000); }); } else { const ta=document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); } }
-function renderShareButtons(url, container) { const shareText = encodeURIComponent("I saw a name in my contacts inside this message 👀 Check if it's you:"); const encodedUrl = encodeURIComponent(url); const btns = [{label:'💬 WhatsApp', href:`https://wa.me/?text=${shareText}%20${encodedUrl}`},{label:'📘 Facebook', href:`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`},{label:'✈️ Telegram', href:`https://t.me/share/url?url=${encodedUrl}&text=${shareText}`},{label:'🐦 Twitter', href:`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`}]; container.innerHTML = btns.map(b=>`<a class="share-social-btn" href="${b.href}" target="_blank" rel="noopener">${b.label}</a>`).join(''); }
-function renderPoster(url, payload) { const canvas=document.getElementById('poster-canvas'), ctx=canvas.getContext('2d'); const W=400,H=480,theme=POSTER_THEMES[payload.e]||POSTER_THEMES.love; const grad=ctx.createLinearGradient(0,0,W,H); grad.addColorStop(0,theme.bg[0]); grad.addColorStop(1,theme.bg[1]); ctx.fillStyle=grad; ctx.fillRect(0,0,W,H); ctx.strokeStyle=theme.accent; ctx.lineWidth=2; ctx.globalAlpha=0.6; ctx.strokeRect(12,12,W-24,H-24); ctx.globalAlpha=1; ctx.font='60px serif'; ctx.textAlign='center'; ctx.fillText(theme.emoji,W/2,90); ctx.fillStyle='#ffffff'; ctx.font='bold 22px serif'; ctx.fillText('Someone left you a',W/2,140); ctx.fillStyle=theme.accent; ctx.font='bold italic 26px serif'; ctx.fillText('secret message 👀',W/2,172); ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font='14px monospace'; ctx.fillText('Scan the QR code to reveal it',W/2,200); const qrDiv=document.createElement('div'); qrDiv.style.position='absolute'; qrDiv.style.left='-9999px'; document.body.appendChild(qrDiv); try { new QRCode(qrDiv,{text:url,width:160,height:160,colorDark:'#ffffff',colorLight:'transparent'}); setTimeout(()=>{ const qrImg=qrDiv.querySelector('img')||qrDiv.querySelector('canvas'); if(qrImg){ ctx.fillStyle='rgba(255,255,255,0.08)'; roundRect(ctx,W/2-90,218,180,180,12); ctx.fill(); if(qrImg.tagName==='IMG'){ qrImg.onload=()=>{ctx.drawImage(qrImg,W/2-80,228,160,160);drawPosterFooter(ctx,W,H,payload,theme);}; if(qrImg.complete){ctx.drawImage(qrImg,W/2-80,228,160,160);drawPosterFooter(ctx,W,H,payload,theme);} } else { ctx.drawImage(qrImg,W/2-80,228,160,160); drawPosterFooter(ctx,W,H,payload,theme); } } document.body.removeChild(qrDiv); },200); } catch(e){ document.body.removeChild(qrDiv); drawPosterFooter(ctx,W,H,payload,theme); } }
-function drawPosterFooter(ctx,W,H,payload,theme){ ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font='11px monospace'; ctx.textAlign='center'; ctx.fillText('Delivered by VODDIC  ·  secretmsg.ai',W/2,H-24); if(payload.r){ctx.fillStyle=theme.accent;ctx.font='italic 13px serif';ctx.fillText(`For: ${payload.r}`,W/2,H-48);} }
-function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); }
-function downloadPoster(){ const canvas=document.getElementById('poster-canvas'); const link=document.createElement('a'); link.download='secret-message-poster.png'; link.href=canvas.toDataURL('image/png'); link.click(); }
-function startReveal(payload){ window._pendingRevealPayload=payload; showPage('reveal-page'); document.getElementById('boot-screen').style.display='none'; document.getElementById('name-verify-screen').style.display='none'; document.getElementById('chat-screen').style.display='none'; showAdThenDo('reveal'); }
-function runBootSequence(payload){ document.getElementById('boot-screen').style.display='flex'; const container=document.getElementById('boot-lines'); const thinking=document.getElementById('boot-thinking'); container.innerHTML=''; let i=0; function showNext(){ if(i<BOOT_SEQUENCE.length){ const div=document.createElement('div'); div.className='boot-line'; div.textContent=`> ${BOOT_SEQUENCE[i]}`; container.appendChild(div); requestAnimationFrame(()=>setTimeout(()=>div.classList.add('shown'),50)); i++; setTimeout(showNext,500+Math.random()*300); } else { thinking.classList.add('show'); setTimeout(()=>{ document.getElementById('boot-screen').style.display='none'; payload.r?showVerify(payload):showChat(payload); },1800); } } showNext(); }
-function showVerify(payload){ document.getElementById('name-verify-screen').style.display='flex'; document.getElementById('verify-result').className='verify-result'; document.getElementById('verify-name-input').value=''; window._verifyPayload=payload; }
-function verifyName(){ const entered=(document.getElementById('verify-name-input').value||'').trim().toLowerCase(); const expected=(window._verifyPayload?.r||'').toLowerCase(); const result=document.getElementById('verify-result'); if(expected&&entered&&entered===expected){ result.textContent=`✓ Yes... this message was prepared for you, ${window._verifyPayload.r}.`; result.className='verify-result match'; } else { result.textContent=`This message might not be for you.\n\nBut ${window._verifyPayload?.s||'the sender'} still thinks you are a wonderful person.`; result.className='verify-result no-match'; result.style.whiteSpace='pre-line'; } setTimeout(()=>{ document.getElementById('name-verify-screen').style.display='none'; showChat(window._verifyPayload); },2500); }
-function showChat(payload){ document.getElementById('chat-screen').style.display='flex'; const msgs=document.getElementById('chat-messages'); const typing=document.getElementById('typing-indicator'); msgs.innerHTML=''; msgs.appendChild(typing); document.getElementById('chat-avatar').textContent=POSTER_THEMES[payload.e]?.emoji||'🤖'; const templates=TEMPLATES[payload.e]||TEMPLATES.love; const template=templates[Math.floor(Math.random()*templates.length)]; const lines=template.map(line=>resolvePronouns(line,payload)); renderShareButtons(location.href, document.getElementById('chat-share-btns')); let queue=[...lines], videoInserted=false; const hasVideo=!!(payload.mu&&extractYouTubeId(payload.mu)); function nextMessage(){ typing.classList.add('show'); msgs.scrollTop=msgs.scrollHeight; const delay=1000+Math.floor(Math.random()*800); setTimeout(()=>{ typing.classList.remove('show'); if(queue.length===0){ if(hasVideo&&!videoInserted){ videoInserted=true; initVideoExperience(payload,msgs,typing,()=>showFinalLoop(payload)); return; } showFinalLoop(payload); return; } const text=queue.shift(); addBubble('ai',text,msgs); speakNatural(text.replace(/"/g,'').replace(/<[^>]+>/g,'')); if(queue.length>0){ nextMessage(); } else { if(hasVideo&&!videoInserted){ videoInserted=true; setTimeout(()=>initVideoExperience(payload,msgs,typing,()=>showFinalLoop(payload)),900); } else { setTimeout(()=>showFinalLoop(payload),800); } } },delay); } nextMessage(); }
-function addBubble(type, text, container){ const typing=document.getElementById('typing-indicator'); const bubble=document.createElement('div'); bubble.className=`bubble ${type}`; bubble.innerHTML=text+`<span class="bubble-time">${getTime()}</span>`; if(type==='ai'){ const ttsBtn=document.createElement('button'); ttsBtn.className='tts-btn'; ttsBtn.textContent='🔊 Read aloud'; ttsBtn.onclick=()=>speakNatural(text.replace(/<[^>]+>/g,'').replace(/"/g,'')); bubble.appendChild(ttsBtn); } container.insertBefore(bubble,typing); requestAnimationFrame(()=>setTimeout(()=>bubble.classList.add('in'),50)); container.scrollTop=container.scrollHeight; return bubble; }
-function getTime(){ const now=new Date(); return `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; }
-function checkHash(){ const hash=location.hash; if(hash&&hash.startsWith('#msg=')){ try{ const json=decodeURIComponent(atob(hash.slice(5))); startReveal(JSON.parse(json)); } catch(e){ showPage('home-page'); } } else { showPage('home-page'); } }
-window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
-window.addEventListener('hashchange',checkHash);
-window.addEventListener('DOMContentLoaded',checkHash);
+// ===================== UTILS =====================
+function getTime(){
+  const now=new Date();
+  return `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+}
+
+// ===================== HASH ROUTING =====================
+function checkHash(){
+  const hash=location.hash;
+  if(hash&&hash.startsWith('#msg=')){
+    try{
+      const json=decodeURIComponent(atob(hash.slice(5)));
+      startReveal(JSON.parse(json));
+    }catch(e){ showPage('home-page'); }
+  } else { showPage('home-page'); }
+}
+
+// Load voices on first interaction AND on voices changed
+window.speechSynthesis.onvoiceschanged = loadVoices;
+window.addEventListener('DOMContentLoaded', () => {
+  loadVoices();
+  checkHash();
+});
+window.addEventListener('hashchange', checkHash);
 </script>
+
+<!-- Google Analytics (optional) -->
+<!--
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+-->
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
