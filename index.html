@@ -269,6 +269,32 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
   .form-card{padding:20px 16px}
   .emotion-btn .emo-icon{font-size:18px}
 }
+
+/* ======= STICKER PICKER ======= */
+.sticker-picker-wrap{margin-bottom:18px;display:none;border:1px solid rgba(255,50,80,.2);border-radius:10px;padding:14px;background:rgba(255,0,60,.04)}
+.sticker-picker-wrap.show{display:block}
+.sticker-section-label-hot{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:rgba(255,100,120,.9);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sticker-pack-tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.sticker-pack-tabs::-webkit-scrollbar{display:none}
+.sticker-tab{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:var(--font-mono);font-size:9px;color:var(--text-dim);cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:1px;flex-shrink:0}
+.sticker-tab:hover{border-color:rgba(255,100,120,.5);color:rgba(255,140,160,.9)}
+.sticker-tab.active{border-color:rgba(255,50,80,.7);color:rgba(255,120,140,1);background:rgba(255,0,60,.12);font-weight:700}
+.sticker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sticker-item{background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:10px 4px 8px;font-size:22px;text-align:center;cursor:pointer;transition:all .2s;line-height:1.2;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.sticker-item:hover{border-color:rgba(255,100,120,.5);transform:scale(1.06);background:rgba(255,0,60,.07)}
+.sticker-item.selected{border-color:rgba(255,50,80,.9);background:rgba(255,0,60,.14);box-shadow:0 0 12px rgba(255,50,80,.25)}
+.sticker-none-btn{grid-column:1/-1;font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:1px;background:transparent;border:1px dashed var(--border);border-radius:8px;padding:6px;cursor:pointer;transition:all .2s;margin-top:2px}
+.sticker-none-btn:hover{border-color:var(--text-dim)}
+/* Sticker bubble in chat */
+.sticker-bubble{align-self:flex-start;background:transparent!important;border:none!important;padding:4px 0 4px 4px!important;filter:drop-shadow(0 4px 14px rgba(255,50,80,.35))}
+.sticker-bubble::before{display:none!important}
+.sticker-bubble .bubble-time{margin-top:2px}
+
+/* ======= AD BANNERS ======= */
+.ad-banner-strip{width:100%;display:flex;justify-content:center;align-items:center;padding:10px 0;background:rgba(0,0,0,.25);border-top:1px solid rgba(58,32,16,.5);border-bottom:1px solid rgba(58,32,16,.5);overflow:hidden;min-height:70px}
+.ad-banner-incard{display:flex;justify-content:center;align-items:center;padding:10px 0;overflow:hidden;min-height:70px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:16px -24px}
+.ad-sidebar-fixed{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9990;display:none;box-shadow:-4px 0 20px rgba(0,0,0,.4)}
+@media(min-width:960px){.ad-sidebar-fixed{display:block}}
 </style>
 </head>
 <body>
@@ -281,6 +307,12 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
     <p class="home-subtitle">// anonymous · emotional · viral</p>
   </div>
   <div class="form-container">
+
+    <!-- ── Banner Ad (320×50) ── -->
+    <div class="ad-banner-strip">
+      <script>atOptions={'key':'fc44c7eab601156e3645011f28713273','format':'iframe','height':50,'width':320,'params':{}}</script>
+      <script src="https://www.highperformanceformat.com/fc44c7eab601156e3645011f28713273/invoke.js"></script>
+    </div>
 
     <!-- Ad click counter badge -->
     <div style="text-align:center;margin-bottom:8px">
@@ -351,6 +383,14 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
         🔞 Adult / Erotic content selected. Only share with consenting adults. You are responsible for the content you send.
       </div>
 
+      <!-- ── Sticker Pack (shown for erotic / flirt) ── -->
+      <div class="sticker-picker-wrap" id="sticker-picker-wrap">
+        <div class="sticker-section-label-hot">💋 Attach a sticker <span style="opacity:.5">(optional)</span></div>
+        <div class="sticker-pack-tabs" id="sticker-pack-tabs"></div>
+        <div class="sticker-grid" id="sticker-grid"></div>
+        <button class="sticker-none-btn" onclick="selectSticker(null)">✕ No sticker</button>
+      </div>
+
       <button class="generate-btn" id="generate-btn" onclick="handleGenerateClick()">✦ Generate Secret Message</button>
     </div>
   </div>
@@ -366,6 +406,13 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
     <div class="form-section-label">// Shareable Link</div>
     <div class="link-box" id="share-link-display" onclick="copyLink()">Tap to copy link...</div>
     <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
+
+    <!-- ── Banner Ad (320×50) ── -->
+    <div class="ad-banner-incard">
+      <script>atOptions={'key':'fc44c7eab601156e3645011f28713273','format':'iframe','height':50,'width':320,'params':{}}</script>
+      <script src="https://www.highperformanceformat.com/fc44c7eab601156e3645011f28713273/invoke.js"></script>
+    </div>
+
     <div class="form-section-label">// QR Poster</div>
     <div id="poster-canvas-wrap">
       <canvas id="poster-canvas" width="400" height="600"></canvas>
@@ -440,7 +487,7 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
         </div>
         <button class="gen-continue-btn" id="gen-continue-btn" disabled onclick="finishGenerate()">Show Result →</button>
       </div>
-      <div class="gen-disclaimer">⬡ SecretMsg · Powered by Secret AI Messenger · Ad keeps this free</div>
+      <div class="gen-disclaimer">⬡ SecretMsg · Powered by VODDIC · Ad keeps this free</div>
     </div>
   </div>
 </div>
@@ -469,12 +516,18 @@ textarea{resize:vertical;min-height:90px;font-style:italic}
         </div>
         <button class="rev-skip-btn" id="rev-skip-btn" disabled onclick="skipRevealAd()">Reveal Message →</button>
       </div>
-      <div class="rev-disclaimer">⬡ SecretMsg · Powered by Secret AI Messenger · Ad keeps this free</div>
+      <div class="rev-disclaimer">⬡ SecretMsg · Powered by VODDIC · Ad keeps this free</div>
     </div>
   </div>
 </div>
 
 <div id="qr-hidden-gen" style="position:absolute;left:-9999px;top:-9999px;"></div>
+
+<!-- ── Sidebar Ad — 160×600 (desktop only, fixed right) ── -->
+<div class="ad-sidebar-fixed" id="ad-sidebar">
+  <script>atOptions={'key':'4ecd8f1059c69a87b34d12694a27ea37','format':'iframe','height':600,'width':160,'params':{}}</script>
+  <script src="https://www.highperformanceformat.com/4ecd8f1059c69a87b34d12694a27ea37/invoke.js"></script>
+</div>
 
 <script>
 // ===================== AD CLICK COUNTER + ADCASH VIDEO SLIDER =====================
@@ -484,6 +537,59 @@ function incrementAdCount() {
   totalAdViews++;
   const el = document.getElementById('global-ad-count');
   if (el) el.textContent = totalAdViews;
+}
+
+// ===================== STICKER PACKS =====================
+const STICKER_PACKS = [
+  { id:'flames', name:'🔥 Flames',  stickers:['🔥💋🔥','😈🔥💋','💋💋💋','🥵💦','🔥🌙✨','💋😈💋','🔥💕🔥','😏🔥💋'] },
+  { id:'roses',  name:'🌹 Roses',   stickers:['🌹💋','🥀💔','🌹🌹🌹','🌺💋💋','🌹✨💋','🌸💋🌸','🌹❤️🔥','💐💋💄'] },
+  { id:'night',  name:'🌙 Night',   stickers:['🌙💋✨','😏💋','👄💋','🌙🔥','💋🌙💫','🌙😈💋','💋🔮✨','🌙💕🔥'] },
+  { id:'hearts', name:'💕 Hearts',  stickers:['💕💋💕','❤️🔥','💋💛💋','💗💗💗','💋❤️💋','💞💞💞','❤️‍🔥💋','💋💕😏'] },
+];
+let _selectedStickerPackId = 'flames';
+let _selectedStickerEmoji  = null;
+
+function renderStickerPicker() {
+  const tabsEl = document.getElementById('sticker-pack-tabs');
+  const gridEl = document.getElementById('sticker-grid');
+  if (!tabsEl || !gridEl) return;
+  tabsEl.innerHTML = STICKER_PACKS.map(p =>
+    `<button class="sticker-tab${p.id===_selectedStickerPackId?' active':''}" onclick="selectStickerPack('${p.id}')">${p.name}</button>`
+  ).join('');
+  const pack = STICKER_PACKS.find(p => p.id === _selectedStickerPackId) || STICKER_PACKS[0];
+  gridEl.innerHTML = pack.stickers.map(s =>
+    `<button class="sticker-item${_selectedStickerEmoji===s?' selected':''}" onclick="selectSticker('${s}')">${s}</button>`
+  ).join('');
+}
+
+function selectStickerPack(id) {
+  _selectedStickerPackId = id;
+  _selectedStickerEmoji = null;
+  renderStickerPicker();
+}
+
+function selectSticker(emoji) {
+  _selectedStickerEmoji = (!emoji || _selectedStickerEmoji === emoji) ? null : emoji;
+  renderStickerPicker();
+}
+
+// Append a sticker bubble in the chat (called after video ends or final loop for erotic/flirt)
+function appendStickerBubble(payload, msgs) {
+  if (!['erotic','flirt'].includes(payload.e)) return;
+  const pack = STICKER_PACKS.find(p => p.id === (_selectedStickerPackId||'flames')) || STICKER_PACKS[0];
+  const emoji = payload.st || _selectedStickerEmoji || pack.stickers[Math.floor(Math.random()*pack.stickers.length)];
+  const typing = document.getElementById('typing-indicator');
+  if (!typing || !msgs) return;
+  typing.classList.add('show'); msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    typing.classList.remove('show');
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble ai sticker-bubble';
+    bubble.innerHTML = `<span style="font-size:46px;letter-spacing:5px;display:block;padding:4px 0">${emoji}</span><span class="bubble-time">${getTime()}</span>`;
+    msgs.insertBefore(bubble, typing);
+    requestAnimationFrame(() => setTimeout(() => bubble.classList.add('in'), 50));
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 900);
 }
 
 // ---- Adcash Video Slider — per official docs: aclib.runVideoSlider({ zoneId }) ----
@@ -771,7 +877,7 @@ function handleGenerateClick() {
   if (!msgText) { alert('Please write a message first!'); return; }
   if (!sender)  { alert('Please enter a sender name!'); return; }
 
-  const payload = {r:recipient,s:sender,m:msgText,e:currentEmotion,mu:musicUrl,sg:senderGender,rg:receiverGender};
+  const payload = {r:recipient,s:sender,m:msgText,e:currentEmotion,mu:musicUrl,sg:senderGender,rg:receiverGender,st:_selectedStickerEmoji||null};
   const encoded  = btoa(encodeURIComponent(JSON.stringify(payload)));
   const shareUrl = `${location.origin}${location.pathname}#msg=${encoded}`;
 
@@ -895,6 +1001,13 @@ document.querySelectorAll('.emotion-btn').forEach(btn => {
     // Show adult notice for erotic
     const notice = document.getElementById('adult-notice');
     if (notice) notice.classList.toggle('show', currentEmotion === 'erotic');
+    // Show sticker picker for erotic or flirt
+    const stickerWrap = document.getElementById('sticker-picker-wrap');
+    if (stickerWrap) {
+      const showPicker = ['erotic','flirt'].includes(currentEmotion);
+      stickerWrap.classList.toggle('show', showPicker);
+      if (showPicker) renderStickerPicker();
+    }
   });
 });
 
@@ -1398,7 +1511,11 @@ function playSegment(index,msgs,typing){
   const N=SEGMENTS.length;
   if(index>=N){
     if(segBubbles[N-1]) segBubbles[N-1].querySelector('.video-full-btn').classList.add('show');
-    if(ytOnDone) ytOnDone();
+    // Append sticker after video ends for erotic/flirt
+    if(ytPayload && ['erotic','flirt'].includes(ytPayload.e)){
+      appendStickerBubble(ytPayload, msgs);
+    }
+    if(ytOnDone) setTimeout(ytOnDone, ytPayload&&['erotic','flirt'].includes(ytPayload.e) ? 2000 : 0);
     return;
   }
 
@@ -1512,10 +1629,14 @@ function showFinalLoop(payload){
       typing.classList.add('show'); msgs.scrollTop=msgs.scrollHeight;
       setTimeout(()=>{
         typing.classList.remove('show');
-        const closing=`This message is from <strong>${payload.s||'your sender'}</strong>, delivered by <strong>Secret AI Messenger</strong>. 💌`;
+        const closing=`This message is from <strong>${payload.s||'your sender'}</strong>, delivered by <strong>VODDIC</strong>. 💌`;
         addBubble('ai',closing,msgs);
-        speakBold(`This message is from ${payload.s||'your sender'}, delivered by Secret AI Messenger.`);
+        speakBold(`This message is from ${payload.s||'your sender'}, delivered by VODDIC.`);
         msgs.scrollTop=msgs.scrollHeight;
+        // Sticker drop for erotic / flirt (no-video path)
+        if(['erotic','flirt'].includes(payload.e)){
+          setTimeout(()=>appendStickerBubble(payload,msgs), 1400);
+        }
       },1200);
     },1600);
   },1200);
