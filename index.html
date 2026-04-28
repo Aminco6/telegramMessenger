@@ -923,14 +923,6 @@ function showGeneratingOverlay(payload, shareUrl) {
 function finishGenerate() {
   clearInterval(genTimerInterval);
   document.getElementById('generating-overlay').classList.remove('show');
-  
-  // Shorten URL if not already done
-  if (!_pendingShareUrl) {
-    const encoded  = btoa(encodeURIComponent(JSON.stringify(_pendingPayload)));
-    const longUrl = `${location.origin}${location.pathname}#msg=${encoded}`;
-    _pendingShareUrl = longUrl;
-  }
-  
   currentMsgData = {..._pendingPayload, url:_pendingShareUrl};
   renderSharePage(_pendingShareUrl, _pendingPayload);
   showPage('share-page');
@@ -1028,33 +1020,25 @@ function showPage(id) {
 
 // ===================== SHARE PAGE =====================
 function renderSharePage(url, payload) {
-  // Show short URL if available
-  const displayUrl = url || _pendingShareUrl || '';
-  
-  // Update the link box
-  const linkBox = document.getElementById('share-link-display');
-  if (linkBox) {
-    linkBox.textContent = displayUrl;
-    linkBox.title = 'Click to copy';
-  }
-  
-  // Generate poster with the URL
-  renderPoster(displayUrl, payload);
-  
-  // Update share buttons
-  renderShareButtons(displayUrl, document.getElementById('share-btns'));
-  
-  // Show shortened notification
-  if (displayUrl.length < 40) {
-    const shareHeader = document.querySelector('.share-header p');
-    if (shareHeader) {
-      shareHeader.textContent = '// short link ready — share anywhere';
-    }
-  }
+  document.getElementById('share-link-display').textContent = url;
+  renderPoster(url, payload);
+  renderShareButtons(url, document.getElementById('share-btns'));
 }
 
-
-
+function copyLink() {
+  const url = currentMsgData?.url||'';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(()=>{
+      const el = document.getElementById('share-link-display');
+      el.textContent = '✓ Copied!';
+      setTimeout(()=>el.textContent=url, 2000);
+    });
+  } else {
+    const ta=document.createElement('textarea'); ta.value=url;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+}
 
 function renderShareButtons(url, container) {
   const shareText  = encodeURIComponent("I saw a name in my contacts inside this message 👀 Check if it's you:");
@@ -1808,113 +1792,6 @@ window.addEventListener('hashchange', checkHash);
 // Also try on first touch/click — iOS/Android often only expose voices after a gesture
 window.addEventListener('touchstart', loadVoices, { once: true });
 window.addEventListener('click', loadVoices, { once: true });
-
-
-
-
-
-
-
-
-
-// ===================== URL SHORTENER =====================
-let currentShortUrl = null;
-
-async function shortenUrl(longUrl) {
-  // Try multiple shortening services
-  const services = [
-    async (url) => {
-      const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
-      if (!res.ok) throw new Error('TinyURL failed');
-      return (await res.text()).trim();
-    },
-    async (url) => {
-      const res = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`);
-      if (!res.ok) throw new Error('is.gd failed');
-      return (await res.text()).trim();
-    },
-    async (url) => {
-      const res = await fetch(`https://vgd.no/api/v1/shorten?url=${encodeURIComponent(url)}`);
-      if (!res.ok) throw new Error('vgd failed');
-      const data = await res.json();
-      return data.shorturl;
-    }
-  ];
-
-  for (const service of services) {
-    try {
-      return await service(longUrl);
-    } catch (e) {
-      continue;
-    }
-  }
-  return longUrl; // Fallback to long URL if all fail
-}
-
-// Override the handleGenerateClick function
-const originalHandleGenerateClick = handleGenerateClick;
-handleGenerateClick = async function() {
-  const recipient      = document.getElementById('recipient-name').value.trim();
-  const sender         = document.getElementById('sender-name').value.trim();
-  const msgText        = document.getElementById('message-text').value.trim();
-  const musicUrl       = document.getElementById('music-url').value.trim();
-  const senderGender   = document.getElementById('sender-gender').value;
-  const receiverGender = document.getElementById('receiver-gender').value;
-
-  if (!msgText) { alert('Please write a message first!'); return; }
-  if (!sender)  { alert('Please enter a sender name!'); return; }
-
-  const payload = {r:recipient,s:sender,m:msgText,e:currentEmotion,mu:musicUrl,sg:senderGender,rg:receiverGender,st:_selectedStickerEmoji||null};
-  const encoded  = btoa(encodeURIComponent(JSON.stringify(payload)));
-  const longUrl = `${location.origin}${location.pathname}#msg=${encoded}`;
-
-  _pendingPayload  = payload;
-  
-  // Show generating overlay immediately
-  showGeneratingOverlay(payload, longUrl);
-  
-  // Shorten URL in background
-  try {
-    const shortUrl = await shortenUrl(longUrl);
-    _pendingShareUrl = shortUrl;
-    console.log('Short URL created:', shortUrl);
-  } catch (e) {
-    _pendingShareUrl = longUrl;
-  }
-};
-
-
-function copyLink() {
-  const url = currentMsgData?.url || _pendingShareUrl || '';
-  const linkBox = document.getElementById('share-link-display');
-  
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => {
-      if (linkBox) {
-        linkBox.textContent = '✓ Copied!';
-        setTimeout(() => {
-          linkBox.textContent = url;
-        }, 2000);
-      }
-    });
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = url;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    if (linkBox) {
-      linkBox.textContent = '✓ Copied!';
-      setTimeout(() => {
-        linkBox.textContent = url;
-      }, 2000);
-    }
-  }
-}
-
-
-
 </script>
 
 <!-- Google Analytics (optional) -->
